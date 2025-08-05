@@ -1,6 +1,7 @@
 langchain-groq
 langchain-mcp-adapters
 mcp
+mcp-use
 python-dotenv
 httpx
 langchain-google-genai
@@ -9,3 +10,4 @@ langchain
 langchain-core
 schedule
 asyncio-mqtt
+mcp_use

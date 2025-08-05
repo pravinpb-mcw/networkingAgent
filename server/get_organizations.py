@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
-from .meraki_client import MerakiAPIClient
+from meraki_client import MerakiAPIClient
 
 logger = logging.getLogger("get-organizations-tool")
 

@@ -3,7 +3,7 @@ Cisco Meraki MCP Server Package
 Exposes 5 key Meraki API endpoints as MCP tools for network observability
 """
 
-from .meraki_client import MerakiAPIClient
+from meraki_client import MerakiAPIClient
 from .get_network_clients import get_network_clients
 from .get_network_traffic import get_network_traffic
 from .get_device_loss_and_latency_history import get_device_loss_and_latency_history

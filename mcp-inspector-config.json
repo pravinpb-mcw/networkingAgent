@@ -2,9 +2,9 @@
   "mcpServers": {
     "cisco-meraki-observability": {
       "command": "/usr/local/bin/python3",
-      "args": ["standalone_mcp_server.py"],
+      "args": ["server/meraki_server.py"],
       "env": {
-        "TIMESPAN": "86400",
+        "TIMESPAN": "7200",
         "BASE_URL": "https://api.meraki.com/api/v1",
         "PRODUCT_TYPE": "appliance"
       }

@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
-from .meraki_client import MerakiAPIClient
+from meraki_client import MerakiAPIClient
 
 logger = logging.getLogger("get-network-traffic-tool")
 
@@ -38,7 +38,6 @@ async def get_network_traffic() -> List[TextContent]:
         }
         
         json_output = json.dumps(result, indent=2, default=str)
-        print(f"\n=== get_network_traffic JSON Output ===\n{json_output}\n")
         logger.info(f"get_network_traffic completed successfully. Retrieved traffic analysis for network {client.network_id}.")
         
         return [TextContent(

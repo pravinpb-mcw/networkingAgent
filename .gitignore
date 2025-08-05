@@ -1,2 +1,6 @@
 .env
 
+/monitoring_data/
+
+.venv/
+

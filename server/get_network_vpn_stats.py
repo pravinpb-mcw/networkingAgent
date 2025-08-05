@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
-from .meraki_client import MerakiAPIClient
+from meraki_client import MerakiAPIClient
 
 logger = logging.getLogger("get-organization-vpn-stats-tool")
 
@@ -38,7 +38,6 @@ async def get_organization_vpn_stats() -> List[TextContent]:
         }
         
         json_output = json.dumps(result, indent=2, default=str)
-        print(f"\n=== get_organization_vpn_stats JSON Output ===\n{json_output}\n")
         logger.info(f"get_organization_vpn_stats completed successfully. Retrieved VPN stats for organization {client.organization_id}.")
         
         return [TextContent(
