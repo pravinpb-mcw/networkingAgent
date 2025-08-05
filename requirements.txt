@@ -1,0 +1,11 @@
+langchain-groq
+langchain-mcp-adapters
+mcp
+python-dotenv
+httpx
+langchain-google-genai
+google-generativeai
+langchain
+langchain-core
+schedule
+asyncio-mqtt
