@@ -11,3 +11,4 @@ langchain-core
 schedule
 asyncio-mqtt
 mcp_use
+requests

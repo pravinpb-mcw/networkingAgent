@@ -12,6 +12,7 @@ import sys
 import time
 import sqlite3
 import statistics
+import argparse
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 from collections import deque
@@ -45,7 +46,7 @@ logger = logging.getLogger("network-monitor")
 class NetworkPerformanceMonitor:
     """Monitor network performance using LLM and MCP tools with trend analysis"""
     
-    def __init__(self, db_path: str = "network_monitor.db", max_history: int = 1000):
+    def __init__(self, db_path: str = "network_monitor.db", max_history: int = 1000, enable_webhooks: bool = False):
         """Initialize the network monitor"""
         self.gemini_api_key = os.getenv("GEMINI_API_KEY")
         if not self.gemini_api_key:
@@ -70,6 +71,18 @@ class NetworkPerformanceMonitor:
         self.db_path = db_path
         self.max_history = max_history
         self.recent_data = deque(maxlen=max_history)  # In-memory recent data
+        
+        # Initialize webhook module if enabled
+        self.webhook_module = None
+        if enable_webhooks:
+            try:
+                from webhook_module import WebhookModule
+                self.webhook_module = WebhookModule()
+                if not self.webhook_module.is_configured():
+                    logger.warning("Webhooks enabled but no webhook URLs configured")
+            except ImportError as e:
+                logger.error(f"Failed to import webhook module: {e}")
+                logger.warning("Webhook functionality disabled")
         
         # Initialize database
         self._init_database()
@@ -336,17 +349,23 @@ class NetworkPerformanceMonitor:
         try:
             # Get device performance data
             logger.info("Getting device loss and latency history...")
-            performance_data = await get_device_loss_and_latency_history()
+            performance_response = await get_device_loss_and_latency_history()
+            # Parse the JSON from the response
+            performance_data = json.loads(performance_response[0].text)
             data['performance'] = performance_data
             
             # Get network traffic data
             logger.info("Getting network traffic data...")
-            traffic_data = await get_network_traffic()
+            traffic_response = await get_network_traffic()
+            # Parse the JSON from the response
+            traffic_data = json.loads(traffic_response[0].text)
             data['traffic'] = traffic_data
             
             # Get network events
             logger.info("Getting network events...")
-            events_data = await get_network_events()
+            events_response = await get_network_events()
+            # Parse the JSON from the response
+            events_data = json.loads(events_response[0].text)
             data['events'] = events_data
             
             logger.info("Performance data collection completed")
@@ -476,28 +495,40 @@ class NetworkPerformanceMonitor:
             
             # System prompt for performance analysis
             system_prompt = """You are a network performance analyst expert. 
-            Analyze the provided network performance data and provide concise, actionable insights.
+            Analyze the provided network performance data and provide structured, actionable insights.
             
-            Focus on:
-            1. **Performance Issues**: Identify latency, loss, and jitter problems
-            2. **Root Causes**: Suggest possible causes for performance issues
-            3. **Recommendations**: Provide specific actions to improve performance
-            4. **Trends**: Note any patterns or trends in the data
+            ALWAYS format your response in this exact structure:
             
-            Keep your response concise and actionable."""
+            STATUS: [Normal/Warning/Critical] - Brief status summary
+            
+            PERFORMANCE ISSUES:
+            • [Issue 1 with specific metrics]
+            • [Issue 2 with specific metrics]
+            • [None if no issues detected]
+            
+            ROOT CAUSES:
+            • [Possible cause 1]
+            • [Possible cause 2]
+            • [None if no issues]
+            
+            RECOMMENDATIONS:
+            • [Specific action 1]
+            • [Specific action 2]
+            • [Continue monitoring if normal]
+            
+            TRENDS:
+            • [Trend 1 with percentage/values]
+            • [Trend 2 with percentage/values]
+            • [No significant trends if stable]
+            
+            Keep each section concise and actionable. Use bullet points consistently."""
             
             # Human prompt
             human_prompt = f"""Analyze this network performance data:
 
 {performance_summary}
 
-Provide a brief analysis focusing on:
-- Current performance status
-- Any issues detected
-- Recommended actions
-- Overall network health assessment
-
-Keep it concise and actionable."""
+Provide a structured analysis following the exact format specified. Focus on actionable insights and specific recommendations."""
             
             messages = [
                 SystemMessage(content=system_prompt),
@@ -601,10 +632,31 @@ Keep it concise and actionable."""
         metrics = analysis.get('metrics', {})
         if metrics:
             print("\nCurrent Metrics:")
-            print(f"   Latency: {metrics.get('latency_ms', 'N/A')}ms")
-            print(f"   Packet Loss: {metrics.get('loss_percent', 'N/A')}%")
-            print(f"   Jitter: {metrics.get('jitter', 'N/A')}ms")
-            print(f"   Goodput: {metrics.get('goodput', 'N/A')}")
+            print("   " + "="*60)
+            print("   | Metric      | Value    | Threshold | Status  |")
+            print("   |" + "-"*58 + "|")
+            
+            # Latency
+            latency = metrics.get('latency_ms', 'N/A')
+            latency_status = "NORMAL" if latency == 'N/A' or latency <= self.thresholds['latency_ms'] else "HIGH"
+            print(f"   | Latency     | {latency:>7}ms | {self.thresholds['latency_ms']:>9}ms | {latency_status:>7} |")
+            
+            # Packet Loss
+            loss = metrics.get('loss_percent', 'N/A')
+            loss_status = "NORMAL" if loss == 'N/A' or loss <= self.thresholds['loss_percent'] else "HIGH"
+            print(f"   | Packet Loss | {loss:>7}%  | {self.thresholds['loss_percent']:>9}%  | {loss_status:>7} |")
+            
+            # Jitter
+            jitter = metrics.get('jitter', 'N/A')
+            jitter_status = "NORMAL" if jitter == 'N/A' or jitter <= self.thresholds['jitter'] else "HIGH"
+            print(f"   | Jitter      | {jitter:>7}ms | {self.thresholds['jitter']:>9}ms | {jitter_status:>7} |")
+            
+            # Goodput
+            goodput = metrics.get('goodput', 'N/A')
+            goodput_status = "NORMAL"  # Goodput doesn't have a threshold, always normal
+            print(f"   | Goodput     | {goodput:>7}   | {'N/A':>9}   | {goodput_status:>7} |")
+            
+            print("   " + "="*60)
         
         # Display trend analysis
         trends = analysis.get('trends', {})
@@ -652,9 +704,87 @@ Keep it concise and actionable."""
         # Display LLM insights
         if insights:
             print("\nAI Insights:")
-            print(f"   {insights}")
+            self._display_structured_insights(insights)
         
         print("="*80)
+    
+    def _display_structured_insights(self, insights: str):
+        """Display structured insights in a formatted way"""
+        try:
+            # Split insights into sections
+            lines = insights.strip().split('\n')
+            current_section = None
+            section_content = []
+            
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Check for section headers
+                if line.startswith('STATUS:'):
+                    if current_section and section_content:
+                        self._print_section(current_section, section_content)
+                    current_section = 'STATUS'
+                    section_content = [line[7:].strip()]  # Remove 'STATUS:' prefix
+                elif line.startswith('PERFORMANCE ISSUES:'):
+                    if current_section and section_content:
+                        self._print_section(current_section, section_content)
+                    current_section = 'PERFORMANCE ISSUES'
+                    section_content = []
+                elif line.startswith('ROOT CAUSES:'):
+                    if current_section and section_content:
+                        self._print_section(current_section, section_content)
+                    current_section = 'ROOT CAUSES'
+                    section_content = []
+                elif line.startswith('RECOMMENDATIONS:'):
+                    if current_section and section_content:
+                        self._print_section(current_section, section_content)
+                    current_section = 'RECOMMENDATIONS'
+                    section_content = []
+                elif line.startswith('TRENDS:'):
+                    if current_section and section_content:
+                        self._print_section(current_section, section_content)
+                    current_section = 'TRENDS'
+                    section_content = []
+                elif line.startswith('•') and current_section:
+                    section_content.append(line[1:].strip())  # Remove bullet point
+                elif current_section and line:
+                    # Handle multi-line content
+                    if section_content:
+                        section_content[-1] += " " + line
+                    else:
+                        section_content.append(line)
+            
+            # Print the last section
+            if current_section and section_content:
+                self._print_section(current_section, section_content)
+                
+        except Exception as e:
+            # Fallback to simple display if parsing fails
+            print(f"   {insights}")
+    
+    def _print_section(self, section: str, content: List[str]):
+        """Print a formatted section"""
+        section_colors = {
+            'STATUS': 'GREEN',
+            'PERFORMANCE ISSUES': 'RED',
+            'ROOT CAUSES': 'YELLOW',
+            'RECOMMENDATIONS': 'BLUE',
+            'TRENDS': 'CYAN'
+        }
+        
+        color = section_colors.get(section, 'WHITE')
+        print(f"\n   {section}:")
+        
+        if section == 'STATUS':
+            # Status is usually a single line
+            print(f"     {content[0] if content else 'No status provided'}")
+        else:
+            # Other sections have bullet points
+            for item in content:
+                if item.strip():
+                    print(f"     • {item.strip()}")
     
     async def run_monitoring_cycle(self):
         """Run one monitoring cycle"""
@@ -670,6 +800,15 @@ Keep it concise and actionable."""
             
             # Display results
             self.display_insights(analysis, insights)
+            
+            # Send to webhooks (Teams/Slack) if enabled
+            if self.webhook_module:
+                webhook_results = self.webhook_module.send_network_insights(analysis, insights)
+                if webhook_results:
+                    print(f"\nWebhook Results:")
+                    for platform, success in webhook_results.items():
+                        status = "SUCCESS" if success else "FAILED"
+                        print(f"  {platform.upper()}: {status}")
             
             # Save to file
             self._save_monitoring_data(data, analysis, insights)
@@ -727,11 +866,80 @@ Keep it concise and actionable."""
             print(f"\nMonitoring error: {e}")
             logger.error(f"Monitoring error: {e}")
 
+def parse_arguments():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Network Performance Monitor with optional webhook notifications",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python3 network_monitor.py                    # Run without webhooks
+  python3 network_monitor.py --webhooks         # Run with webhooks enabled
+  python3 network_monitor.py -w                 # Short form for webhooks
+  python3 network_monitor.py --help             # Show this help message
+        """
+    )
+    
+    parser.add_argument(
+        '--webhooks', '-w',
+        action='store_true',
+        help='Enable webhook notifications to Teams and Slack'
+    )
+    
+    parser.add_argument(
+        '--interval', '-i',
+        type=int,
+        default=1,
+        help='Monitoring interval in minutes (default: 1)'
+    )
+    
+    parser.add_argument(
+        '--db-path',
+        type=str,
+        default="network_monitor.db",
+        help='Database file path (default: network_monitor.db)'
+    )
+    
+    parser.add_argument(
+        '--max-history',
+        type=int,
+        default=1000,
+        help='Maximum number of data points to keep in memory (default: 1000)'
+    )
+    
+    return parser.parse_args()
+
 async def main():
     """Main function"""
     try:
-        monitor = NetworkPerformanceMonitor()
-        await monitor.start_monitoring(interval_minutes=1)
+        # Parse command line arguments
+        args = parse_arguments()
+        
+        print("="*80)
+        print("NETWORK PERFORMANCE MONITOR")
+        print("="*80)
+        print(f"Monitoring interval: {args.interval} minute(s)")
+        print(f"Database path: {args.db_path}")
+        print(f"Max history: {args.max_history} data points")
+        print(f"Webhooks enabled: {'Yes' if args.webhooks else 'No'}")
+        
+        if args.webhooks:
+            print("\nWebhook Configuration:")
+            print("  - Set TEAMS_WEBHOOK_URL in .env file for Teams notifications")
+            print("  - Set SLACK_WEBHOOK_URL in .env file for Slack notifications")
+            print("  - See WEBHOOK_SETUP.md for setup instructions")
+        
+        print("="*80)
+        
+        # Create monitor instance
+        monitor = NetworkPerformanceMonitor(
+            db_path=args.db_path,
+            max_history=args.max_history,
+            enable_webhooks=args.webhooks
+        )
+        
+        # Start monitoring
+        await monitor.start_monitoring(interval_minutes=args.interval)
         
     except Exception as e:
         print(f"Failed to start monitor: {e}")
