@@ -8,7 +8,12 @@ langchain-google-genai
 google-generativeai
 langchain
 langchain-core
+langchain-community
+transformers
+torch
+accelerate
 schedule
 asyncio-mqtt
 mcp_use
 requests
+langchain-huggingface
