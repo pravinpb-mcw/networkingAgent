@@ -61,7 +61,7 @@ load_dotenv()
 # Page configuration
 st.set_page_config(
     page_title="Network Agent Dashboard",
-    page_icon="🌐",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -145,11 +145,11 @@ class NetworkDashboard:
             config_file = "mcp-inspector-config.json"
             if os.path.exists(config_file):
                 self.mcp_client = MCPClient.from_config_file(config_file)
-                st.success("✅ MCP Client connected successfully")
+                st.success("MCP Client connected successfully")
             else:
-                st.error("❌ MCP config file not found")
+                st.error("MCP config file not found")
         except Exception as e:
-            st.error(f"❌ Failed to initialize MCP client: {e}")
+            st.error(f"Failed to initialize MCP client: {e}")
     
     def _init_llm(self):
         """Initialize Gemini LLM"""
@@ -161,11 +161,11 @@ class NetworkDashboard:
                     temperature=0.3,
                     max_tokens=2048
                 )
-                st.success("✅ Gemini LLM initialized successfully")
+                st.success("Gemini LLM initialized successfully")
             else:
-                st.error("❌ GEMINI_API_KEY not found in .env file")
+                st.error("GEMINI_API_KEY not found in .env file")
         except Exception as e:
-            st.error(f"❌ Failed to initialize LLM: {e}")
+            st.error(f"Failed to initialize LLM: {e}")
     
     def _create_mcp_agent(self):
         """Create MCP agent for chat functionality"""
@@ -530,7 +530,7 @@ class NetworkDashboard:
 
 def main():
     """Main dashboard function"""
-    st.markdown('<div class="main-header"><h1>🌐 Network Agent Dashboard</h1><p>MCP Client Chatbot + Network Monitor Integration</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1> Network Agent Dashboard</h1><p>MCP Client Chatbot + Network Monitor Integration</p></div>', unsafe_allow_html=True)
     
     if not IMPORTS_SUCCESS:
         st.stop()
@@ -543,10 +543,10 @@ def main():
     
     # Sidebar for controls
     with st.sidebar:
-        st.header("🎛️ Dashboard Controls")
+        st.header("Dashboard Controls")
         
         # Monitoring controls
-        st.subheader("📊 Network Monitor")
+        st.subheader(" Network Monitor")
         if st.button("Start Monitoring", type="primary"):
             dashboard.start_monitoring()
             st.success("Monitoring started!")
@@ -556,16 +556,16 @@ def main():
             st.info("Monitoring stopped!")
         
         # Status indicators
-        st.subheader("📈 Status")
-        st.metric("Monitoring Active", "🟢 Yes" if dashboard.monitoring_active else "🔴 No")
+        st.subheader("Status")
+        st.metric("Monitoring Active", "Yes" if dashboard.monitoring_active else "No")
         st.metric("Data Points", len(dashboard.monitoring_data))
         
     
     # Main content area
-    tab1, tab2, tab3 = st.tabs(["💬 MCP Chatbot", "📊 Network Monitor", "📈 Analytics"])
+    tab1, tab2, tab3 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics"])
     
     with tab1:
-        st.header("💬 MCP Client Chatbot")
+        st.header("MCP Client Chatbot")
         st.info("Chat with the MCP agent to analyze network data using available tools")
         
         # Chat interface with custom styling
@@ -630,7 +630,7 @@ def main():
         # Monitoring status
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Status", "🟢 Active" if dashboard.monitoring_active else "🔴 Inactive")
+            st.metric("Status", "Active" if dashboard.monitoring_active else "Inactive")
         with col2:
             st.metric("Data Points", len(dashboard.monitoring_data))
         with col3:
@@ -647,19 +647,19 @@ def main():
         if dashboard.monitoring_data:
             latest = dashboard.monitoring_data[-1]
             
-            st.subheader("📈 Latest Insights")
+            st.subheader("Latest Insights")
             st.markdown(f"**Timestamp:** {latest['timestamp'][:19]}")
             
             # Check if this is an error entry
             if latest.get('error', False):
-                st.error(f"⚠️ Monitoring Error: {latest.get('insights', 'Unknown error')}")
+                st.error(f"Monitoring Error: {latest.get('insights', 'Unknown error')}")
             else:
                 # Display insights
                 if 'insights' in latest:
                     st.info(latest['insights'])
                 
                 # Display data summary
-                st.subheader("📊 Data Summary")
+                st.subheader("Data Summary")
                 
                 data = latest.get('data', {})
                 
@@ -704,7 +704,7 @@ def main():
             st.info("No monitoring data available. Start monitoring to see data.")
     
     with tab3:
-        st.header("📈 Analytics Dashboard")
+        st.header("Analytics Dashboard")
         
         if len(dashboard.monitoring_data) > 1:
             # Filter out error entries
@@ -715,7 +715,7 @@ def main():
                 timestamps = [entry['timestamp'] for entry in valid_data]
                 
                 # Performance trends chart
-                st.subheader("📊 Performance Trends")
+                st.subheader("Performance Trends")
                 
                 # Extract performance data
                 perf_data = []
