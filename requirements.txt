@@ -16,4 +16,10 @@ schedule
 asyncio-mqtt
 mcp_use
 requests
-langchain-huggingface
+# langchain-huggingface
+
+streamlit>=1.28.0
+plotly>=5.17.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+nest-asyncio>=1.5.8
