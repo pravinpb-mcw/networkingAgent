@@ -5,11 +5,42 @@ Uses mcp_use library to connect Gemini to Meraki MCP tools
 """
 
 import asyncio
+import logging
 import os
 import sys
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from mcp_use import MCPAgent, MCPClient
+
+# Configure logging to remove emojis and set clean format
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+
+# Disable emoji logging from mcp_use
+logging.getLogger("mcp_use").setLevel(logging.WARNING)
+logging.getLogger("mcp_use.telemetry").setLevel(logging.WARNING)
+logging.getLogger("mcp_use.agent").setLevel(logging.WARNING)
+logging.getLogger("mcp_use.client").setLevel(logging.WARNING)
+
+# Set environment variable to disable telemetry
+os.environ["MCP_USE_ANONYMIZED_TELEMETRY"] = "false"
+
+# Custom logging filter to remove emojis
+class EmojiFilter(logging.Filter):
+    def filter(self, record):
+        if hasattr(record, 'msg') and isinstance(record.msg, str):
+            # Remove common emoji patterns
+            import re
+            record.msg = re.sub(r'[🚀🔌🔄✅🛠️🧰🧠✨💬🏁👣🔧📄🎉]', '', record.msg)
+        return True
+
+# Apply emoji filter to root logger
+logging.getLogger().addFilter(EmojiFilter())
 
 # Load environment variables
 load_dotenv()

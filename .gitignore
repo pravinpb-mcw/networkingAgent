@@ -4,3 +4,10 @@
 
 .venv/
 
+network_monitor.db
+
+network_monitor.log
+
+/__pycache__/
+
+
