@@ -57,8 +57,8 @@ async def run_meraki_chat():
     os.environ["GEMINI_API_KEY"] = gemini_api_key
     
     # MCP server config file
-    config_file = "mcp-inspector-config.json"
-    
+    config_file = "E:\\noa\\networkingAgent\\mcp-inspector-config.json"
+
     print("Initializing Meraki MCP Chat with Gemini...")
     print("="*60)
     
@@ -95,6 +95,10 @@ async def run_meraki_chat():
         print("• get_device_loss_and_latency_history - Get performance metrics")
         print("• get_organization_vpn_stats - Get VPN statistics")
         print("• get_network_events - Get network events")
+        print("• get_organization_uplinks_statuses - Device uplink status and failover")
+        print("• update_network_appliance_settings - Update appliance settings")
+        print("• update_network_wireless_settings - Update wireless settings")
+        print("• create_network_group_policy - Create group policies")
         print("\nCommands:")
         print("• Type 'exit' or 'quit' to end")
         print("• Type 'clear' to clear history")

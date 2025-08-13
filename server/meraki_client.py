@@ -17,23 +17,34 @@ logger = logging.getLogger("meraki-client")
 class MerakiAPIClient:
     """Client for interacting with Cisco Meraki Dashboard API"""
     
-    def __init__(self, api_key: str = None, base_url: str = None):
+    def __init__(self, api_key: str = None, base_url: str = None, use_mock: bool = False):
         # If no API key provided, try to get it from environment
         if api_key is None:
             api_key = os.getenv("MERAKI_API_KEY")
-            if not api_key:
+            if not api_key and not use_mock:
                 raise ValueError("MERAKI_API_KEY not found in environment or .env file")
         
         # If no base_url provided, get it from environment
         if base_url is None:
-            base_url = os.getenv("BASE_URL", "https://api.meraki.com/api/v1")
+            if use_mock:
+                base_url = os.getenv("MOCK_BASE_URL", "http://127.0.0.1:5000")
+            else:
+                base_url = os.getenv("BASE_URL", "https://api.meraki.com/api/v1")
         
         self.api_key = api_key
         self.base_url = base_url
-        self.headers = {
-            "X-Cisco-Meraki-API-Key": api_key,
-            "Content-Type": "application/json"
-        }
+        self.use_mock = use_mock
+        
+        # Set headers based on whether we're using mock or real API
+        if use_mock:
+            self.headers = {
+                "Content-Type": "application/json"
+            }
+        else:
+            self.headers = {
+                "X-Cisco-Meraki-API-Key": api_key,
+                "Content-Type": "application/json"
+            }
         
         # Load other configuration from .env
         self.network_id = os.getenv("NETWORK_ID")
@@ -50,13 +61,21 @@ class MerakiAPIClient:
             self.timespan = 86400
             logger.warning(f"Invalid TIMESPAN value '{timespan_str}', using default 86400")
     
-    async def _make_request(self, endpoint: str, params: Optional[Dict] = None) -> Dict[str, Any]:
-        """Make HTTP request to Meraki API with error handling"""
+    async def _make_request(self, endpoint: str, params: Optional[Dict] = None, method: str = "GET", data: Optional[Dict] = None) -> Dict[str, Any]:
+        """Make HTTP request to Meraki API or mock server with error handling"""
         url = f"{self.base_url}{endpoint}"
         
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.get(url, headers=self.headers, params=params or {})
+                if method == "GET":
+                    response = await client.get(url, headers=self.headers, params=params or {})
+                elif method == "PUT":
+                    response = await client.put(url, headers=self.headers, json=data or {})
+                elif method == "POST":
+                    response = await client.post(url, headers=self.headers, json=data or {})
+                else:
+                    raise ValueError(f"Unsupported HTTP method: {method}")
+                
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
@@ -114,3 +133,86 @@ class MerakiAPIClient:
             raise ValueError("PRODUCT_TYPE not found in .env file")
         params = {"productType": prod_type}
         return await self._make_request(f"/networks/{net_id}/events", params) 
+
+    async def get_organization_uplinks_statuses(
+        self,
+        organization_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Get device uplink status and failover information for an organization.
+
+        This calls the Meraki endpoint:
+        GET /organizations/{organizationId}/uplinks/statuses
+
+        Minimal implementation without filters. If you need filters (e.g., by
+        networkIds or serials), extend this method to accept and forward those
+        query parameters.
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+
+        # No query params by default; add filters here if needed
+        return await self._make_request(f"/organizations/{org_id}/uplinks/statuses")
+
+    async def update_network_appliance_settings(
+        self, 
+        network_id: str = None, 
+        settings_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update network appliance settings
+        
+        PUT /networks/{networkId}/appliance/settings
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not settings_data:
+            raise ValueError("settings_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/settings",
+            method="PUT",
+            data=settings_data
+        )
+
+    async def update_network_wireless_settings(
+        self, 
+        network_id: str = None, 
+        settings_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update network wireless settings
+        
+        PUT /networks/{networkId}/wireless/settings
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not settings_data:
+            raise ValueError("settings_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/settings",
+            method="PUT",
+            data=settings_data
+        )
+
+    async def create_network_group_policy(
+        self, 
+        network_id: str = None, 
+        policy_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Create a new group policy for a network
+        
+        POST /networks/{networkId}/groupPolicies
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not policy_data:
+            raise ValueError("policy_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/groupPolicies",
+            method="POST",
+            data=policy_data
+        )

@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "cisco-meraki-observability": {
-      "command": "/usr/local/bin/python3",
-      "args": ["server/meraki_server.py"],
+      "command": "E:\\noa\\myenv\\Scripts\\python.exe",
+      "args": ["E:\\noa\\networkingAgent\\server\\meraki_server.py"],
       "env": {
         "TIMESPAN": "7200",
-        "BASE_URL": "https://api.meraki.com/api/v1",
+        "BASE_URL":"http://127.0.0.1:5000",
         "PRODUCT_TYPE": "appliance"
       }
     }

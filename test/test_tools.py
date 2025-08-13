@@ -18,6 +18,10 @@ from server.get_network_traffic import get_network_traffic
 from server.get_device_loss_and_latency_history import get_device_loss_and_latency_history
 from server.get_network_vpn_stats import get_organization_vpn_stats
 from server.get_network_events import get_network_events
+from server.get_organization_uplinks_statuses import get_organization_uplinks_statuses
+from server.update_network_appliance_settings import update_network_appliance_settings
+from server.update_network_wireless_settings import update_network_wireless_settings
+from server.create_network_group_policy import create_network_group_policy
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -47,7 +51,11 @@ async def test_all_tools():
         ("get_network_traffic", get_network_traffic),
         ("get_device_loss_and_latency_history", get_device_loss_and_latency_history),
         ("get_organization_vpn_stats", get_organization_vpn_stats),
-        ("get_network_events", get_network_events)
+        ("get_network_events", get_network_events),
+        ("get_organization_uplinks_statuses", get_organization_uplinks_statuses),
+        ("update_network_appliance_settings", lambda: update_network_appliance_settings({"test": "settings"})),
+        ("update_network_wireless_settings", lambda: update_network_wireless_settings({"test": "settings"})),
+        ("create_network_group_policy", lambda: create_network_group_policy({"name": "Test Policy"})),
     ]
     
     for tool_name, tool_func in tools:

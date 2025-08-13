@@ -25,10 +25,23 @@ from get_network_traffic import get_network_traffic
 from get_device_loss_and_latency_history import get_device_loss_and_latency_history
 from get_network_vpn_stats import get_organization_vpn_stats
 from get_network_events import get_network_events
+from get_organization_uplinks_statuses import get_organization_uplinks_statuses
+from update_network_appliance_settings import update_network_appliance_settings
+from update_network_wireless_settings import update_network_wireless_settings
+from create_network_group_policy import create_network_group_policy
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("meraki-mcp-server")
+
+# Check if we should use mock server - check both USE_MOCK and BASE_URL
+USE_MOCK = os.getenv("USE_MOCK", "false").lower() == "true"
+BASE_URL = os.getenv("BASE_URL", "")
+if BASE_URL and "127.0.0.1" in BASE_URL or "localhost" in BASE_URL:
+    USE_MOCK = True
+
+logger.info(f"BASE_URL: {BASE_URL}")
+logger.info(f"USE_MOCK: {USE_MOCK}")
 
 # Initialize the MCP server
 app = Server("cisco-meraki-observability")
@@ -81,6 +94,84 @@ async def handle_list_tools() -> List[Tool]:
                 "properties": {},
                 "required": []
             }
+        ),
+        Tool(
+            name="get_organization_uplinks_statuses",
+            description="Retrieve device uplink status and failover information for your configured organization. Uses ORGANIZATION_ID from .env file.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        ),
+        Tool(
+            name="update_network_appliance_settings",
+            description="Update network appliance settings for your configured network. Uses NETWORK_ID from .env file.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "settings_data": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "description": "Dictionary containing the appliance settings to update"
+                            },
+                            {
+                                "type": "string",
+                                "description": "JSON string containing the appliance settings to update"
+                            }
+                        ],
+                        "description": "Appliance settings data (can be dictionary or JSON string)"
+                    }
+                },
+                "required": ["settings_data"]
+            }
+        ),
+        Tool(
+            name="update_network_wireless_settings",
+            description="Update network wireless settings for your configured network. Uses NETWORK_ID from .env file.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "settings_data": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "description": "Dictionary containing the wireless settings to update"
+                            },
+                            {
+                                "type": "string",
+                                "description": "JSON string containing the wireless settings to update"
+                            }
+                        ],
+                        "description": "Wireless settings data (can be dictionary or JSON string)"
+                    }
+                },
+                "required": ["settings_data"]
+            }
+        ),
+        Tool(
+            name="create_network_group_policy",
+            description="Create a new group policy for your configured network. Uses NETWORK_ID from .env file.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "policy_data": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "description": "Dictionary containing the group policy configuration"
+                            },
+                            {
+                                "type": "string",
+                                "description": "JSON string containing the group policy configuration"
+                            }
+                        ],
+                        "description": "Group policy data (can be dictionary or JSON string)"
+                    }
+                },
+                "required": ["policy_data"]
+            }
         )
     ]
 
@@ -99,6 +190,17 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             return await get_organization_vpn_stats()
         elif name == "get_network_events":
             return await get_network_events()
+        elif name == "get_organization_uplinks_statuses":
+            return await get_organization_uplinks_statuses()
+        elif name == "update_network_appliance_settings":
+            settings_data = arguments.get("settings_data", {})
+            return await update_network_appliance_settings(settings_data, use_mock=USE_MOCK)
+        elif name == "update_network_wireless_settings":
+            settings_data = arguments.get("settings_data", {})
+            return await update_network_wireless_settings(settings_data, use_mock=USE_MOCK)
+        elif name == "create_network_group_policy":
+            policy_data = arguments.get("policy_data", {})
+            return await create_network_group_policy(policy_data, use_mock=USE_MOCK)
         else:
             return [{"type": "text", "text": f"Unknown tool: {name}"}]
             
@@ -111,12 +213,18 @@ async def main():
     
     # Test API connectivity
     try:
-        client = MerakiAPIClient()
+        if USE_MOCK:
+            logger.info("Using MOCK server mode")
+            client = MerakiAPIClient(use_mock=True)
+        else:
+            logger.info("Using REAL Meraki API mode")
+            client = MerakiAPIClient()
+        
         # Test with a simple request to verify API key works
-        logger.info("Testing Meraki API connectivity...")
-        logger.info("Successfully connected to Meraki API.")
+        logger.info("Testing API connectivity...")
+        logger.info("Successfully connected to API.")
     except Exception as e:
-        logger.error(f"Failed to connect to Meraki API: {e}")
+        logger.error(f"Failed to connect to API: {e}")
         raise
     
     # Run the MCP server
