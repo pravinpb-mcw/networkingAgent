@@ -161,7 +161,7 @@ class MerakiAPIClient:
     ) -> Dict[str, Any]:
         """Update network appliance settings
         
-        PUT /networks/{networkId}/appliance/settings
+        POST /networks/{networkId}/appliance/settings
         """
         net_id = network_id or self.network_id
         if not net_id:
@@ -171,7 +171,7 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/appliance/settings",
-            method="PUT",
+            method="POST",
             data=settings_data
         )
 
@@ -182,7 +182,7 @@ class MerakiAPIClient:
     ) -> Dict[str, Any]:
         """Update network wireless settings
         
-        PUT /networks/{networkId}/wireless/settings
+        POST /networks/{networkId}/wireless/settings
         """
         net_id = network_id or self.network_id
         if not net_id:
@@ -192,7 +192,7 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/wireless/settings",
-            method="PUT",
+            method="POST",
             data=settings_data
         )
 
@@ -203,7 +203,7 @@ class MerakiAPIClient:
     ) -> Dict[str, Any]:
         """Create a new group policy for a network
         
-        POST /networks/{networkId}/groupPolicies
+        PUT /networks/{networkId}/groupPolicies
         """
         net_id = network_id or self.network_id
         if not net_id:
@@ -213,6 +213,6 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/groupPolicies",
-            method="POST",
+            method="PUT",
             data=policy_data
         )

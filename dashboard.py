@@ -49,6 +49,11 @@ try:
     from server.get_network_clients import get_network_clients
     from server.get_organizations import get_organizations
     
+    # Import configuration tools
+    from server.update_network_wireless_settings import update_network_wireless_settings
+    from server.update_network_appliance_settings import update_network_appliance_settings
+    from server.create_network_group_policy import create_network_group_policy
+    
     IMPORTS_SUCCESS = True
 except ImportError as e:
     st.error(f"Import error: {e}")
@@ -108,6 +113,20 @@ st.markdown("""
         margin: 0.5rem 0;
         font-family: monospace;
         font-size: 0.8rem;
+    }
+    
+    /* Make dropdowns more obvious */
+    .stSelectbox > div > div {
+        border: 2px solid #1f77b4 !important;
+        border-radius: 8px !important;
+        background: #f8f9fa !important;
+        cursor: pointer !important;
+    }
+    
+    .stSelectbox > div > div:hover {
+        border-color: #ff7f0e !important;
+        background: #e3f2fd !important;
+        box-shadow: 0 2px 8px rgba(31, 119, 180, 0.3) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -506,6 +525,25 @@ class NetworkDashboard:
         if self.monitor_thread:
             self.monitor_thread.join(timeout=5)
     
+    def get_available_tools(self):
+        """Get available tools from MCP server"""
+        try:
+            if self.mcp_client and hasattr(self.mcp_client, 'sessions'):
+                tools = []
+                for session_name, session in self.mcp_client.sessions.items():
+                    if hasattr(session, 'tools') and session.tools:
+                        for tool in session.tools:
+                            tools.append({
+                                'name': tool.name,
+                                'description': tool.description,
+                                'session': session_name
+                            })
+                return tools
+            return []
+        except Exception as e:
+            print(f"Error getting tools: {e}")
+            return []
+    
     def cleanup(self):
         """Cleanup resources"""
         try:
@@ -562,7 +600,7 @@ def main():
         
     
     # Main content area
-    tab1, tab2, tab3 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics"])
+    tab1, tab2, tab3, tab4 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics", "Network Configuration"])
     
     with tab1:
         st.header("MCP Client Chatbot")
@@ -598,31 +636,111 @@ def main():
                 else:
                     st.markdown(f'<div class="assistant-message"><strong>Assistant:</strong> {message["content"]}</div>', unsafe_allow_html=True)
         
-        # Chat input
-        user_input = st.text_input("Ask about your network:", key="chat_input")
-        col1, col2 = st.columns([1, 4])
+        # Chat input with auto-clear functionality
+        # Initialize chat input counter for unique keys
+        if 'chat_input_counter' not in st.session_state:
+            st.session_state.chat_input_counter = 0
+        
+        user_input = st.text_input(
+            "Ask about your network (press Enter to send):", 
+            key=f"chat_input_{st.session_state.chat_input_counter}"
+        )
+        
+        # JavaScript to handle Enter key
+        st.markdown("""
+        <script>
+        const input = document.querySelector('input[data-testid="stTextInput"]');
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    // Find and click the Send button
+                    const sendButton = document.querySelector('button[kind="primary"]');
+                    if (sendButton) {
+                        sendButton.click();
+                    }
+                }
+            });
+        }
+        </script>
+        """, unsafe_allow_html=True)
+        
+        # Send and Clear buttons
+        col1, col2 = st.columns([4, 1])
         
         with col1:
             if st.button("Send", type="primary"):
                 if user_input.strip():
                     with st.spinner("Getting response..."):
                         response = dashboard.chat_with_mcp(user_input.strip())
+                        # Clear input by incrementing counter (creates new input with empty value)
+                        st.session_state.chat_input_counter += 1
                         st.rerun()
         
         with col2:
-            if st.button("Clear Chat"):
+            if st.button("🗑️", help="Clear chat history"):
                 dashboard.chat_history.clear()
                 st.rerun()
         
         # Available tools info
         with st.expander("🔧 Available MCP Tools"):
-            st.markdown("""
-            - **get_network_clients** - Get connected devices
-            - **get_network_traffic** - Analyze traffic patterns
-            - **get_device_loss_and_latency_history** - Get performance metrics
-            - **get_organization_vpn_stats** - Get VPN statistics
-            - **get_network_events** - Get network events
-            """)
+            # Try to get tools dynamically from MCP server
+            try:
+                if dashboard.mcp_client and hasattr(dashboard.mcp_client, 'sessions'):
+                    # Get tools from MCP client sessions
+                    tools_found = False
+                    for session_name, session in dashboard.mcp_client.sessions.items():
+                        if hasattr(session, 'tools') and session.tools:
+                            tools_found = True
+                            st.markdown(f"**Session: {session_name}**")
+                            for tool in session.tools:
+                                st.markdown(f"- **{tool.name}** - {tool.description}")
+                    
+                    if not tools_found:
+                        # Fallback to hardcoded list
+                        st.markdown("""
+                        **Monitoring Tools:**
+                        - **get_network_clients** - Get connected devices
+                        - **get_network_traffic** - Analyze traffic patterns
+                        - **get_device_loss_and_latency_history** - Get performance metrics
+                        - **get_organization_vpn_stats** - Get VPN statistics
+                        - **get_network_events** - Get network events
+                        
+                        **Configuration Tools:**
+                        - **update_network_wireless_settings** - Update WiFi/SSID settings
+                        - **update_network_appliance_settings** - Update network infrastructure settings
+                        - **create_network_group_policy** - Create bandwidth and access policies
+                        """)
+                else:
+                    # Fallback to hardcoded list
+                    st.markdown("""
+                    **Monitoring Tools:**
+                    - **get_network_clients** - Get connected devices
+                    - **get_network_traffic** - Analyze traffic patterns
+                    - **get_device_loss_and_latency_history** - Get performance metrics
+                    - **get_organization_vpn_stats** - Get VPN statistics
+                    - **get_network_events** - Get network events
+                    
+                    **Configuration Tools:**
+                    - **update_network_wireless_settings** - Update WiFi/SSID settings
+                    - **update_network_appliance_settings** - Update network infrastructure settings
+                    - **create_network_group_policy** - Create bandwidth and access policies
+                    """)
+            except Exception as e:
+                st.warning(f"Could not fetch tools from MCP server: {e}")
+                # Fallback to hardcoded list
+                st.markdown("""
+                **Monitoring Tools:**
+                - **get_network_clients** - Get connected devices
+                - **get_network_traffic** - Analyze traffic patterns
+                - **get_device_loss_and_latency_history** - Get performance metrics
+                - **get_organization_vpn_stats** - Get VPN statistics
+                - **get_network_events** - Get network events
+                
+                **Configuration Tools:**
+                - **update_network_wireless_settings** - Update WiFi/SSID settings
+                - **update_network_appliance_settings** - Update network infrastructure settings
+                - **create_network_group_policy** - Create bandwidth and access policies
+                """)
     
     with tab2:
         st.header("📊 Network Monitor")
@@ -785,7 +903,316 @@ def main():
         else:
             st.info("Need more monitoring data for analytics. Start monitoring to see trends.")
     
-    # Footer
+    with tab4:
+         st.header("🔧 Network Configuration")
+         st.info("Configure your network settings directly from the dashboard")
+         
+         # Configuration tool selection
+         st.subheader("🔧 Select Configuration Tool")
+         st.info("💡 **Click the dropdown below to select what you want to configure**")
+         
+         config_tool = st.selectbox(
+             "Choose what you want to configure:",
+             [
+                 ("update_network_wireless_settings", "📶 Wireless Network Settings"),
+                 ("update_network_appliance_settings", "⚙️ Network Appliance Settings"), 
+                 ("create_network_group_policy", "📋 Create Group Policy")
+             ],
+             format_func=lambda x: x[1],  # Show the friendly name
+             help="Click to select which network configuration you want to update",
+             key="config_tool_selector"
+         )
+         
+         # Extract the actual tool name from the tuple
+         if config_tool:
+             config_tool = config_tool[0]
+         
+         
+         
+         # Initialize session state for form data
+         if 'wireless_settings' not in st.session_state:
+             st.session_state.wireless_settings = {
+                 "enabled": True,
+                 "ssid": "My_SSID",
+                 "limit_up": 1000,
+                 "limit_down": 1000
+             }
+         
+         if 'appliance_settings' not in st.session_state:
+             st.session_state.appliance_settings = {
+                 "dhcp_enabled": True,
+                 "dhcp_lease_time": 86400,
+                 "vlan_enabled": False,
+                 "vlan_id": 100
+             }
+         
+         if 'group_policy' not in st.session_state:
+             st.session_state.group_policy = {
+                 "policy_name": "Guest Policy",
+                 "bandwidth_enabled": True,
+                 "limit_up": 500,
+                 "limit_down": 1000,
+                 "scheduling_enabled": False,
+                 "traffic_shaping": True,
+                 "content_filtering": False,
+                 "splash_page": False
+             }
+         
+         if config_tool == "update_network_wireless_settings":
+             st.subheader("📶 Wireless Network Settings")
+             
+             col1, col2 = st.columns(2)
+             with col1:
+                 enabled = st.checkbox("Enable Wireless Network", value=st.session_state.wireless_settings["enabled"], key="wireless_enabled")
+                 ssid = st.text_input("SSID Name", value=st.session_state.wireless_settings["ssid"], key="wireless_ssid")
+             
+             with col2:
+                limit_up = st.number_input("Upload Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_up"], key="wireless_limit_up")
+                limit_down = st.number_input("Download Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_down"], key="wireless_limit_down")
+             
+             # Reset button
+             if st.button("🔄 Reset to Defaults", help="Reset wireless settings to default values"):
+                 st.session_state.wireless_settings = {
+                     "enabled": True,
+                     "ssid": "My_SSID",
+                     "limit_up": 1000,
+                     "limit_down": 1000
+                 }
+                 st.success("Wireless settings reset to defaults!")
+                 st.rerun()
+             
+             if st.button("Create Wireless Settings", type="primary"):
+                 # Save current form values to session state
+                 st.session_state.wireless_settings = {
+                     "enabled": enabled,
+                     "ssid": ssid,
+                     "limit_up": limit_up,
+                     "limit_down": limit_down
+                 }
+                 
+                 with st.spinner("Updating wireless settings..."):
+                     try:
+                         # Import the function
+                         from server.update_network_wireless_settings import update_network_wireless_settings
+                         
+                         # Prepare settings data
+                         settings_data = {
+                             "enabled": enabled,
+                             "ssid": ssid,
+                             "bandwidth": {
+                                 "limitUp": limit_up,
+                                 "limitDown": limit_down
+                             }
+                         }
+                         
+                         # Call the function
+                         result = asyncio.run(update_network_wireless_settings(settings_data, use_mock=True))
+                         
+                         if result and len(result) > 0:
+                             st.success("✅ Wireless settings updated successfully!")
+                             st.json(settings_data)
+                             
+                             # Show the result
+                             with st.expander("View Update Result"):
+                                 st.json(result[0]['text'])
+                         else:
+                             st.error("Failed to update wireless settings")
+                             
+                     except Exception as e:
+                         st.error(f"Error updating wireless settings: {e}")
+                         st.exception(e)
+         
+         elif config_tool == "update_network_appliance_settings":
+             st.subheader("⚙️ Network Appliance Settings")
+             
+             col1, col2 = st.columns(2)
+             with col1:
+                 dhcp_enabled = st.checkbox("Enable DHCP", value=st.session_state.appliance_settings["dhcp_enabled"], key="appliance_dhcp_enabled")
+                 dhcp_lease_time = st.number_input("DHCP Lease Time (seconds)", min_value=300, max_value=864000, value=st.session_state.appliance_settings["dhcp_lease_time"], key="appliance_dhcp_lease")
+             
+             with col2:
+                vlan_enabled = st.checkbox("Enable VLAN", value=st.session_state.appliance_settings["vlan_enabled"], key="appliance_vlan_enabled")
+                vlan_id = st.number_input("VLAN ID", min_value=1, max_value=4094, value=st.session_state.appliance_settings["vlan_id"], disabled=not vlan_enabled, key="appliance_vlan_id")
+             
+             # Reset button
+             if st.button("🔄 Reset to Defaults", help="Reset appliance settings to default values"):
+                 st.session_state.appliance_settings = {
+                     "dhcp_enabled": True,
+                     "dhcp_lease_time": 86400,
+                     "vlan_enabled": False,
+                     "vlan_id": 100
+                 }
+                 st.success("Appliance settings reset to defaults!")
+                 st.rerun()
+             
+             if st.button("Create Appliance Settings", type="primary"):
+                 # Save current form values to session state
+                 st.session_state.appliance_settings = {
+                     "dhcp_enabled": dhcp_enabled,
+                     "dhcp_lease_time": dhcp_lease_time,
+                     "vlan_enabled": vlan_enabled,
+                     "vlan_id": vlan_id
+                 }
+                 
+                 with st.spinner("Updating appliance settings..."):
+                     try:
+                         # Import the function
+                         from server.update_network_appliance_settings import update_network_appliance_settings
+                         
+                         # Prepare settings data
+                         settings_data = {
+                             "dhcp": {
+                                 "enabled": dhcp_enabled,
+                                 "leaseTime": dhcp_lease_time
+                             },
+                             "vlan": {
+                                 "enabled": vlan_enabled,
+                                 "id": vlan_id if vlan_enabled else None
+                             }
+                         }
+                         
+                         # Call the function
+                         result = asyncio.run(update_network_appliance_settings(settings_data, use_mock=True))
+                         
+                         if result and len(result) > 0:
+                             st.success("✅ Appliance settings updated successfully!")
+                             st.json(settings_data)
+                             
+                             # Show the result
+                             with st.expander("View Update Result"):
+                                 st.json(result[0]['text'])
+                         else:
+                             st.error("Failed to update appliance settings")
+                             
+                     except Exception as e:
+                         st.error(f"Error updating appliance settings: {e}")
+                         st.exception(e)
+         
+         elif config_tool == "create_network_group_policy":
+             st.subheader("📋 Create Network Group Policy")
+             
+             col1, col2 = st.columns(2)
+             with col1:
+                 policy_name = st.text_input("Policy Name", value=st.session_state.group_policy["policy_name"], key="policy_name")
+                 bandwidth_enabled = st.checkbox("Enable Bandwidth Limits", value=st.session_state.group_policy["bandwidth_enabled"], key="policy_bandwidth_enabled")
+             
+             with col2:
+                 limit_up = st.number_input("Upload Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_up"], disabled=not bandwidth_enabled, key="policy_limit_up")
+                 limit_down = st.number_input("Download Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_down"], disabled=not bandwidth_enabled, key="policy_limit_down")
+             
+             # Advanced settings
+             with st.expander("Advanced Settings"):
+                 col1, col2 = st.columns(2)
+                 with col1:
+                     scheduling_enabled = st.checkbox("Enable Scheduling Restrictions", value=st.session_state.group_policy["scheduling_enabled"], key="policy_scheduling")
+                     traffic_shaping = st.checkbox("Enable Firewall & Traffic Shaping", value=st.session_state.group_policy["traffic_shaping"], key="policy_traffic_shaping")
+                 
+                 with col2:
+                     content_filtering = st.checkbox("Enable Content Filtering", value=st.session_state.group_policy["content_filtering"], key="policy_content_filtering")
+                     splash_page = st.checkbox("Enable Splash Page Authentication", value=st.session_state.group_policy["splash_page"], key="policy_splash_page")
+             
+             # Reset button
+             if st.button("🔄 Reset to Defaults", help="Reset group policy to default values"):
+                 st.session_state.group_policy = {
+                     "policy_name": "Guest Policy",
+                     "bandwidth_enabled": True,
+                     "limit_up": 500,
+                     "limit_down": 1000,
+                     "scheduling_enabled": False,
+                     "traffic_shaping": True,
+                     "content_filtering": False,
+                     "splash_page": False
+                 }
+                 st.success("Group policy reset to defaults!")
+                 st.rerun()
+             
+             if st.button("Update Group Policy", type="primary"):
+                 # Save current form values to session state
+                 st.session_state.group_policy = {
+                     "policy_name": policy_name,
+                     "bandwidth_enabled": bandwidth_enabled,
+                     "limit_up": limit_up,
+                     "limit_down": limit_down,
+                     "scheduling_enabled": scheduling_enabled,
+                     "traffic_shaping": traffic_shaping,
+                     "content_filtering": content_filtering,
+                     "splash_page": splash_page
+                 }
+                 
+                 with st.spinner("Creating group policy..."):
+                     try:
+                         # Import the function
+                         from server.create_network_group_policy import create_network_group_policy
+                         
+                         # Prepare policy data matching comprehensive Cisco Meraki API structure
+                         policy_data = {
+                             "name": policy_name,
+                             "scheduling": {
+                                 "enabled": scheduling_enabled,
+                                 "monday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "tuesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "wednesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "thursday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "friday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "saturday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                 "sunday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {}
+                             },
+                             "bandwidth": {
+                                 "settings": "custom" if bandwidth_enabled else "network default",
+                                 "bandwidthLimits": {
+                                     "limitUp": limit_up if bandwidth_enabled else None,
+                                     "limitDown": limit_down if bandwidth_enabled else None
+                                 } if bandwidth_enabled else {}
+                             },
+                             "firewallAndTrafficShaping": {
+                                 "settings": "custom" if traffic_shaping else "network default",
+                                 "trafficShapingRules": [] if traffic_shaping else [],
+                                 "l3FirewallRules": [],
+                                 "l7FirewallRules": []
+                             },
+                             "contentFiltering": {
+                                 "allowedUrlPatterns": {"settings": "network default", "patterns": []},
+                                 "blockedUrlPatterns": {"settings": "append" if content_filtering else "network default", "patterns": []},
+                                 "blockedUrlCategories": {"settings": "network default", "categories": []}
+                             },
+                             "splashAuthSettings": "custom" if splash_page else "bypass",
+                             "vlanTagging": {"settings": "network default"},
+                             "bonjourForwarding": {"settings": "network default", "rules": []}
+                         }
+                         
+                         # Call the function
+                         result = asyncio.run(create_network_group_policy(policy_data, use_mock=True))
+                         
+                         if result and len(result) > 0:
+                             st.success("✅ Group policy created successfully!")
+                             st.json(policy_data)
+                             
+                             # Show the result
+                             with st.expander("View Creation Result"):
+                                 st.json(result[0]['text'])
+                         else:
+                             st.error("Failed update group policy")
+                             
+                     except Exception as e:
+                         st.error(f"Error creating group policy: {e}")
+                         st.exception(e)
+         
+         # Configuration History
+         st.subheader("📚 Configuration History")
+         st.info("Recent configuration changes will appear here")
+         
+         # Add a placeholder for configuration history
+         if 'config_history' not in st.session_state:
+             st.session_state.config_history = []
+         
+         if st.session_state.config_history:
+             for i, config in enumerate(st.session_state.config_history):
+                 with st.expander(f"Configuration {i+1} - {config.get('timestamp', 'Unknown')}"):
+                     st.json(config.get('data', {}))
+         else:
+             st.info("No configuration history yet. Make changes to see them here.")
+     
+     # Footer
     st.markdown("---")
     st.markdown("**Network Agent Dashboard** - Powered by MCP, Gemini LLM, and Streamlit")
     

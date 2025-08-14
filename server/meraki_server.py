@@ -52,7 +52,7 @@ async def handle_list_tools() -> List[Tool]:
     return [
         Tool(
             name="get_network_clients",
-            description="Retrieve clients connected to your configured network including device details, usage patterns, and connection history. Uses NETWORK_ID and TIMESPAN from .env file.",
+            description="Get connected network clients. REQUIRED: NETWORK_ID, TIMESPAN from .env. Returns: device details, usage patterns, connection history.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -61,7 +61,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_traffic",
-            description="Analyze network traffic patterns, bandwidth usage, and application breakdown for network optimization insights. Uses NETWORK_ID and TIMESPAN from .env file.",
+            description="Analyze network traffic patterns. REQUIRED: NETWORK_ID, TIMESPAN from .env. Returns: bandwidth usage, application breakdown, optimization insights.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -70,7 +70,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_device_loss_and_latency_history",
-            description="Retrieve loss and latency history for your configured device. Returns historical performance data including packet loss and latency metrics. Uses SERIAL and IP from .env file.",
+            description="Get device performance metrics. REQUIRED: SERIAL, IP from .env. Returns: packet loss, latency, goodput history.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -79,7 +79,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_organization_vpn_stats",
-            description="Retrieve VPN statistics for your configured organization. Returns VPN performance data including connection status and traffic metrics. Uses ORGANIZATION_ID and TIMESPAN from .env file.",
+            description="Get VPN statistics. REQUIRED: ORGANIZATION_ID, TIMESPAN from .env. Returns: connection status, traffic metrics, performance data.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -88,7 +88,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_events",
-            description="Retrieve events for your configured network. Returns network events including device status changes, security events, and system notifications. Uses NETWORK_ID and PRODUCT_TYPE from .env file.",
+            description="Get network events. REQUIRED: NETWORK_ID, PRODUCT_TYPE from .env. Returns: device status, security events, system notifications.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -97,7 +97,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_organization_uplinks_statuses",
-            description="Retrieve device uplink status and failover information for your configured organization. Uses ORGANIZATION_ID from .env file.",
+            description="Get device uplink status. REQUIRED: ORGANIZATION_ID from .env. Returns: uplink status, failover info, interface details.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -106,7 +106,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_network_appliance_settings",
-            description="Update network appliance settings for your configured network. Uses NETWORK_ID from .env file.",
+            description="Update network appliance settings. REQUIRED: settings_data (dict or JSON string). Example: {'dhcp': {'enabled': True, 'leaseTime': 86400}, 'vlan': {'enabled': True, 'id': 100}}",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -114,7 +114,23 @@ async def handle_list_tools() -> List[Tool]:
                         "oneOf": [
                             {
                                 "type": "object",
-                                "description": "Dictionary containing the appliance settings to update"
+                                "description": "Dictionary containing the appliance settings to update",
+                                "properties": {
+                                    "dhcp": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {"type": "boolean"},
+                                            "leaseTime": {"type": "integer", "minimum": 300, "maximum": 864000}
+                                        }
+                                    },
+                                    "vlan": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {"type": "boolean"},
+                                            "id": {"type": "integer", "minimum": 1, "maximum": 4094}
+                                        }
+                                    }
+                                }
                             },
                             {
                                 "type": "string",
@@ -129,7 +145,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_network_wireless_settings",
-            description="Update network wireless settings for your configured network. Uses NETWORK_ID from .env file.",
+            description="Update network wireless settings. REQUIRED: settings_data (dict or JSON string). Example: {'enabled': True, 'ssid': 'My_SSID', 'bandwidth': {'limitUp': 1000, 'limitDown': 1000}}",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -137,14 +153,25 @@ async def handle_list_tools() -> List[Tool]:
                         "oneOf": [
                             {
                                 "type": "object",
-                                "description": "Dictionary containing the wireless settings to update"
+                                "description": "Dictionary containing the wireless settings to update",
+                                "properties": {
+                                    "enabled": {"type": "boolean", "description": "Enable/disable wireless network"},
+                                    "ssid": {"type": "string", "description": "Network SSID name"},
+                                    "bandwidth": {
+                                        "type": "object",
+                                        "properties": {
+                                            "limitUp": {"type": "integer", "minimum": 1, "maximum": 10000, "description": "Upload limit in Mbps"},
+                                            "limitDown": {"type": "integer", "minimum": 1, "maximum": 10000, "description": "Download limit in Mbps"}
+                                        }
+                                    }
+                                }
                             },
                             {
                                 "type": "string",
                                 "description": "JSON string containing the wireless settings to update"
                             }
                         ],
-                        "description": "Wireless settings data (can be dictionary or JSON string)"
+                        "description": "Wireless settings data (can be dictionary or  string)"
                     }
                 },
                 "required": ["settings_data"]
@@ -152,7 +179,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_network_group_policy",
-            description="Create a new group policy for your configured network. Uses NETWORK_ID from .env file.",
+            description="Create a new group policy. REQUIRED: policy_data (dict or JSON string). Example: {'name': 'Guest Policy', 'bandwidth': {'limitUp': 500, 'limitDown': 1000}, 'scheduling': {'enabled': True}}",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -160,7 +187,46 @@ async def handle_list_tools() -> List[Tool]:
                         "oneOf": [
                             {
                                 "type": "object",
-                                "description": "Dictionary containing the group policy configuration"
+                                "description": "Dictionary containing the group policy configuration",
+                                "properties": {
+                                    "name": {"type": "string", "description": "Policy name"},
+                                    "bandwidth": {
+                                        "type": "object",
+                                        "properties": {
+                                            "limitUp": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Upload limit in Kbps"},
+                                            "limitDown": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Download limit in Kbps"}
+                                        }
+                                    },
+                                    "scheduling": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {"type": "boolean", "description": "Enable scheduling restrictions"}
+                                        }
+                                    },
+                                    "firewall_and_traffic_shaping": {
+                                        "type": "object",
+                                        "properties": {
+                                            "settings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "trafficShapingEnabled": {"type": "boolean", "description": "Enable traffic shaping"}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "content_filtering": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {"type": "boolean", "description": "Enable content filtering"}
+                                        }
+                                    },
+                                    "splash_page": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {"type": "boolean", "description": "Enable splash page"}
+                                        }
+                                    }
+                                }
                             },
                             {
                                 "type": "string",

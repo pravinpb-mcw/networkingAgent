@@ -42,13 +42,15 @@ class WirelessSettings(BaseModel):
         extra = "allow"  # Allow any additional fields
 
 class GroupPolicy(BaseModel):
-    """Model for group policy"""
+    """Model for group policy matching Cisco Meraki API structure"""
     name: str
     scheduling: Dict[str, Any] = {}
     bandwidth: Dict[str, Any] = {}
-    firewall_and_traffic_shaping: Dict[str, Any] = {}
-    content_filtering: Dict[str, Any] = {}
-    splash_page: Dict[str, Any] = {}
+    firewallAndTrafficShaping: Dict[str, Any] = {}
+    contentFiltering: Dict[str, Any] = {}
+    splashAuthSettings: str = "bypass"
+    vlanTagging: Dict[str, Any] = {}
+    bonjourForwarding: Dict[str, Any] = {}
     
     class Config:
         extra = "allow"  # Allow any additional fields
@@ -63,9 +65,9 @@ async def root():
         "timestamp": datetime.now().isoformat(),
         "endpoints": [
             "GET /organizations/{org_id}/uplinks/statuses",
-            "PUT /networks/{network_id}/appliance/settings",
-            "PUT /networks/{network_id}/wireless/settings", 
-            "POST /networks/{network_id}/groupPolicies",
+            "POST /networks/{network_id}/appliance/settings",
+            "POST /networks/{network_id}/wireless/settings", 
+            "PUT /networks/{network_id}/groupPolicies",
             "GET /networks/{network_id}/clients",
             "GET /networks/{network_id}/traffic",
             "GET /networks/{network_id}/events",
@@ -116,18 +118,18 @@ async def get_organization_uplinks_statuses(organization_id: str):
     
     return mock_uplinks
 
-@app.put("/networks/{network_id}/appliance/settings")
+@app.post("/networks/{network_id}/appliance/settings")
 async def update_network_appliance_settings(network_id: str, settings: ApplianceSettings):
     """Mock endpoint for updating network appliance settings"""
     try:
-        logger.info(f"PUT /networks/{network_id}/appliance/settings")
+        logger.info(f"POST /networks/{network_id}/appliance/settings")
         logger.info(f"Settings: {settings}")
         
         # Store the settings in mock data
         if network_id not in mock_data["networks"]:
             mock_data["networks"][network_id] = {}
         
-        mock_data["networks"][network_id]["appliance_settings"] = settings.dict()
+        mock_data["networks"][network_id]["appliance_settings"] = settings.model_dump()
         
         logger.info(f"Successfully stored appliance settings for network {network_id}")
         
@@ -135,17 +137,17 @@ async def update_network_appliance_settings(network_id: str, settings: Appliance
             "message": "Appliance settings updated successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "settings": settings.dict()
+            "settings": settings.model_dump()
         }
     except Exception as e:
         logger.error(f"Error updating appliance settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.put("/networks/{network_id}/wireless/settings")
+@app.post("/networks/{network_id}/wireless/settings")
 async def update_network_wireless_settings(network_id: str, settings: WirelessSettings):
     """Mock endpoint for updating network wireless settings"""
     try:
-        logger.info(f"PUT /networks/{network_id}/wireless/settings")
+        logger.info(f"POST /networks/{network_id}/wireless/settings")
         logger.info(f"Settings: {settings}")
 
         # Store the settings in mock data
@@ -153,7 +155,7 @@ async def update_network_wireless_settings(network_id: str, settings: WirelessSe
             mock_data["networks"][network_id] = {}
 
         # Convert to dict before storing
-        mock_data["networks"][network_id]["wireless_settings"] = settings.dict()
+        mock_data["networks"][network_id]["wireless_settings"] = settings.model_dump()
         
         logger.info(f"Successfully stored wireless settings for network {network_id}")
 
@@ -161,17 +163,17 @@ async def update_network_wireless_settings(network_id: str, settings: WirelessSe
             "message": "Wireless settings updated successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "settings": settings.dict()  # Return as dict
+            "settings": settings.model_dump()  # Return as dict
         }
     except Exception as e:
         logger.error(f"Error updating wireless settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/networks/{network_id}/groupPolicies")
+@app.put("/networks/{network_id}/groupPolicies")
 async def create_network_group_policy(network_id: str, policy: GroupPolicy):
     """Mock endpoint for creating network group policies"""
-    logger.info(f"POST /networks/{network_id}/groupPolicies")
+    logger.info(f"PUT /networks/{network_id}/groupPolicies")
     logger.info(f"Policy: {policy}")
     
     # Generate a mock policy ID
@@ -188,9 +190,11 @@ async def create_network_group_policy(network_id: str, policy: GroupPolicy):
         "name": policy.name,
         "scheduling": policy.scheduling,
         "bandwidth": policy.bandwidth,
-        "firewallAndTrafficShaping": policy.firewall_and_traffic_shaping,
-        "contentFiltering": policy.content_filtering,
-        "splashPage": policy.splash_page
+        "firewallAndTrafficShaping": policy.firewallAndTrafficShaping,
+        "contentFiltering": policy.contentFiltering,
+        "splashAuthSettings": policy.splashAuthSettings,
+        "vlanTagging": policy.vlanTagging,
+        "bonjourForwarding": policy.bonjourForwarding
     }
     
     return {
