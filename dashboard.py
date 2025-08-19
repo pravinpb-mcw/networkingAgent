@@ -63,6 +63,15 @@ except ImportError as e:
 # Load environment variables
 load_dotenv()
 
+# Import and setup configuration
+try:
+    from config import setup_environment
+    setup_environment()
+except ImportError:
+    # Set basic defaults if config.py is not available
+    os.environ.setdefault("USE_MOCK", "true")
+    os.environ.setdefault("BASE_URL", "http://127.0.0.1:5000")
+
 # Page configuration
 st.set_page_config(
     page_title="Network Agent Dashboard",

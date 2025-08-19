@@ -18,6 +18,16 @@ import os
 
 # Add the server directory to the path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import configuration
+try:
+    from config import setup_environment
+    setup_environment()
+except ImportError:
+    # If config.py is not available, set basic defaults
+    os.environ.setdefault("USE_MOCK", "true")
+    os.environ.setdefault("BASE_URL", "http://127.0.0.1:5000")
 
 from meraki_client import MerakiAPIClient
 from get_network_clients import get_network_clients
@@ -27,7 +37,7 @@ from get_network_vpn_stats import get_organization_vpn_stats
 from get_network_events import get_network_events
 from get_organization_uplinks_statuses import get_organization_uplinks_statuses
 from update_network_appliance_settings import update_network_appliance_settings
-from update_network_wireless_settings import update_network_wireless_settings, update_network_wireless_settings_with_group_policy, update_network_wireless_settings_complete
+from update_network_wireless_settings import update_network_wireless_settings, update_network_wireless_settings_with_group_policy, continue_wireless_update_after_policy
 from update_network_group_policy import update_network_group_policy
 from delete_network_group_policy import delete_network_group_policy
 
@@ -112,33 +122,8 @@ async def handle_list_tools() -> List[Tool]:
                 "type": "object",
                 "properties": {
                     "settings_data": {
-                        "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the appliance settings to update",
-                                "properties": {
-                                    "dhcp": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean"},
-                                            "leaseTime": {"type": "integer", "minimum": 300, "maximum": 864000}
-                                        }
-                                    },
-                                    "vlan": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean"},
-                                            "id": {"type": "integer", "minimum": 1, "maximum": 4094}
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the appliance settings to update"
-                            }
-                        ],
-                        "description": "Appliance settings data (can be dictionary or JSON string)"
+                        "type": "string",
+                        "description": "JSON string containing the appliance settings to update (e.g., DHCP, VLAN)."
                     }
                 },
                 "required": ["settings_data"]
@@ -147,32 +132,12 @@ async def handle_list_tools() -> List[Tool]:
         Tool(
             name="create_network_wireless_settings",
             description="🛑  STOP-AND-WAIT TOOL: Create new network wireless settings with group policy synchronization. Just tell me what you want in simple text. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth' or 'Turn on wireless network with name Guest_WiFi'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth', I will create: {'enabled': True, 'ssid': 'My_SSID', 'bandwidth': {'limitUp': 1000, 'limitDown': 1000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. 🛑  CRITICAL INSTRUCTION: After collecting wireless settings, I will STOP execution and wait for YOU to provide group policy data. I will NOT proceed automatically. You must use the 'continue_wireless_update_after_policy' tool to complete the process.",
-            inputSchema={
+             inputSchema={
                 "type": "object",
                 "properties": {
                     "settings_data": {
-                        "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the wireless settings to update",
-                                "properties": {
-                                    "enabled": {"type": "boolean", "description": "Enable/disable wireless network"},
-                                    "ssid": {"type": "string", "description": "Network SSID name"},
-                                    "bandwidth": {
-                                        "type": "object",
-                                        "properties": {
-                                            "limitUp": {"type": "integer", "minimum": 1, "maximum": 10000, "description": "Upload limit in Mbps"},
-                                            "limitDown": {"type": "integer", "minimum": 1, "maximum": 10000, "description": "Download limit in Mbps"}
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the wireless settings to update"
-                            }
-                        ],
-                        "description": "Wireless settings data (can be dictionary or JSON string)"
+                        "type": "string",
+                        "description": "JSON string containing the appliance settings to update (e.g., DHCP, VLAN)."
                     }
                 },
                 "required": ["settings_data"]
@@ -240,65 +205,8 @@ async def handle_list_tools() -> List[Tool]:
                     },
                     "policy_data": {
                         "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the policy updates",
-                                "properties": {
-                                    "name": {"type": "string", "description": "Policy name"},
-                                    "bandwidth": {
-                                        "type": "object",
-                                        "properties": {
-                                            "limitUp": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Upload limit in Kbps"},
-                                            "limitDown": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Download limit in Kbps"}
-                                        }
-                                    },
-                                    "scheduling": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable scheduling restrictions"}
-                                        }
-                                    },
-                                    "firewallAndTrafficShaping": {
-                                        "type": "object",
-                                        "properties": {
-                                            "settings": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "trafficShapingEnabled": {"type": "boolean", "description": "Enable traffic shaping"}
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "contentFiltering": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable content filtering"}
-                                        }
-                                    },
-                                    "splashAuthSettings": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable splash page"}
-                                        }
-                                    },
-                                    "vlanTagging": {
-                                        "type": "object",
-                                        "properties": {
-                                            "settings": {"type": "string", "description": "VLAN tagging settings"}
-                                        }
-                                    },
-                                    "bonjourForwarding": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable Bonjour forwarding"}
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the policy updates"
-                            }
+                            {"type": "object"},
+                            {"type": "string"}
                         ],
                         "description": "Policy data to update (can be dictionary or JSON string)"
                     }
@@ -306,80 +214,7 @@ async def handle_list_tools() -> List[Tool]:
                 "required": ["policy_id", "policy_data"]
             }
         ),
-        Tool(
-            name="create_network_group_policy",
-            description="Create a new USER GROUP POLICY (bandwidth limits, traffic shaping, content filtering, etc.). Just tell me what you want in simple text. Example: 'Create a policy called Guest Policy with 500 Kbps upload and 1000 Kbps download limits' or 'Create a new policy with traffic shaping enabled'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. NOTE: This is for USER POLICIES, not network infrastructure.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "policy_data": {
-                        "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the policy data to create",
-                                "properties": {
-                                    "name": {"type": "string", "description": "Policy name"},
-                                    "bandwidth": {
-                                        "type": "object",
-                                        "properties": {
-                                            "limitUp": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Upload limit in Kbps"},
-                                            "limitDown": {"type": "integer", "minimum": 1, "maximum": 100000, "description": "Download limit in Kbps"}
-                                        }
-                                    },
-                                    "scheduling": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable scheduling restrictions"}
-                                        }
-                                    },
-                                    "firewallAndTrafficShaping": {
-                                        "type": "object",
-                                        "properties": {
-                                            "settings": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "trafficShapingEnabled": {"type": "boolean", "description": "Enable traffic shaping"}
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "contentFiltering": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable content filtering"}
-                                        }
-                                    },
-                                    "splashAuthSettings": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable splash page"}
-                                        }
-                                    },
-                                    "vlanTagging": {
-                                        "type": "object",
-                                        "properties": {
-                                            "settings": {"type": "string", "description": "VLAN tagging settings"}
-                                        }
-                                    },
-                                    "bonjourForwarding": {
-                                        "type": "object",
-                                        "properties": {
-                                            "enabled": {"type": "boolean", "description": "Enable Bonjour forwarding"}
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the policy data to create"
-                            }
-                        ],
-                        "description": "Policy data to create (can be dictionary or JSON string)"
-                    }
-                },
-                "required": ["policy_data"]
-            }
-        ),
+       
         Tool(
             name="delete_network_group_policy",
             description="Delete an existing USER GROUP POLICY. Just provide the policy ID. Example: 'Delete policy_1' or 'Remove policy_2'. IMPORTANT: This will permanently remove the policy and cannot be undone. NOTE: This is for USER POLICIES, not network infrastructure.",
@@ -392,6 +227,34 @@ async def handle_list_tools() -> List[Tool]:
                     }
                 },
                 "required": ["policy_id"]
+            }
+        ),
+
+        Tool(
+            name="handle_traffic_shaping_response",
+            description="Handle user response to traffic shaping question during wireless settings creation. Use this after the create_network_wireless_settings tool asks about enabling traffic shaping for existing policies. Provide your response: 'YES' to enable for all policies, 'NO' to skip, or 'POLICY_ID:YES' for specific policy.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "user_response": {
+                        "type": "string",
+                        "description": "User's response to traffic shaping question (YES/NO/POLICY_ID:YES)"
+                    },
+                    "wireless_settings": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "description": "Dictionary containing the wireless settings that were collected earlier"
+                            },
+                            {
+                                "type": "string",
+                                "description": "JSON string containing the wireless settings that were collected earlier"
+                            }
+                        ],
+                        "description": "Wireless settings data that was collected in the previous step"
+                    }
+                },
+                "required": ["user_response", "wireless_settings"]
             }
         )
     ]
@@ -415,24 +278,21 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             return await get_organization_uplinks_statuses()
         elif name == "create_network_appliance_settings":
             settings_data = arguments.get("settings_data", {})
-            return await update_network_appliance_settings(settings_data, use_mock=USE_MOCK)
+            from create_network_appliance_settings import create_network_appliance_settings
+            return await create_network_appliance_settings(settings_data, use_mock=USE_MOCK)
         elif name == "create_network_wireless_settings":
             settings_data = arguments.get("settings_data", {})
             return await update_network_wireless_settings(settings_data, use_mock=USE_MOCK)
 
         elif name == "continue_wireless_update_after_policy":
             wireless_settings = arguments.get("wireless_settings", {})
-            from update_network_wireless_settings import continue_wireless_update_after_policy
             return await continue_wireless_update_after_policy(wireless_settings, use_mock=USE_MOCK)
 
         elif name == "create_network_wireless_settings_with_group_policy":
             wireless_settings = arguments.get("wireless_settings", {})
             group_policy_data = arguments.get("group_policy_data", {})
             return await update_network_wireless_settings_with_group_policy(wireless_settings, group_policy_data, use_mock=USE_MOCK)
-        elif name == "create_network_group_policy":
-            policy_data = arguments.get("policy_data", {})
-            from create_network_group_policy import create_network_group_policy
-            return await create_network_group_policy(policy_data, use_mock=USE_MOCK)
+
         elif name == "update_network_group_policy":
             policy_id = arguments.get("policy_id", "")
             policy_data = arguments.get("policy_data", {})
@@ -440,6 +300,11 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
         elif name == "delete_network_group_policy":
             policy_id = arguments.get("policy_id", "")
             return await delete_network_group_policy(policy_id, use_mock=USE_MOCK)
+        elif name == "handle_traffic_shaping_response":
+            user_response = arguments.get("user_response", "")
+            wireless_settings = arguments.get("wireless_settings", {})
+            from update_network_wireless_settings import handle_traffic_shaping_response
+            return await handle_traffic_shaping_response(user_response, wireless_settings, use_mock=USE_MOCK)
         else:
             return [{"type": "text", "text": f"Unknown tool: {name}"}]
             

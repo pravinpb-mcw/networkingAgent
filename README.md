@@ -6,11 +6,21 @@ A Model Context Protocol (MCP) server that exposes 5 specific Cisco Meraki Dashb
 
 This MCP server provides the following tools:
 
+### Monitoring Tools (6):
 1. **get_network_clients** - Retrieve clients connected to your configured network
 2. **get_network_traffic** - Analyze network traffic patterns and bandwidth usage
 3. **get_device_loss_and_latency_history** - Get loss and latency history for your configured device
 4. **get_organization_vpn_stats** - Retrieve VPN statistics for your configured organization
 5. **get_network_events** - Retrieve events for your configured network
+6. **get_organization_uplinks_statuses** - Get device uplink status and failover information
+
+### Configuration Tools (6):
+7. **create_network_appliance_settings** - Create network infrastructure settings (DHCP, VLAN, etc.)
+8. **create_network_wireless_settings** - Create WiFi/SSID settings with traffic shaping check
+9. **handle_traffic_shaping_response** - Handle traffic shaping decisions during wireless setup
+10. **continue_wireless_update_after_policy** - Continue wireless update after group policy
+11. **update_network_group_policy** - Update existing user group policies
+12. **delete_network_group_policy** - Delete existing user group policies
 
 ## Project Structure
 
@@ -113,6 +123,39 @@ All tools automatically use the configuration from your `.env` file:
 - Valid Cisco Meraki Dashboard API key
 - Network access to api.meraki.com
 - Appropriate permissions for the API endpoints being accessed
+
+## Enhanced Traffic Shaping Check
+
+The `create_network_wireless_settings` tool now includes intelligent traffic shaping management:
+
+### How It Works:
+1. **Automatic Detection**: Checks `mock_data/networks.json` for existing group policies
+2. **Traffic Shaping Analysis**: Identifies policies with `trafficShapingEnabled=false`
+3. **User Interaction**: Asks users if they want to enable traffic shaping
+4. **Flexible Options**: Users can enable for all policies, skip, or enable for specific policies
+5. **Seamless Integration**: Continues with wireless settings after traffic shaping decisions
+
+### User Response Options:
+- `YES` or `ENABLE` - Enable traffic shaping for all policies with disabled status
+- `NO` or `SKIP` - Continue without enabling traffic shaping
+- `POLICY_ID:YES` - Enable traffic shaping for a specific policy (e.g., `policy_1:YES`)
+
+### Example Workflow:
+```bash
+# 1. User calls wireless settings
+create_network_wireless_settings("Enable wireless with SSID MyNetwork")
+
+# 2. Tool checks existing policies and asks:
+"Found 2 group policy(ies) with trafficShapingEnabled=false:
+   • Policy ID: policy_1
+   • Policy ID: policy_2
+Do you want to enable traffic shaping for these policies?"
+
+# 3. User responds:
+"YES"
+
+# 4. Tool enables traffic shaping and continues with wireless setup
+```
 
 ## Error Handling
 

@@ -76,13 +76,14 @@ async def run_meraki_chat():
             max_tokens=2048
         )
         
-        # Create MCP agent with memory
+        # Create MCP agent with memory and disable verbose output
         print("Creating MCP Agent...")
         agent = MCPAgent(
             llm=llm,
             client=client,
             max_steps=10,
             memory_enabled=True,
+            verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
         )
         
         print("Setup complete!")
@@ -97,9 +98,7 @@ async def run_meraki_chat():
         print("• get_network_events - Get network events")
         print("• get_organization_uplinks_statuses - Device uplink status and failover")
         print("• create_network_appliance_settings - Create appliance settings")
-        print("• create_network_wireless_settings - Create wireless settings")
-        # print("• continue_wireless_update_after_policy - Continue wireless update after policy")
-        # print("• create_network_group_policy - Create group policies")
+        print("• create_network_wireless_settings - Create wireless settings with automatic group policy sync")
         print("• update_network_group_policy - update group policies")
         print("\nCommands:")
         print("• Type 'exit' or 'quit' to end")
@@ -232,7 +231,8 @@ async def test_connection():
             llm=llm,
             client=client,
             max_steps=5,
-            memory_enabled=True
+            memory_enabled=True,
+            verbose=False  # Disable verbose output
         )
         
         print("MCP Agent created successfully")

@@ -8,6 +8,28 @@ from typing import Dict, Any
 
 logger = logging.getLogger("natural-language-converter")
 
+def extract_policy_id_from_input(natural_language: str) -> str:
+    """
+    Extract policy ID from natural language input.
+    Returns the policy ID if found, or None if not found.
+    """
+    import re
+    
+    # Look for common policy ID patterns
+    patterns = [
+        r'policy[_\s]*(\w+)',  # "policy_2", "policy 2"
+        r'id[_\s]*(\w+)',      # "id_2", "id 2"
+        r'(\w+)[_\s]*policy',  # "2_policy", "2 policy"
+        r'update[_\s]*(\w+)',  # "update_2", "update 2"
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, natural_language.lower())
+        if match:
+            return match.group(1)
+    
+    return None
+
 def convert_natural_language_to_policy_data(natural_language: str) -> Dict[str, Any]:
     """
     Convert natural language input to structured policy data.

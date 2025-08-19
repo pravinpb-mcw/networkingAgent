@@ -96,7 +96,7 @@ class WirelessSettings(BaseModel):
 
 class GroupPolicy(BaseModel):
     """Model for group policy matching Cisco Meraki API structure"""
-    name: str
+    name: str = None  # Make name optional for partial updates
     scheduling: Dict[str, Any] = {}
     bandwidth: Dict[str, Any] = {}
     firewallAndTrafficShaping: Dict[str, Any] = {}
@@ -152,60 +152,87 @@ async def get_organization_uplinks_statuses():
     return []
 
 @app.post("/networks/{network_id}/appliance/settings")
-async def update_network_appliance_settings(network_id: str, settings: ApplianceSettings):
-    """Mock endpoint for updating network appliance settings"""
+async def create_network_appliance_settings(network_id: str, settings: ApplianceSettings):
+    """Mock endpoint for creating new network appliance settings"""
     try:
         logger.info(f"POST /networks/{network_id}/appliance/settings")
         logger.info(f"Settings: {settings}")
         
-        # Store the settings in mock data
+        # Initialize network if it doesn't exist
         if network_id not in mock_data["networks"]:
             mock_data["networks"][network_id] = {}
         
-        mock_data["networks"][network_id]["appliance_settings"] = settings.model_dump()
+        # Initialize appliance_settings as a list if it doesn't exist
+        if "appliance_settings" not in mock_data["networks"][network_id]:
+            mock_data["networks"][network_id]["appliance_settings"] = []
+        
+        # Create a new appliance settings entry
+        new_settings = settings.model_dump()
+        new_entry = {
+            "id": f"appliance_settings_{len(mock_data['networks'][network_id]['appliance_settings']) + 1}",
+            "created_at": datetime.now().isoformat(),
+            **new_settings
+        }
+        
+        # Add the new entry to the list
+        mock_data["networks"][network_id]["appliance_settings"].append(new_entry)
         
         # Save to JSON file
         save_to_json_file("networks.json", mock_data["networks"])
         
-        logger.info(f"Successfully stored appliance settings for network {network_id}")
+        logger.info(f"Successfully added new appliance settings for network {network_id}")
         
         return {
-            "message": "Appliance settings updated successfully",
+            "message": "Appliance settings created successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "settings": settings.model_dump()
+            "new_entry": new_entry,
+            "total_entries": len(mock_data["networks"][network_id]["appliance_settings"])
         }
     except Exception as e:
-        logger.error(f"Error updating appliance settings: {e}")
+        logger.error(f"Error adding appliance settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/networks/{network_id}/wireless/settings")
-async def update_network_wireless_settings(network_id: str, settings: WirelessSettings):
-    """Mock endpoint for updating network wireless settings"""
+async def create_network_wireless_settings(network_id: str, settings: WirelessSettings):
+    """Mock endpoint for creating new network wireless settings"""
     try:
         logger.info(f"POST /networks/{network_id}/wireless/settings")
         logger.info(f"Settings: {settings}")
 
-        # Store the settings in mock data
+        # Initialize network if it doesn't exist
         if network_id not in mock_data["networks"]:
             mock_data["networks"][network_id] = {}
 
-        # Convert to dict before storing
-        mock_data["networks"][network_id]["wireless_settings"] = settings.model_dump()
+        # Initialize wireless_settings as a list if it doesn't exist
+        if "wireless_settings" not in mock_data["networks"][network_id]:
+            mock_data["networks"][network_id]["wireless_settings"] = []
+
+        # Create a new wireless settings entry
+        new_settings = settings.model_dump()
+        new_entry = {
+            "id": f"wireless_settings_{len(mock_data['networks'][network_id]['wireless_settings']) + 1}",
+            "created_at": datetime.now().isoformat(),
+            **new_settings
+        }
+
+        # Add the new entry to the list
+        mock_data["networks"][network_id]["wireless_settings"].append(new_entry)
         
         # Save to JSON file
         save_to_json_file("networks.json", mock_data["networks"])
         
-        logger.info(f"Successfully stored wireless settings for network {network_id}")
+        logger.info(f"Successfully created new wireless settings for network {network_id}")
 
         return {
-            "message": "Wireless settings updated successfully",
+            "message": "Wireless settings created successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "settings": settings.model_dump()  # Return as dict
+            "new_entry": new_entry,
+            "total_entries": len(mock_data["networks"][network_id]["wireless_settings"])
         }
     except Exception as e:
-        logger.error(f"Error updating wireless settings: {e}")
+        logger.error(f"Error creating wireless settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -156,6 +156,27 @@ class MerakiAPIClient:
         # No query params by default; add filters here if needed
         return await self._make_request(f"/organizations/{org_id}/uplinks/statuses")
 
+    async def create_network_appliance_settings(
+        self, 
+        network_id: str = None, 
+        settings_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Create new network appliance settings
+        
+        POST /networks/{networkId}/appliance/settings
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not settings_data:
+            raise ValueError("settings_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/settings",
+            method="POST",
+            data=settings_data
+        )
+
     async def update_network_appliance_settings(
         self, 
         network_id: str = None, 
@@ -177,12 +198,12 @@ class MerakiAPIClient:
             data=settings_data
         )
 
-    async def update_network_wireless_settings(
+    async def create_network_wireless_settings(
         self, 
         network_id: str = None, 
         settings_data: Dict[str, Any] = None
     ) -> Dict[str, Any]:
-        """Update network wireless settings
+        """Create new network wireless settings
         
         POST /networks/{networkId}/wireless/settings
         """
