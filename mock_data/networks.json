@@ -1,0 +1,60 @@
+{
+  "main_network": {
+    "appliance_settings": {
+      "dhcp": {
+        "enabled": true
+      },
+      "vlan": {
+        "enabled": true
+      }
+    },
+    "wireless_settings": {
+      "enabled": true,
+      "ssid": "My_SSID",
+      "bandwidth": {
+        "limitDown": 100.0,
+        "limitUp": 100.0
+      }
+    },
+    "groupPolicies": {
+      "policy_1": {
+        "id": "policy_1",
+        "name": "Updated Staff Policy",
+        "scheduling": {},
+        "bandwidth": {
+          "limitDown": 10000.0,
+          "limitUp": 500.0
+        },
+        "firewallAndTrafficShaping": {
+          "settings": {
+            "trafficShapingEnabled": true
+          }
+        },
+        "contentFiltering": {},
+        "splashAuthSettings": "bypass",
+        "vlanTagging": {},
+        "bonjourForwarding": {},
+        "updated_at": "2025-08-18T16:14:58.266471"
+      },
+      "policy_2": {
+        "id": "policy_2",
+        "name": "policy_2",
+        "scheduling": {},
+        "bandwidth": {
+          "limitDown": 10000.0,
+          "limitUp": 50.0
+        },
+        "firewallAndTrafficShaping": {
+          "settings": {
+            "trafficShapingEnabled": true
+          }
+        },
+        "contentFiltering": {},
+        "splashAuthSettings": "bypass",
+        "vlanTagging": {},
+        "bonjourForwarding": {},
+        "updated_at": "2025-08-19T09:56:04.744119"
+      }
+    }
+  }
+}

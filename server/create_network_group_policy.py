@@ -9,8 +9,10 @@ from datetime import datetime
 from typing import List, Dict, Any, Union
 
 from meraki_client import MerakiAPIClient
+from natural_language_converter import convert_natural_language_to_policy_data
 
 logger = logging.getLogger("create-network-group-policy-tool")
+
 
 async def create_network_group_policy(policy_data: Union[Dict[str, Any], str], use_mock: bool = False) -> List[Dict[str, Any]]:
     """
@@ -22,14 +24,11 @@ async def create_network_group_policy(policy_data: Union[Dict[str, Any], str], u
         use_mock: Whether to use mock server mode
     """
     try:
-        # Handle both dictionary and JSON string inputs
+        # Handle natural language input by converting it to structured data
         if isinstance(policy_data, str):
-            try:
-                # Parse JSON string to dictionary
-                policy_data = json.loads(policy_data)
-                logger.info("Successfully parsed JSON string input to dictionary")
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid JSON string: {e}")
+            # Convert natural language to structured policy data
+            policy_data = convert_natural_language_to_policy_data(policy_data)
+            logger.info("Successfully converted natural language input to policy data")
         
         # Ensure policy_data is a dict
         if not isinstance(policy_data, dict):

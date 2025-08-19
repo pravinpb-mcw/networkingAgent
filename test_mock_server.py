@@ -46,15 +46,15 @@ def test_mock_server():
         print(f"❌ Error: {e}")
     
     # Test 3: Wireless settings endpoint
-    print("\n3. Testing PUT /networks/{network_id}/wireless/settings")
-    network_id = "L_3947405073390239794"
+    print("\n3. Testing POST /networks/{network_id}/wireless/settings")
+    network_id = "main_network"
     wireless_data = {
         "enabled": True,
         "ssid": "Test_SSID_123"
     }
     
     try:
-        response = requests.put(
+        response = requests.post(
             f"{base_url}/networks/{network_id}/wireless/settings",
             json=wireless_data,
             headers={"Content-Type": "application/json"}
@@ -69,14 +69,14 @@ def test_mock_server():
         print(f"❌ Error: {e}")
     
     # Test 4: Appliance settings endpoint
-    print("\n4. Testing PUT /networks/{network_id}/appliance/settings")
+    print("\n4. Testing POST /networks/{network_id}/appliance/settings")
     appliance_data = {
         "clientTrackingMethod": "MAC address",
         "deploymentMode": "routed"
     }
     
     try:
-        response = requests.put(
+        response = requests.post(
             f"{base_url}/networks/{network_id}/appliance/settings",
             json=appliance_data,
             headers={"Content-Type": "application/json"}
@@ -87,6 +87,46 @@ def test_mock_server():
             print(f"✅ Appliance settings updated: {data.get('message')}")
         else:
             print(f"❌ Appliance settings failed: {response.text}")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+    
+    # Test 5: Create group policy endpoint
+    print("\n5. Testing PUT /networks/{network_id}/groupPolicies")
+    policy_data = {
+        "name": "Test Policy",
+        "bandwidth": {
+            "limitUp": 1000,
+            "limitDown": 1000
+        },
+        "scheduling": {
+            "enabled": False
+        },
+        "firewallAndTrafficShaping": {
+            "settings": {
+                "trafficShapingEnabled": True
+            }
+        },
+        "contentFiltering": {
+            "enabled": False
+        },
+        "splashAuthSettings": "bypass",
+        "vlanTagging": {},
+        "bonjourForwarding": {}
+    }
+    
+    try:
+        response = requests.put(
+            f"{base_url}/networks/{network_id}/groupPolicies",
+            json=policy_data,
+            headers={"Content-Type": "application/json"}
+        )
+        print(f"Status: {response.status_code}")
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ Group policy created: {data.get('message')}")
+            print(f"   Policy ID: {data.get('policyId')}")
+        else:
+            print(f"❌ Group policy creation failed: {response.text}")
     except Exception as e:
         print(f"❌ Error: {e}")
     

@@ -73,6 +73,8 @@ class MerakiAPIClient:
                     response = await client.put(url, headers=self.headers, json=data or {})
                 elif method == "POST":
                     response = await client.post(url, headers=self.headers, json=data or {})
+                elif method == "DELETE":
+                    response = await client.delete(url, headers=self.headers)
                 else:
                     raise ValueError(f"Unsupported HTTP method: {method}")
                 
@@ -215,4 +217,48 @@ class MerakiAPIClient:
             f"/networks/{net_id}/groupPolicies",
             method="PUT",
             data=policy_data
+        )
+
+    async def update_network_group_policy(
+        self, 
+        policy_id: str,
+        network_id: str = None, 
+        policy_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update an existing group policy for a network
+        
+        PUT /networks/{networkId}/groupPolicies/{policyId}
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not policy_data:
+            raise ValueError("policy_data is required")
+        if not policy_id:
+            raise ValueError("policy_id is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/groupPolicies/{policy_id}",
+            method="PUT",
+            data=policy_data
+        )
+
+    async def delete_network_group_policy(
+        self, 
+        policy_id: str,
+        network_id: str = None
+    ) -> Dict[str, Any]:
+        """Delete an existing group policy for a network
+        
+        DELETE /networks/{networkId}/groupPolicies/{policyId}
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not policy_id:
+            raise ValueError("policy_id is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/groupPolicies/{policy_id}",
+            method="DELETE"
         )

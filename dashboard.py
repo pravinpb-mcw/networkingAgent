@@ -52,7 +52,7 @@ try:
     # Import configuration tools
     from server.update_network_wireless_settings import update_network_wireless_settings
     from server.update_network_appliance_settings import update_network_appliance_settings
-    from server.create_network_group_policy import create_network_group_policy
+
     
     IMPORTS_SUCCESS = True
 except ImportError as e:
@@ -705,10 +705,12 @@ def main():
                         - **get_organization_vpn_stats** - Get VPN statistics
                         - **get_network_events** - Get network events
                         
-                        **Configuration Tools:**
-                        - **update_network_wireless_settings** - Update WiFi/SSID settings
-                        - **update_network_appliance_settings** - Update network infrastructure settings
-                        - **create_network_group_policy** - Create bandwidth and access policies
+                                         **Configuration Tools:**
+                 - **create_network_wireless_settings** - Create WiFi/SSID settings
+                 - **continue_wireless_update_after_policy** - Continue wireless update after policy
+                 - **create_network_appliance_settings** - Create network infrastructure settings
+                 - **create_network_group_policy** - Create bandwidth and access policies
+                 - **delete_network_group_policy** - Delete bandwidth and access policies
                         """)
                 else:
                     # Fallback to hardcoded list
@@ -721,9 +723,11 @@ def main():
                     - **get_network_events** - Get network events
                     
                     **Configuration Tools:**
-                    - **update_network_wireless_settings** - Update WiFi/SSID settings
-                    - **update_network_appliance_settings** - Update network infrastructure settings
+                    - **create_network_wireless_settings** - Create WiFi/SSID settings
+                    - **continue_wireless_update_after_policy** - Continue wireless update after policy
+                    - **create_network_appliance_settings** - Create network infrastructure settings
                     - **create_network_group_policy** - Create bandwidth and access policies
+                    - **delete_network_group_policy** - Delete bandwidth and access policies
                     """)
             except Exception as e:
                 st.warning(f"Could not fetch tools from MCP server: {e}")
@@ -737,9 +741,11 @@ def main():
                 - **get_network_events** - Get network events
                 
                 **Configuration Tools:**
-                - **update_network_wireless_settings** - Update WiFi/SSID settings
-                - **update_network_appliance_settings** - Update network infrastructure settings
+                - **create_network_wireless_settings** - Create WiFi/SSID settings
+                - **continue_wireless_update_after_policy** - Continue wireless update after policy
+                - **create_network_appliance_settings** - Create network infrastructure settings
                 - **create_network_group_policy** - Create bandwidth and access policies
+                - **delete_network_group_policy** - Delete bandwidth and access policies
                 """)
     
     with tab2:
@@ -914,8 +920,8 @@ def main():
          config_tool = st.selectbox(
              "Choose what you want to configure:",
              [
-                 ("update_network_wireless_settings", "📶 Wireless Network Settings"),
-                 ("update_network_appliance_settings", "⚙️ Network Appliance Settings"), 
+                 ("create_network_wireless_settings", "📶 Wireless Network Settings"),
+                 ("create_network_appliance_settings", "⚙️ Network Appliance Settings"), 
                  ("create_network_group_policy", "📋 Create Group Policy")
              ],
              format_func=lambda x: x[1],  # Show the friendly name
@@ -958,7 +964,7 @@ def main():
                  "splash_page": False
              }
          
-         if config_tool == "update_network_wireless_settings":
+         if config_tool == "create_network_wireless_settings":
              st.subheader("📶 Wireless Network Settings")
              
              col1, col2 = st.columns(2)
@@ -1022,7 +1028,7 @@ def main():
                          st.error(f"Error updating wireless settings: {e}")
                          st.exception(e)
          
-         elif config_tool == "update_network_appliance_settings":
+         elif config_tool == "create_network_appliance_settings":
              st.subheader("⚙️ Network Appliance Settings")
              
              col1, col2 = st.columns(2)
@@ -1087,8 +1093,117 @@ def main():
                      except Exception as e:
                          st.error(f"Error updating appliance settings: {e}")
                          st.exception(e)
-         
-         elif config_tool == "create_network_group_policy":
+          
+             elif config_tool == "create_network_group_policy":
+              st.subheader("📋 Create Network Group Policy")
+              
+              col1, col2 = st.columns(2)
+              with col1:
+                  policy_name = st.text_input("Policy Name", value=st.session_state.group_policy["policy_name"], key="create_policy_name")
+                  bandwidth_enabled = st.checkbox("Enable Bandwidth Limits", value=st.session_state.group_policy["bandwidth_enabled"], key="create_policy_bandwidth_enabled")
+              
+              with col2:
+                  limit_up = st.number_input("Upload Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_up"], disabled=not bandwidth_enabled, key="create_policy_limit_up")
+                  limit_down = st.number_input("Download Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_down"], disabled=not bandwidth_enabled, key="create_policy_limit_down")
+              
+              # Advanced settings
+              with st.expander("Advanced Settings"):
+                  col1, col2 = st.columns(2)
+                  with col1:
+                      scheduling_enabled = st.checkbox("Enable Scheduling Restrictions", value=st.session_state.group_policy["scheduling_enabled"], key="create_policy_scheduling")
+                      traffic_shaping = st.checkbox("Enable Firewall & Traffic Shaping", value=st.session_state.group_policy["traffic_shaping"], key="create_policy_traffic_shaping")
+                  
+                  with col2:
+                      content_filtering = st.checkbox("Enable Content Filtering", value=st.session_state.group_policy["content_filtering"], key="create_policy_content_filtering")
+                      splash_page = st.checkbox("Enable Splash Page Authentication", value=st.session_state.group_policy["splash_page"], key="create_policy_splash_page")
+              
+              # Reset button
+              if st.button("🔄 Reset to Defaults", help="Reset group policy to default values", key="create_policy_reset"):
+                  st.session_state.group_policy = {
+                      "policy_name": "Guest Policy",
+                      "bandwidth_enabled": True,
+                      "limit_up": 500,
+                      "limit_down": 1000,
+                      "scheduling_enabled": False,
+                      "traffic_shaping": True,
+                      "content_filtering": False,
+                      "splash_page": False
+                  }
+                  st.success("Group policy reset to defaults!")
+                  st.rerun()
+              
+              if st.button("Create Group Policy", type="primary", key="create_policy_button"):
+                  # Save current form values to session state
+                  st.session_state.group_policy = {
+                      "policy_name": policy_name,
+                      "bandwidth_enabled": bandwidth_enabled,
+                      "limit_up": limit_up,
+                      "limit_down": limit_down,
+                      "scheduling_enabled": scheduling_enabled,
+                      "traffic_shaping": traffic_shaping,
+                      "content_filtering": content_filtering,
+                      "splash_page": splash_page
+                  }
+                  
+                  with st.spinner("Creating group policy..."):
+                      try:
+                          # Import the function
+                          from server.create_network_group_policy import create_network_group_policy
+                          
+                          # Prepare policy data matching comprehensive Cisco Meraki API structure
+                          policy_data = {
+                              "name": policy_name,
+                              "scheduling": {
+                                  "enabled": scheduling_enabled,
+                                  "monday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "tuesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "wednesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "thursday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "friday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "saturday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
+                                  "sunday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {}
+                              },
+                              "bandwidth": {
+                                  "settings": "custom" if bandwidth_enabled else "network default",
+                                  "bandwidthLimits": {
+                                      "limitUp": limit_up if bandwidth_enabled else None,
+                                      "limitDown": limit_down if bandwidth_enabled else None
+                                  } if bandwidth_enabled else {}
+                              },
+                              "firewallAndTrafficShaping": {
+                                  "settings": "custom" if traffic_shaping else "network default",
+                                  "trafficShapingRules": [] if traffic_shaping else [],
+                                  "l3FirewallRules": [],
+                                  "l7FirewallRules": []
+                              },
+                              "contentFiltering": {
+                                  "allowedUrlPatterns": {"settings": "network default", "patterns": []},
+                                  "blockedUrlPatterns": {"settings": "append" if content_filtering else "network default", "patterns": []},
+                                  "blockedUrlCategories": {"settings": "network default", "categories": []}
+                              },
+                              "splashAuthSettings": "custom" if splash_page else "bypass",
+                              "vlanTagging": {"settings": "network default"},
+                              "bonjourForwarding": {"settings": "network default", "rules": []}
+                          }
+                          
+                          # Call the function
+                          result = asyncio.run(create_network_group_policy(policy_data, use_mock=True))
+                          
+                          if result and len(result) > 0:
+                              st.success("✅ Group policy created successfully!")
+                              st.json(policy_data)
+                              
+                              # Show the result
+                              with st.expander("View Creation Result"):
+                                  st.json(result[0]['text'])
+                          else:
+                              st.error("Failed to create group policy")
+                              
+                      except Exception as e:
+                          st.error(f"Error creating group policy: {e}")
+                          st.exception(e)
+          
+         elif config_tool == "delete_network_group_policy":
              st.subheader("📋 Create Network Group Policy")
              
              col1, col2 = st.columns(2)
@@ -1141,8 +1256,8 @@ def main():
                  
                  with st.spinner("Creating group policy..."):
                      try:
-                         # Import the function
-                         from server.create_network_group_policy import create_network_group_policy
+                                                   # Note: create_network_group_policy tool has been removed
+                          # Use update_network_group_policy instead
                          
                          # Prepare policy data matching comprehensive Cisco Meraki API structure
                          policy_data = {

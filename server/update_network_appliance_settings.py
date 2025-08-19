@@ -22,14 +22,12 @@ async def update_network_appliance_settings(settings_data: Union[Dict[str, Any],
         use_mock: Whether to use mock server mode
     """
     try:
-        # Handle both dictionary and JSON string inputs
+        # Handle natural language input by converting it to structured data
         if isinstance(settings_data, str):
-            try:
-                # Parse JSON string to dictionary
-                settings_data = json.loads(settings_data)
-                logger.info("Successfully parsed JSON string input to dictionary")
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid JSON string: {e}")
+            # Convert natural language to structured settings data
+            from natural_language_converter import convert_natural_language_to_appliance_settings
+            settings_data = convert_natural_language_to_appliance_settings(settings_data)
+            logger.info("Successfully converted natural language input to appliance settings")
         
         # Ensure settings_data is a dict
         if not isinstance(settings_data, dict):

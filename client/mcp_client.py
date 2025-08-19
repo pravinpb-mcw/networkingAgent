@@ -96,9 +96,11 @@ async def run_meraki_chat():
         print("• get_organization_vpn_stats - Get VPN statistics")
         print("• get_network_events - Get network events")
         print("• get_organization_uplinks_statuses - Device uplink status and failover")
-        print("• update_network_appliance_settings - Update appliance settings")
-        print("• update_network_wireless_settings - Update wireless settings")
-        print("• create_network_group_policy - Create group policies")
+        print("• create_network_appliance_settings - Create appliance settings")
+        print("• create_network_wireless_settings - Create wireless settings")
+        # print("• continue_wireless_update_after_policy - Continue wireless update after policy")
+        # print("• create_network_group_policy - Create group policies")
+        print("• update_network_group_policy - update group policies")
         print("\nCommands:")
         print("• Type 'exit' or 'quit' to end")
         print("• Type 'clear' to clear history")
@@ -145,19 +147,25 @@ async def run_meraki_chat():
                         # Hardcoded fallback
                         else:
                             print("Using hardcoded tool list:")
-                            print("• get_network_clients - sdfGet connected network clients and devices")
+                            print("• get_network_clients - Get connected network clients and devices")
                             print("• get_network_traffic - Analyze network traffic patterns and bandwidth usage")
                             print("• get_device_loss_and_latency_history - Get device performance metrics")
                             print("• get_organization_vpn_stats - Get VPN statistics for the organization")
                             print("• get_network_events - Get network events and alerts")
+                            print("• create_network_appliance_settings - Create appliance settings")
+                            print("• create_network_wireless_settings - Create wireless settings")
+                            print("• delete_network_group_policy - Delete group policies")
                     except Exception as e:
                         print(f"Error getting tools: {e}")
                         # Hardcoded fallback
-                        print("• get_network_clients - sdzGet connected network clients and devices")
+                        print("• get_network_clients - Get connected network clients and devices")
                         print("• get_network_traffic - Analyze network traffic patterns and bandwidth usage")
                         print("• get_device_loss_and_latency_history - Get device performance metrics")
                         print("• get_organization_vpn_stats - Get VPN statistics for the organization")
                         print("• get_network_events - Get network events and alerts")
+                        print("• create_network_appliance_settings - Create appliance settings")
+                        print("• create_network_wireless_settings - Create wireless settings")
+                        print("• delete_network_group_policy - Delete group policies")
                     continue
                 
                 # Skip empty input

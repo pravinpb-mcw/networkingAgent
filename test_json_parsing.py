@@ -24,7 +24,7 @@ async def test_json_parsing():
         # Import the functions
         from update_network_wireless_settings import update_network_wireless_settings
         from update_network_appliance_settings import update_network_appliance_settings
-        from create_network_group_policy import create_network_group_policy
+        # Note: create_network_group_policy tool has been removed
         
         print("✅ Successfully imported update functions")
         
@@ -57,15 +57,9 @@ async def test_json_parsing():
         # Test 3: JSON string input for group policy creation
         print("\n3. Testing create_network_group_policy with JSON string")
         print("-" * 60)
-        
-        policy_json = '{"name": "Test Policy JSON", "bandwidth": {"limitUp": 1000, "limitDown": 1000}}'
-        
-        try:
-            result = await create_network_group_policy(policy_json, use_mock=True)
-            print("✅ Group policy creation with JSON string successful!")
-            print(f"Result: {result}")
-        except Exception as e:
-            print(f"❌ Group policy creation with JSON string failed: {e}")
+        print("Note: create_network_group_policy tool has been removed")
+        print("Use update_network_group_policy instead")
+        print("Skipping this test...")
         
         # Test 4: Dictionary input (should still work)
         print("\n4. Testing update_network_wireless_settings with dictionary")

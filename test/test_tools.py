@@ -21,7 +21,7 @@ from server.get_network_events import get_network_events
 from server.get_organization_uplinks_statuses import get_organization_uplinks_statuses
 from server.update_network_appliance_settings import update_network_appliance_settings
 from server.update_network_wireless_settings import update_network_wireless_settings
-from server.create_network_group_policy import create_network_group_policy
+# Note: create_network_group_policy tool has been removed
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +55,7 @@ async def test_all_tools():
         ("get_organization_uplinks_statuses", get_organization_uplinks_statuses),
         ("update_network_appliance_settings", lambda: update_network_appliance_settings({"test": "settings"})),
         ("update_network_wireless_settings", lambda: update_network_wireless_settings({"test": "settings"})),
-        ("create_network_group_policy", lambda: create_network_group_policy({"name": "Test Policy"})),
+        # Note: create_network_group_policy tool has been removed
     ]
     
     for tool_name, tool_func in tools:
