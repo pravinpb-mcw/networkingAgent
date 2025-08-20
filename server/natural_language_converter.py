@@ -42,21 +42,34 @@ def convert_natural_language_to_policy_data(natural_language: str) -> Dict[str, 
     if "bandwidth" in natural_language or "limit" in natural_language:
         bandwidth = {}
         
-        # Upload limits
-        if "500" in natural_language and ("upload" in natural_language or "up" in natural_language):
-            bandwidth["limitUp"] = 500
-        elif "1000" in natural_language and ("upload" in natural_language or "up" in natural_language):
-            bandwidth["limitUp"] = 1000
-        elif "2000" in natural_language and ("upload" in natural_language or "up" in natural_language):
-            bandwidth["limitUp"] = 2000
+        # Use regex to extract any numeric values
+        import re
         
-        # Download limits
-        if "1000" in natural_language and ("download" in natural_language or "down" in natural_language):
-            bandwidth["limitDown"] = 1000
-        elif "10000" in natural_language and ("download" in natural_language or "down" in natural_language):
-            bandwidth["limitDown"] = 10000
-        elif "2000" in natural_language and ("download" in natural_language or "down" in natural_language):
-            bandwidth["limitDown"] = 2000
+        # Upload limits - look for any number followed by upload/up keywords
+        upload_match = re.search(r'(\d+)\s*(?:kbps?|mbps?)?\s*(?:upload|up)', natural_language.lower())
+        if upload_match:
+            bandwidth["limitUp"] = int(upload_match.group(1))
+        else:
+            # Fallback to predefined values
+            if "500" in natural_language and ("upload" in natural_language or "up" in natural_language):
+                bandwidth["limitUp"] = 500
+            elif "1000" in natural_language and ("upload" in natural_language or "up" in natural_language):
+                bandwidth["limitUp"] = 1000
+            elif "2000" in natural_language and ("upload" in natural_language or "up" in natural_language):
+                bandwidth["limitUp"] = 2000
+        
+        # Download limits - look for any number followed by download/down keywords
+        download_match = re.search(r'(\d+)\s*(?:kbps?|mbps?)?\s*(?:download|down)', natural_language.lower())
+        if download_match:
+            bandwidth["limitDown"] = int(download_match.group(1))
+        else:
+            # Fallback to predefined values
+            if "1000" in natural_language and ("download" in natural_language or "down" in natural_language):
+                bandwidth["limitDown"] = 1000
+            elif "10000" in natural_language and ("download" in natural_language or "down" in natural_language):
+                bandwidth["limitDown"] = 10000
+            elif "2000" in natural_language and ("download" in natural_language or "down" in natural_language):
+                bandwidth["limitDown"] = 2000
         
         if bandwidth:
             policy_data["bandwidth"] = bandwidth

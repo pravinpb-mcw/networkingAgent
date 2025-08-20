@@ -12,7 +12,6 @@
         },
         "created_at": "2025-08-19T15:38:26.867670"
       }
-     
     ],
     "wireless_settings": [
       {
@@ -24,43 +23,62 @@
           "limitUp": 100.0
         },
         "created_at": "2025-08-19T15:38:26.867670"
+      },
+      {
+        "id": "wireless_settings_2",
+        "created_at": "2025-08-20T11:18:05.995958",
+        "enabled": true,
+        "ssid": "My_SSID"
       }
     ],
     "groupPolicies": {
       "policy_1": {
         "id": "policy_1",
-        "name": "Updated Staff Policy",
-        "scheduling": {},
+        "name": "New Policy",
+        "scheduling": {
+          "enabled": false
+        },
         "bandwidth": {},
         "firewallAndTrafficShaping": {
           "settings": {
             "trafficShapingEnabled": true
           }
         },
-        "contentFiltering": {},
+        "contentFiltering": {
+          "enabled": false
+        },
         "splashAuthSettings": "bypass",
-        "vlanTagging": {},
-        "bonjourForwarding": {},
-        "updated_at": "2025-08-19T17:08:12.030490"
+        "vlanTagging": {
+          "settings": "not allowed"
+        },
+        "bonjourForwarding": {
+          "enabled": false
+        },
+        "updated_at": "2025-08-20T11:18:04.216850"
       },
       "policy_2": {
         "id": "policy_2",
-        "name": "Updated Staff Policy",
-        "scheduling": {},
-        "bandwidth": {
-          "limitDown": 10.0,
-          "limitUp": 50.0
+        "name": "New Policy",
+        "scheduling": {
+          "enabled": false
         },
+        "bandwidth": {},
         "firewallAndTrafficShaping": {
           "settings": {
             "trafficShapingEnabled": true
           }
         },
-        "contentFiltering": {},
+        "contentFiltering": {
+          "enabled": false
+        },
         "splashAuthSettings": "bypass",
-        "vlanTagging": {},
-        "bonjourForwarding": {},
-        "updated_at": "2025-08-19T17:09:02.090618"
+        "vlanTagging": {
+          "settings": "not allowed"
+        },
+        "bonjourForwarding": {
+          "enabled": false
+        },
+        "updated_at": "2025-08-20T10:58:45.408599"
       }
     }
   }

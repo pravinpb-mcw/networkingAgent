@@ -1,13 +1,16 @@
 """
 Cisco Meraki MCP Server
-Combines all individual tools into a single MCP server
+Provides tools for managing Cisco Meraki networks
 """
 
 import asyncio
+import json
 import logging
 import os
-from typing import List
+from datetime import datetime
+from typing import List, Dict, Any
 
+from mcp import stdio_server
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
@@ -36,10 +39,8 @@ from get_device_loss_and_latency_history import get_device_loss_and_latency_hist
 from get_network_vpn_stats import get_organization_vpn_stats
 from get_network_events import get_network_events
 from get_organization_uplinks_statuses import get_organization_uplinks_statuses
-from update_network_appliance_settings import update_network_appliance_settings
-from update_network_wireless_settings import update_network_wireless_settings, update_network_wireless_settings_with_group_policy, continue_wireless_update_after_policy
+from update_network_wireless_settings import update_network_wireless_settings
 from update_network_group_policy import update_network_group_policy
-from delete_network_group_policy import delete_network_group_policy
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -131,7 +132,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_network_wireless_settings",
-            description="🛑  STOP-AND-WAIT TOOL: Create new network wireless settings with group policy synchronization. Just tell me what you want in simple text. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth' or 'Turn on wireless network with name Guest_WiFi'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth', I will create: {'enabled': True, 'ssid': 'My_SSID', 'bandwidth': {'limitUp': 1000, 'limitDown': 1000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. 🛑  CRITICAL INSTRUCTION: After collecting wireless settings, I will STOP execution and wait for YOU to provide group policy data. I will NOT proceed automatically. You must use the 'continue_wireless_update_after_policy' tool to complete the process.",
+            description="Create new network wireless settings. Just tell me what you want in simple text. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth' or 'Turn on wireless network with name Guest_WiFi'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth', I will create: {'enabled': True, 'ssid': 'My_SSID', 'bandwidth': {'limitUp': 1000, 'limitDown': 1000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. This tool directly applies wireless settings without complex workflows.",
              inputSchema={
                 "type": "object",
                 "properties": {
@@ -169,31 +170,6 @@ async def handle_list_tools() -> List[Tool]:
         ),
 
         Tool(
-            name="create_network_wireless_settings_with_group_policy",
-            description="Complete wireless settings creation with group policy synchronization. Just tell me what you want in simple text. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth, and create a group policy called Guest Policy'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. I'll apply group policy first, then wireless settings.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "wireless_settings": {
-                        "oneOf": [
-                            {"type": "object"},
-                            {"type": "string"}
-                        ],
-                        "description": "Wireless settings data (can be dictionary or JSON string)"
-                    },
-                    "group_policy_data": {
-                        "oneOf": [
-                            {"type": "object"},
-                            {"type": "string"}
-                        ],
-                        "description": "Group policy data (can be dictionary or JSON string)"
-                    }
-                },
-                "required": ["wireless_settings", "group_policy_data"]
-            }
-        ),
-
-        Tool(
             name="update_network_group_policy",
             description="Update an existing USER GROUP POLICY (bandwidth limits, traffic shaping, content filtering, etc.). Just tell me what you want in simple text. Example: 'Update policy 123 with new name Updated Guest Policy' or 'Change policy ABC to enable traffic shaping' or 'Set bandwidth limits to 500 Kbps upload and 10000 Kbps download'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Update policy 123 with new name Updated Guest Policy', I will create: {'name': 'Updated Guest Policy'}. When you say 'enable traffic shaping', I will create: {'firewallAndTrafficShaping': {'settings': {'trafficShapingEnabled': True}}}. When you say 'set bandwidth limits to 500 Kbps upload and 10000 Kbps download', I will create: {'bandwidth': {'limitUp': 500, 'limitDown': 10000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. NOTE: This is for USER POLICIES, not network infrastructure.",
             inputSchema={
@@ -215,48 +191,8 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
        
-        Tool(
-            name="delete_network_group_policy",
-            description="Delete an existing USER GROUP POLICY. Just provide the policy ID. Example: 'Delete policy_1' or 'Remove policy_2'. IMPORTANT: This will permanently remove the policy and cannot be undone. NOTE: This is for USER POLICIES, not network infrastructure.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "policy_id": {
-                        "type": "string",
-                        "description": "ID of the existing policy to delete"
-                    }
-                },
-                "required": ["policy_id"]
-            }
-        ),
+    
 
-        Tool(
-            name="handle_traffic_shaping_response",
-            description="Handle user response to traffic shaping question during wireless settings creation. Use this after the create_network_wireless_settings tool asks about enabling traffic shaping for existing policies. Provide your response: 'YES' to enable for all policies, 'NO' to skip, or 'POLICY_ID:YES' for specific policy.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "user_response": {
-                        "type": "string",
-                        "description": "User's response to traffic shaping question (YES/NO/POLICY_ID:YES)"
-                    },
-                    "wireless_settings": {
-                        "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the wireless settings that were collected earlier"
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the wireless settings that were collected earlier"
-                            }
-                        ],
-                        "description": "Wireless settings data that was collected in the previous step"
-                    }
-                },
-                "required": ["user_response", "wireless_settings"]
-            }
-        )
     ]
 
 @app.call_tool()
@@ -284,27 +220,14 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             settings_data = arguments.get("settings_data", {})
             return await update_network_wireless_settings(settings_data, use_mock=USE_MOCK)
 
-        elif name == "continue_wireless_update_after_policy":
-            wireless_settings = arguments.get("wireless_settings", {})
-            return await continue_wireless_update_after_policy(wireless_settings, use_mock=USE_MOCK)
 
-        elif name == "create_network_wireless_settings_with_group_policy":
-            wireless_settings = arguments.get("wireless_settings", {})
-            group_policy_data = arguments.get("group_policy_data", {})
-            return await update_network_wireless_settings_with_group_policy(wireless_settings, group_policy_data, use_mock=USE_MOCK)
 
         elif name == "update_network_group_policy":
             policy_id = arguments.get("policy_id", "")
             policy_data = arguments.get("policy_data", {})
             return await update_network_group_policy(policy_id, policy_data, use_mock=USE_MOCK)
-        elif name == "delete_network_group_policy":
-            policy_id = arguments.get("policy_id", "")
-            return await delete_network_group_policy(policy_id, use_mock=USE_MOCK)
-        elif name == "handle_traffic_shaping_response":
-            user_response = arguments.get("user_response", "")
-            wireless_settings = arguments.get("wireless_settings", {})
-            from update_network_wireless_settings import handle_traffic_shaping_response
-            return await handle_traffic_shaping_response(user_response, wireless_settings, use_mock=USE_MOCK)
+
+
         else:
             return [{"type": "text", "text": f"Unknown tool: {name}"}]
             
