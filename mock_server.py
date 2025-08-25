@@ -153,7 +153,7 @@ async def get_organization_uplinks_statuses():
 
 @app.post("/networks/{network_id}/appliance/settings")
 async def create_network_appliance_settings(network_id: str, settings: ApplianceSettings):
-    """Mock endpoint for creating new network appliance settings"""
+    """Mock endpoint for creating/updating network appliance settings"""
     try:
         logger.info(f"POST /networks/{network_id}/appliance/settings")
         logger.info(f"Settings: {settings}")
@@ -166,31 +166,103 @@ async def create_network_appliance_settings(network_id: str, settings: Appliance
         if "appliance_settings" not in mock_data["networks"][network_id]:
             mock_data["networks"][network_id]["appliance_settings"] = []
         
-        # Create a new appliance settings entry
+        # Check if we should update existing settings or create new ones
+        # If there are existing settings, update the latest one
+        if len(mock_data["networks"][network_id]["appliance_settings"]) > 0:
+            # Update the latest entry
+            latest_entry = mock_data["networks"][network_id]["appliance_settings"][-1]
+            new_settings = settings.model_dump()
+            
+            updated_entry = {
+                **latest_entry,
+                **new_settings,
+                "updated_at": datetime.now().isoformat()
+            }
+            
+            # Replace the latest entry with the updated one
+            mock_data["networks"][network_id]["appliance_settings"][-1] = updated_entry
+            
+            # Save to JSON file
+            save_to_json_file("networks.json", mock_data["networks"])
+            
+            logger.info(f"Successfully updated appliance settings for network {network_id}")
+            
+            return {
+                "message": "Appliance settings updated successfully",
+                "networkId": network_id,
+                "timestamp": datetime.now().isoformat(),
+                "updated_entry": updated_entry,
+                "total_entries": len(mock_data["networks"][network_id]["appliance_settings"])
+            }
+        else:
+            # Create a new appliance settings entry
+            new_settings = settings.model_dump()
+            new_entry = {
+                "id": f"appliance_settings_{len(mock_data['networks'][network_id]['appliance_settings']) + 1}",
+                "created_at": datetime.now().isoformat(),
+                **new_settings
+            }
+            
+            # Add the new entry to the list
+            mock_data["networks"][network_id]["appliance_settings"].append(new_entry)
+            
+            # Save to JSON file
+            save_to_json_file("networks.json", mock_data["networks"])
+            
+            logger.info(f"Successfully added new appliance settings for network {network_id}")
+            
+            return {
+                "message": "Appliance settings created successfully",
+                "networkId": network_id,
+                "timestamp": datetime.now().isoformat(),
+                "new_entry": new_entry,
+                "total_entries": len(mock_data["networks"][network_id]["appliance_settings"])
+            }
+    except Exception as e:
+        logger.error(f"Error adding appliance settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/networks/{network_id}/appliance/settings")
+async def update_network_appliance_settings(network_id: str, settings: ApplianceSettings):
+    """Mock endpoint for updating existing network appliance settings"""
+    try:
+        logger.info(f"PUT /networks/{network_id}/appliance/settings")
+        logger.info(f"Settings: {settings}")
+        
+        # Check if network and appliance settings exist
+        if (network_id not in mock_data["networks"] or 
+            "appliance_settings" not in mock_data["networks"][network_id] or
+            len(mock_data["networks"][network_id]["appliance_settings"]) == 0):
+            raise HTTPException(status_code=404, detail=f"No appliance settings found for network {network_id}")
+        
+        # Get the latest appliance settings entry
+        latest_entry = mock_data["networks"][network_id]["appliance_settings"][-1]
+        
+        # Update the existing entry with new settings
         new_settings = settings.model_dump()
-        new_entry = {
-            "id": f"appliance_settings_{len(mock_data['networks'][network_id]['appliance_settings']) + 1}",
-            "created_at": datetime.now().isoformat(),
-            **new_settings
+        updated_entry = {
+            **latest_entry,
+            **new_settings,
+            "updated_at": datetime.now().isoformat()
         }
         
-        # Add the new entry to the list
-        mock_data["networks"][network_id]["appliance_settings"].append(new_entry)
+        # Replace the latest entry with the updated one
+        mock_data["networks"][network_id]["appliance_settings"][-1] = updated_entry
         
         # Save to JSON file
         save_to_json_file("networks.json", mock_data["networks"])
         
-        logger.info(f"Successfully added new appliance settings for network {network_id}")
+        logger.info(f"Successfully updated appliance settings for network {network_id}")
         
         return {
-            "message": "Appliance settings created successfully",
+            "message": "Appliance settings updated successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "new_entry": new_entry,
+            "updated_entry": updated_entry,
             "total_entries": len(mock_data["networks"][network_id]["appliance_settings"])
         }
     except Exception as e:
-        logger.error(f"Error adding appliance settings: {e}")
+        logger.error(f"Error updating appliance settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/networks/{network_id}/wireless/settings")
@@ -233,6 +305,58 @@ async def create_network_wireless_settings(network_id: str, settings: WirelessSe
         }
     except Exception as e:
         logger.error(f"Error creating wireless settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/networks/{network_id}/settings")
+async def get_network_settings(network_id: str):
+    """Mock endpoint for getting network settings"""
+    logger.info(f"GET /networks/{network_id}/settings")
+    
+    try:
+        # Check if network exists
+        if network_id not in mock_data["networks"]:
+            raise HTTPException(status_code=404, detail=f"Network {network_id} not found")
+        
+        # Get network settings from mock data
+        network_settings = mock_data["networks"][network_id].get("network_settings", {})
+        
+        return {
+            "message": "Network settings retrieved successfully",
+            "networkId": network_id,
+            "timestamp": datetime.now().isoformat(),
+            "data": network_settings
+        }
+    except Exception as e:
+        logger.error(f"Error getting network settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/networks/{network_id}/settings")
+async def update_network_settings(network_id: str, settings: dict):
+    """Mock endpoint for updating network settings"""
+    logger.info(f"PUT /networks/{network_id}/settings")
+    logger.info(f"Settings: {settings}")
+    
+    try:
+        # Check if network exists
+        if network_id not in mock_data["networks"]:
+            raise HTTPException(status_code=404, detail=f"Network {network_id} not found")
+        
+        # Store the settings in mock data
+        mock_data["networks"][network_id]["network_settings"] = settings
+        
+        # Save to JSON file
+        save_to_json_file("networks.json", mock_data["networks"])
+        
+        return {
+            "message": "Network settings updated successfully",
+            "networkId": network_id,
+            "timestamp": datetime.now().isoformat(),
+            "settings": settings
+        }
+    except Exception as e:
+        logger.error(f"Error updating network settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -445,6 +569,19 @@ async def get_organization_uplinks_statuses(organization_id: str):
     # Return empty list if no data found
     return []
 
+@app.get("/networks/{network_id}/groupPolicies")
+async def get_network_group_policies(network_id: str):
+    """Mock endpoint for getting network group policies"""
+    logger.info(f"GET /networks/{network_id}/groupPolicies")
+    
+    # Load data from common JSON file
+    common_data = load_from_json_file("common_data.json")
+    if common_data and "group_policies" in common_data:
+        return common_data["group_policies"]
+    
+    # Return empty list if no data found
+    return []
+
 @app.get("/organizations/{organization_id}/appliance/vpn/stats")
 async def get_organization_vpn_stats(organization_id: str):
     """Mock endpoint for getting organization VPN stats"""
@@ -457,6 +594,252 @@ async def get_organization_vpn_stats(organization_id: str):
     
     # Return empty list if no data found
     return []
+
+@app.get("/organizations/{organization_id}/networks")
+async def get_organization_networks(organization_id: str):
+    """Mock endpoint for getting organization networks"""
+    logger.info(f"GET /organizations/{organization_id}/networks")
+    
+    # Load networks data from JSON file
+    networks_data = load_from_json_file("networks.json")
+    
+    # Convert the networks data structure to a list format
+    networks_list = []
+    for network_id, network_info in networks_data.items():
+        network_entry = {
+            "id": network_id,
+            "organizationId": organization_id,
+            "name": network_info.get("name", f"Network {network_id}"),
+            "productTypes": network_info.get("productTypes", ["appliance", "camera", "cellularGateway", "sensor", "switch", "wireless"]),
+            "timeZone": network_info.get("timeZone", "America/Los_Angeles"),
+            "tags": network_info.get("tags", []),
+            "enrollmentString": network_info.get("enrollmentString", None),
+            "notes": network_info.get("notes", ""),
+            "isBoundToConfigTemplate": network_info.get("isBoundToConfigTemplate", False),
+            "isVirtual": network_info.get("isVirtual", False)
+        }
+        networks_list.append(network_entry)
+    
+    logger.info(f"Returning {len(networks_list)} networks for organization {organization_id}")
+    return networks_list
+
+@app.post("/organizations/{organization_id}/networks")
+async def create_organization_network(organization_id: str, request: Request):
+    """Mock endpoint for creating organization networks"""
+    logger.info(f"POST /organizations/{organization_id}/networks")
+    
+    try:
+        # Get request body
+        network_data = await request.json()
+        logger.info(f"Creating network with data: {network_data}")
+        
+        # Generate a unique network ID
+        import uuid
+        network_id = f"L_{uuid.uuid4().hex[:16]}"
+        
+        # Add the network ID and organization ID to the data
+        network_data["id"] = network_id
+        network_data["organizationId"] = organization_id
+        
+        # Load existing networks data
+        networks_data = load_from_json_file("networks.json")
+        
+        # Add the new network
+        networks_data[network_id] = network_data
+        
+        # Save updated data back to file
+        save_to_json_file("networks.json", networks_data)
+        
+        logger.info(f"Successfully created new network {network_id} for organization {organization_id}")
+        return network_data
+        
+    except Exception as e:
+        logger.error(f"Error creating organization network: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Connectivity Monitoring Destinations
+@app.get("/networks/{network_id}/appliance/connectivityMonitoringDestinations")
+async def get_connectivity_monitoring_destinations(network_id: str):
+    """Get connectivity monitoring destinations for a network"""
+    logger.info(f"Getting connectivity monitoring destinations for network {network_id}")
+    
+    # Load networks data
+    networks_data = load_from_json_file("networks.json")
+    
+    if network_id in networks_data:
+        connectivity_data = networks_data[network_id].get("connectivity_monitoring", {
+            "destinations": ["8.8.8.8", "1.1.1.1"]
+        })
+        return connectivity_data
+    else:
+        raise HTTPException(status_code=404, detail="Network not found")
+
+@app.put("/networks/{network_id}/appliance/connectivityMonitoringDestinations")
+async def update_connectivity_monitoring_destinations(network_id: str, request: Request):
+    """Update connectivity monitoring destinations for a network"""
+    logger.info(f"Updating connectivity monitoring destinations for network {network_id}")
+    
+    try:
+        monitoring_data = await request.json()
+        logger.info(f"Monitoring data: {monitoring_data}")
+        
+        # Load networks data
+        networks_data = load_from_json_file("networks.json")
+        
+        if network_id in networks_data:
+            # Update the connectivity monitoring data
+            networks_data[network_id]["connectivity_monitoring"] = monitoring_data
+            
+            # Save back to file
+            save_to_json_file("networks.json", networks_data)
+            
+            logger.info(f"Updated connectivity monitoring for network {network_id}")
+            return monitoring_data
+        else:
+            raise HTTPException(status_code=404, detail="Network not found")
+    except Exception as e:
+        logger.error(f"Error updating connectivity monitoring: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Access Control Lists
+@app.get("/networks/{network_id}/switch/accessControlLists")
+async def get_network_access_control_lists(network_id: str):
+    """Get network access control lists"""
+    logger.info(f"Getting access control lists for network {network_id}")
+    
+    # Load networks data
+    networks_data = load_from_json_file("networks.json")
+    
+    if network_id in networks_data:
+        acl_data = networks_data[network_id].get("access_control_lists", {
+            "rules": [
+                {
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "srcPort": "any",
+                    "srcCidr": "any",
+                    "destPort": "any",
+                    "destCidr": "any",
+                    "syslogEnabled": False
+                }
+            ]
+        })
+        return acl_data
+    else:
+        raise HTTPException(status_code=404, detail="Network not found")
+
+@app.put("/networks/{network_id}/switch/accessControlLists")
+async def update_network_access_control_lists(network_id: str, request: Request):
+    """Update network access control lists"""
+    logger.info(f"Updating access control lists for network {network_id}")
+    
+    try:
+        acl_data = await request.json()
+        logger.info(f"ACL data: {acl_data}")
+        
+        # Load networks data
+        networks_data = load_from_json_file("networks.json")
+        
+        if network_id in networks_data:
+            # Update the ACL data
+            networks_data[network_id]["access_control_lists"] = acl_data
+            
+            # Save back to file
+            save_to_json_file("networks.json", networks_data)
+            
+            logger.info(f"Updated access control lists for network {network_id}")
+            return acl_data
+        else:
+            raise HTTPException(status_code=404, detail="Network not found")
+    except Exception as e:
+        logger.error(f"Error updating access control lists: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Login Security
+@app.get("/organizations/{organization_id}/loginSecurity")
+async def get_organization_login_security(organization_id: str):
+    """Get organization login security settings"""
+    logger.info(f"Getting login security settings for organization {organization_id}")
+    
+    # Return login security data (stored at organization level)
+    login_security_data = {
+        "enforcePasswordExpiration": False,
+        "passwordExpirationDays": 365,
+        "enforceDifferentPasswords": False,
+        "numDifferentPasswords": 5,
+        "enforceStrongPasswords": False,
+        "enforceAccountLockout": False,
+        "accountLockoutAttempts": 10,
+        "enforceIdleTimeout": False,
+        "idleTimeoutMinutes": 60,
+        "enforceTwoFactorAuth": False,
+        "enforceLoginIpRanges": False,
+        "loginIpRanges": []
+    }
+    
+    return login_security_data
+
+@app.put("/organizations/{organization_id}/loginSecurity")
+async def update_organization_login_security(organization_id: str, request: Request):
+    """Update organization login security settings"""
+    logger.info(f"Updating login security settings for organization {organization_id}")
+    
+    try:
+        security_data = await request.json()
+        logger.info(f"Security data: {security_data}")
+        
+        # For mock purposes, we'll just return the updated data
+        # In a real implementation, this would be stored in a database
+        logger.info(f"Updated login security for organization {organization_id}")
+        return security_data
+    except Exception as e:
+        logger.error(f"Error updating login security: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Security Intrusion
+@app.get("/networks/{network_id}/appliance/security/intrusion")
+async def get_network_security_intrusion(network_id: str):
+    """Get network security intrusion settings"""
+    logger.info(f"Getting security intrusion settings for network {network_id}")
+    
+    # Load networks data
+    networks_data = load_from_json_file("networks.json")
+    
+    if network_id in networks_data:
+        intrusion_data = networks_data[network_id].get("security_intrusion", {
+            "mode": "prevention",
+            "idsRulesets": "connectivity"
+        })
+        return intrusion_data
+    else:
+        raise HTTPException(status_code=404, detail="Network not found")
+
+@app.put("/networks/{network_id}/appliance/security/intrusion")
+async def update_network_security_intrusion(network_id: str, request: Request):
+    """Update network security intrusion settings"""
+    logger.info(f"Updating security intrusion settings for network {network_id}")
+    
+    try:
+        intrusion_data = await request.json()
+        logger.info(f"Intrusion data: {intrusion_data}")
+        
+        # Load networks data
+        networks_data = load_from_json_file("networks.json")
+        
+        if network_id in networks_data:
+            # Update the intrusion data
+            networks_data[network_id]["security_intrusion"] = intrusion_data
+            
+            # Save back to file
+            save_to_json_file("networks.json", networks_data)
+            
+            logger.info(f"Updated security intrusion for network {network_id}")
+            return intrusion_data
+        else:
+            raise HTTPException(status_code=404, detail="Network not found")
+    except Exception as e:
+        logger.error(f"Error updating security intrusion: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/mock/data")
 async def get_mock_data():
@@ -537,5 +920,5 @@ async def get_json_file_content(filename: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    logger.info("Starting Mock Meraki API Server on http://127.0.0.1:5000")
+    logger.info("Starting Mock Meraki API Server on http://127.0.0.5000")
     uvicorn.run(app, host="127.0.0.1", port=5000, log_level="info") 

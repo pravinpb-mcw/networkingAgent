@@ -18,33 +18,29 @@ class MerakiAPIClient:
     """Client for interacting with Cisco Meraki Dashboard API"""
     
     def __init__(self, api_key: str = None, base_url: str = None, use_mock: bool = False):
-        # If no API key provided, try to get it from environment
-        if api_key is None:
-            api_key = os.getenv("MERAKI_API_KEY")
-            if not api_key and not use_mock:
-                raise ValueError("MERAKI_API_KEY not found in environment or .env file")
-        
-        # If no base_url provided, get it from environment
-        if base_url is None:
-            if use_mock:
-                base_url = os.getenv("MOCK_BASE_URL", "http://127.0.0.1:5000")
-            else:
-                base_url = os.getenv("BASE_URL", "https://api.meraki.com/api/v1")
-        
-        self.api_key = api_key
-        self.base_url = base_url
+        # Keep constructor signature for backward compatibility, but support
+        # method-based routing (GET -> Meraki, POST/PUT/DELETE -> localhost mock)
+
+        # API key (may be None if only using mock for writes)
+        self.api_key = api_key or os.getenv("MERAKI_API_KEY")
+
+        # Base URLs for real Meraki and local mock
+        # Preserve original behavior if a single base_url was passed in
+        self.real_base_url = os.getenv("BASE_URL", "https://api.meraki.com/api/v1")
+        self.mock_base_url = os.getenv("MOCK_BASE_URL", "http://127.0.0.1:5000")
+        self.base_url = base_url or (self.mock_base_url if use_mock else self.real_base_url)
         self.use_mock = use_mock
-        
-        # Set headers based on whether we're using mock or real API
-        if use_mock:
-            self.headers = {
-                "Content-Type": "application/json"
-            }
-        else:
-            self.headers = {
-                "X-Cisco-Meraki-API-Key": api_key,
-                "Content-Type": "application/json"
-            }
+
+        # Headers for real vs mock
+        self.headers_real = {
+            "Content-Type": "application/json"
+        }
+        if self.api_key:
+            # Only add API key header when available
+            self.headers_real["X-Cisco-Meraki-API-Key"] = self.api_key
+        self.headers_mock = {
+            "Content-Type": "application/json"
+        }
         
         # Load other configuration from .env
         self.network_id = os.getenv("NETWORK_ID")
@@ -62,22 +58,47 @@ class MerakiAPIClient:
             logger.warning(f"Invalid TIMESPAN value '{timespan_str}', using default 86400")
     
     async def _make_request(self, endpoint: str, params: Optional[Dict] = None, method: str = "GET", data: Optional[Dict] = None) -> Dict[str, Any]:
-        """Make HTTP request to Meraki API or mock server with error handling"""
-        url = f"{self.base_url}{endpoint}"
-        
+        """Make HTTP request with method-based routing.
+
+        - GET -> real Meraki API (requires MERAKI_API_KEY)
+        - POST/PUT/DELETE -> localhost mock server
+        """
+        # Optional global overrides
+        force_mock = os.getenv("FORCE_MOCK_ALL", "false").lower() == "true"
+        force_real = os.getenv("FORCE_REAL_ALL", "false").lower() == "true"
+
+        if force_real:
+            base = self.real_base_url
+            headers = self.headers_real
+        elif force_mock:
+            base = self.mock_base_url
+            headers = self.headers_mock
+        else:
+            if method.upper() == "GET":
+                base = self.real_base_url
+                headers = self.headers_real
+                if not self.api_key:
+                    raise ValueError("MERAKI_API_KEY not found in environment or .env file for GET requests")
+            else:
+                base = self.mock_base_url
+                headers = self.headers_mock
+
+        url = f"{base}{endpoint}"
+
         async with httpx.AsyncClient() as client:
             try:
-                if method == "GET":
-                    response = await client.get(url, headers=self.headers, params=params or {})
-                elif method == "PUT":
-                    response = await client.put(url, headers=self.headers, json=data or {})
-                elif method == "POST":
-                    response = await client.post(url, headers=self.headers, json=data or {})
-                elif method == "DELETE":
-                    response = await client.delete(url, headers=self.headers)
+                method_upper = method.upper()
+                if method_upper == "GET":
+                    response = await client.get(url, headers=headers, params=params or {})
+                elif method_upper == "PUT":
+                    response = await client.put(url, headers=headers, json=data or {})
+                elif method_upper == "POST":
+                    response = await client.post(url, headers=headers, json=data or {})
+                elif method_upper == "DELETE":
+                    response = await client.delete(url, headers=headers)
                 else:
                     raise ValueError(f"Unsupported HTTP method: {method}")
-                
+
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
@@ -136,6 +157,13 @@ class MerakiAPIClient:
         params = {"productType": prod_type}
         return await self._make_request(f"/networks/{net_id}/events", params) 
 
+    async def get_network_settings(self, network_id: str = None) -> Dict[str, Any]:
+        """Get network-wide configuration settings"""
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        return await self._make_request(f"/networks/{net_id}/settings")
+
     async def get_organization_uplinks_statuses(
         self,
         organization_id: Optional[str] = None,
@@ -177,26 +205,6 @@ class MerakiAPIClient:
             data=settings_data
         )
 
-    async def update_network_appliance_settings(
-        self, 
-        network_id: str = None, 
-        settings_data: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
-        """Update network appliance settings
-        
-        POST /networks/{networkId}/appliance/settings
-        """
-        net_id = network_id or self.network_id
-        if not net_id:
-            raise ValueError("NETWORK_ID not found in .env file")
-        if not settings_data:
-            raise ValueError("settings_data is required")
-        
-        return await self._make_request(
-            f"/networks/{net_id}/appliance/settings",
-            method="POST",
-            data=settings_data
-        )
 
     async def create_network_wireless_settings(
         self, 
@@ -216,6 +224,27 @@ class MerakiAPIClient:
         return await self._make_request(
             f"/networks/{net_id}/wireless/settings",
             method="POST",
+            data=settings_data
+        )
+
+    async def update_network_settings(
+        self, 
+        network_id: str = None, 
+        settings_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update network-wide configuration settings
+        
+        PUT /networks/{networkId}/settings
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not settings_data:
+            raise ValueError("settings_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/settings",
+            method="PUT",
             data=settings_data
         )
 
@@ -282,4 +311,198 @@ class MerakiAPIClient:
         return await self._make_request(
             f"/networks/{net_id}/groupPolicies/{policy_id}",
             method="DELETE"
+        )
+
+    async def get_organization_networks(
+        self, 
+        organization_id: str = None
+    ) -> Dict[str, Any]:
+        """Get all networks in an organization
+        
+        GET /organizations/{organizationId}/networks
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/organizations/{org_id}/networks",
+            method="GET"
+        )
+
+    async def create_organization_network(
+        self, 
+        organization_id: str = None,
+        network_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Create a new network in an organization
+        
+        POST /organizations/{organizationId}/networks
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+        if not network_data:
+            raise ValueError("network_data is required")
+        
+        return await self._make_request(
+            f"/organizations/{org_id}/networks",
+            method="POST",
+            data=network_data
+        )
+
+    # Connectivity Monitoring
+    async def get_connectivity_monitoring_destinations(
+        self, 
+        network_id: str = None
+    ) -> Dict[str, Any]:
+        """Get connectivity monitoring destinations for a network
+        
+        GET /networks/{networkId}/appliance/connectivityMonitoringDestinations
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/connectivityMonitoringDestinations",
+            method="GET"
+        )
+
+    async def update_connectivity_monitoring_destinations(
+        self, 
+        network_id: str = None,
+        monitoring_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update connectivity monitoring destinations for a network
+        
+        PUT /networks/{networkId}/appliance/connectivityMonitoringDestinations
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not monitoring_data:
+            raise ValueError("monitoring_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/connectivityMonitoringDestinations",
+            method="PUT",
+            data=monitoring_data
+        )
+
+    # Access Control Lists
+    async def get_network_access_control_lists(
+        self, 
+        network_id: str = None
+    ) -> Dict[str, Any]:
+        """Get network access control lists
+        
+        GET /networks/{networkId}/switch/accessControlLists
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/switch/accessControlLists",
+            method="GET"
+        )
+
+    async def update_network_access_control_lists(
+        self, 
+        network_id: str = None,
+        acl_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update network access control lists
+        
+        PUT /networks/{networkId}/switch/accessControlLists
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not acl_data:
+            raise ValueError("acl_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/switch/accessControlLists",
+            method="PUT",
+            data=acl_data
+        )
+
+    # Login Security
+    async def get_organization_login_security(
+        self, 
+        organization_id: str = None
+    ) -> Dict[str, Any]:
+        """Get organization login security settings
+        
+        GET /organizations/{organizationId}/loginSecurity
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/organizations/{org_id}/loginSecurity",
+            method="GET"
+        )
+
+    async def update_organization_login_security(
+        self, 
+        organization_id: str = None,
+        security_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update organization login security settings
+        
+        PUT /organizations/{organizationId}/loginSecurity
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+        if not security_data:
+            raise ValueError("security_data is required")
+        
+        return await self._make_request(
+            f"/organizations/{org_id}/loginSecurity",
+            method="PUT",
+            data=security_data
+        )
+
+    # Security Intrusion
+    async def get_network_security_intrusion(
+        self, 
+        network_id: str = None
+    ) -> Dict[str, Any]:
+        """Get network security intrusion settings
+        
+        GET /networks/{id}/appliance/security/intrusion
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/security/intrusion",
+            method="GET"
+        )
+
+    async def update_network_security_intrusion(
+        self, 
+        network_id: str = None,
+        intrusion_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update network security intrusion settings
+        
+        PUT /networks/{id}/appliance/security/intrusion
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not intrusion_data:
+            raise ValueError("intrusion_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/security/intrusion",
+            method="PUT",
+            data=intrusion_data
         )

@@ -125,5 +125,189 @@
       "rxBytes": 2048,
       "numFlows": 100
     }
+  ],
+  "group_policies": [
+    {
+      "id": "policy_1",
+      "name": "Guest Policy",
+      "scheduling": {
+        "enabled": true,
+        "monday": {
+          "active": true,
+          "from": "09:00",
+          "to": "17:00"
+        },
+        "tuesday": {
+          "active": true,
+          "from": "09:00",
+          "to": "17:00"
+        },
+        "wednesday": {
+          "active": true,
+          "from": "09:00",
+          "to": "17:00"
+        },
+        "thursday": {
+          "active": true,
+          "from": "09:00",
+          "to": "17:00"
+        },
+        "friday": {
+          "active": true,
+          "from": "09:00",
+          "to": "17:00"
+        },
+        "saturday": {
+          "active": false,
+          "from": "00:00",
+          "to": "00:00"
+        },
+        "sunday": {
+          "active": false,
+          "from": "00:00",
+          "to": "00:00"
+        }
+      },
+      "bandwidth": {
+        "limitUp": 1000,
+        "limitDown": 10000,
+        "limitUpEnabled": true,
+        "limitDownEnabled": true
+      },
+      "firewallAndTrafficShaping": {
+        "settings": {
+          "trafficShapingEnabled": true,
+          "bandwidthLimits": {
+            "limitUp": 1000,
+            "limitDown": 10000
+          }
+        }
+      },
+      "contentFiltering": {
+        "enabled": true,
+        "allowedUrlPatterns": {
+          "settings": "blocked",
+          "patterns": []
+        },
+        "blockedUrlPatterns": {
+          "settings": "blocked",
+          "patterns": ["*.facebook.com", "*.youtube.com"]
+        }
+      },
+      "splashAuthSettings": "bypass",
+      "vlanTagging": {
+        "settings": "normal",
+        "vlanId": 100
+      },
+      "bonjourForwarding": {
+        "settings": "custom",
+        "rules": []
+      }
+    },
+    {
+      "id": "policy_2",
+      "name": "Employee Policy",
+      "scheduling": {
+        "enabled": false
+      },
+      "bandwidth": {
+        "limitUp": 5000,
+        "limitDown": 50000,
+        "limitUpEnabled": true,
+        "limitDownEnabled": true
+      },
+      "firewallAndTrafficShaping": {
+        "settings": {
+          "trafficShapingEnabled": false
+        }
+      },
+      "contentFiltering": {
+        "enabled": false
+      },
+      "splashAuthSettings": "bypass",
+      "vlanTagging": {
+        "settings": "normal",
+        "vlanId": 200
+      },
+      "bonjourForwarding": {
+        "settings": "default"
+      }
+    },
+    {
+      "id": "policy_3",
+      "name": "IoT Policy",
+      "scheduling": {
+        "enabled": true,
+        "monday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "tuesday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "wednesday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "thursday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "friday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "saturday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        },
+        "sunday": {
+          "active": true,
+          "from": "00:00",
+          "to": "23:59"
+        }
+      },
+      "bandwidth": {
+        "limitUp": 500,
+        "limitDown": 2000,
+        "limitUpEnabled": true,
+        "limitDownEnabled": true
+      },
+      "firewallAndTrafficShaping": {
+        "settings": {
+          "trafficShapingEnabled": true,
+          "bandwidthLimits": {
+            "limitUp": 500,
+            "limitDown": 2000
+          }
+        }
+      },
+      "contentFiltering": {
+        "enabled": true,
+        "allowedUrlPatterns": {
+          "settings": "allowed",
+          "patterns": ["*.iot.example.com"]
+        },
+        "blockedUrlPatterns": {
+          "settings": "blocked",
+          "patterns": ["*"]
+        }
+      },
+      "splashAuthSettings": "bypass",
+      "vlanTagging": {
+        "settings": "normal",
+        "vlanId": 300
+      },
+      "bonjourForwarding": {
+        "settings": "default"
+      }
+    }
   ]
 }

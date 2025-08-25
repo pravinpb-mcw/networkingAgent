@@ -47,11 +47,11 @@ try:
     from server.get_network_traffic import get_network_traffic
     from server.get_network_events import get_network_events
     from server.get_network_clients import get_network_clients
+    from server.get_network_group_policies import get_network_group_policies
     from server.get_organizations import get_organizations
     
     # Import configuration tools
-    from server.update_network_wireless_settings import update_network_wireless_settings
-    from server.update_network_appliance_settings import update_network_appliance_settings
+    from server.create_network_wireless_settings import create_network_wireless_settings
 
     
     IMPORTS_SUCCESS = True
@@ -259,6 +259,8 @@ class NetworkDashboard:
                 response = await get_network_traffic()
             elif tool_name == 'get_network_events':
                 response = await get_network_events()
+            elif tool_name == 'get_network_group_policies':
+                response = await get_network_group_policies()
             elif tool_name == 'get_network_clients':
                 response = await get_network_clients()
             elif tool_name == 'get_organizations':
@@ -1007,35 +1009,35 @@ def main():
                  
                  with st.spinner("Updating wireless settings..."):
                      try:
-                         # Import the function
-                         from server.update_network_wireless_settings import update_network_wireless_settings
-                         
-                         # Prepare settings data
-                         settings_data = {
-                             "enabled": enabled,
-                             "ssid": ssid,
-                             "bandwidth": {
-                                 "limitUp": limit_up,
-                                 "limitDown": limit_down
-                             }
-                         }
-                         
-                         # Call the function
-                         result = asyncio.run(update_network_wireless_settings(settings_data, use_mock=True))
-                         
-                         if result and len(result) > 0:
-                             st.success("✅ Wireless settings updated successfully!")
-                             st.json(settings_data)
+                                                   # Import the function
+                          from server.create_network_wireless_settings import create_network_wireless_settings
+                          
+                          # Prepare settings data
+                          settings_data = {
+                              "enabled": enabled,
+                              "ssid": ssid,
+                              "bandwidth": {
+                                  "limitUp": limit_up,
+                                  "limitDown": limit_down
+                              }
+                          }
+                          
+                          # Call the function
+                          result = asyncio.run(create_network_wireless_settings(settings_data, use_mock=True))
+                          
+                          if result and len(result) > 0:
+                              st.success("✅ Wireless settings created successfully!")
+                              st.json(settings_data)
                              
-                             # Show the result
-                             with st.expander("View Update Result"):
+                                                           # Show the result
+                              with st.expander("View Create Result"):
                                  st.json(result[0]['text'])
-                         else:
-                             st.error("Failed to update wireless settings")
-                             
+                          else:
+                              st.error("Failed to create wireless settings")
+                              
                      except Exception as e:
-                         st.error(f"Error updating wireless settings: {e}")
-                         st.exception(e)
+                          st.error(f"Error creating wireless settings: {e}")
+                          st.exception(e)
          
          elif config_tool == "create_network_appliance_settings":
              st.subheader("⚙️ Network Appliance Settings")
@@ -1072,7 +1074,7 @@ def main():
                  with st.spinner("Updating appliance settings..."):
                      try:
                          # Import the function
-                         from server.update_network_appliance_settings import update_network_appliance_settings
+                         from server.create_network_appliance_settings import create_network_appliance_settings
                          
                          # Prepare settings data
                          settings_data = {
@@ -1087,20 +1089,20 @@ def main():
                          }
                          
                          # Call the function
-                         result = asyncio.run(update_network_appliance_settings(settings_data, use_mock=True))
+                         result = asyncio.run(create_network_appliance_settings(settings_data, use_mock=True))
                          
                          if result and len(result) > 0:
-                             st.success("✅ Appliance settings updated successfully!")
+                             st.success("✅ Appliance settings created successfully!")
                              st.json(settings_data)
                              
                              # Show the result
-                             with st.expander("View Update Result"):
+                             with st.expander("View Create Result"):
                                  st.json(result[0]['text'])
                          else:
-                             st.error("Failed to update appliance settings")
+                             st.error("Failed to create appliance settings")
                              
                      except Exception as e:
-                         st.error(f"Error updating appliance settings: {e}")
+                         st.error(f"Error creating appliance settings: {e}")
                          st.exception(e)
           
              elif config_tool == "create_network_group_policy":

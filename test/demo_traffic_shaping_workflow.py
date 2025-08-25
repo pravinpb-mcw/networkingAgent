@@ -13,7 +13,7 @@ import os
 # Add the parent directory to the path so we can import from server
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from server.update_network_wireless_settings import update_network_wireless_settings, handle_traffic_shaping_response
+from server.create_network_wireless_settings import create_network_wireless_settings
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,7 @@ async def demonstrate_complete_workflow():
     wireless_settings_input = "Enable wireless with SSID MyNetwork and 1000 Mbps bandwidth"
     
     print("\n🔄 **Processing wireless settings input...**")
-    result = await update_network_wireless_settings(wireless_settings_input, use_mock=True)
+    result = await create_network_wireless_settings(wireless_settings_input, use_mock=True)
     
     print("\n📤 **Tool Response:**")
     print(result[0]['text'])

@@ -1,6 +1,6 @@
 """
-Update Network Wireless Settings Tool
-Updates wireless settings for a specific network directly
+Create Network Wireless Settings Tool
+Creates wireless settings for a specific network directly
 """
 
 import json
@@ -11,11 +11,11 @@ from typing import List, Dict, Any, Union
 
 from meraki_client import MerakiAPIClient
 
-logger = logging.getLogger("update-network-wireless-settings-tool")
+logger = logging.getLogger("create-network-wireless-settings-tool")
 
-async def update_network_wireless_settings(settings_data: Union[Dict[str, Any], str], use_mock: bool = False) -> List[Dict[str, Any]]:
+async def create_network_wireless_settings(settings_data: Union[Dict[str, Any], str], use_mock: bool = False) -> List[Dict[str, Any]]:
     """
-    Update network wireless settings for your configured network.
+    Create network wireless settings for your configured network.
     Uses NETWORK_ID from .env file.
     
     This function directly applies wireless settings without complex workflows.
@@ -44,19 +44,19 @@ async def update_network_wireless_settings(settings_data: Union[Dict[str, Any], 
         
         # Initialize response tracking
         response_parts = []
-        response_parts.append("📶 **WIRELESS NETWORK SETTINGS UPDATE**")
+        response_parts.append("📶 **WIRELESS NETWORK SETTINGS CREATION**")
         response_parts.append("=" * 50)
         response_parts.append(f"📝 **Settings to Apply:** {json.dumps(settings_data, indent=2)}")
         response_parts.append("")
         
         # Apply wireless settings
-        logger.info("Applying wireless settings...")
+        logger.info("Creating wireless settings...")
         try:
             wireless_result = await client.create_network_wireless_settings(settings_data=settings_data)
             
-            response_parts.append("✅ **WIRELESS SETTINGS APPLIED SUCCESSFULLY**")
+            response_parts.append("✅ **WIRELESS SETTINGS CREATED SUCCESSFULLY**")
             response_parts.append("")
-            response_parts.append("📋 **Applied Settings:**")
+            response_parts.append("📋 **Created Settings:**")
             
             # Display applied settings
             if settings_data.get("enabled") is not None:
@@ -75,11 +75,11 @@ async def update_network_wireless_settings(settings_data: Union[Dict[str, Any], 
             
             response_parts.append("")
             response_parts.append("🎉 **OPERATION COMPLETED SUCCESSFULLY!**")
-            response_parts.append("• Wireless network configuration updated")
+            response_parts.append("• Wireless network configuration created")
             
         except Exception as e:
-            logger.error(f"Failed to apply wireless settings: {e}")
-            response_parts.append(f"❌ **ERROR APPLYING WIRELESS SETTINGS:** {str(e)}")
+            logger.error(f"Failed to create wireless settings: {e}")
+            response_parts.append(f"❌ **ERROR CREATING WIRELESS SETTINGS:** {str(e)}")
             response_parts.append("")
             response_parts.append("🔧 **Recommendations:**")
             response_parts.append("   • Check network connectivity")
@@ -92,9 +92,8 @@ async def update_network_wireless_settings(settings_data: Union[Dict[str, Any], 
         return [{"type": "text", "text": "\n".join(response_parts)}]
         
     except Exception as e:
-        logger.error(f"Error in update_network_wireless_settings: {e}")
+        logger.error(f"Error in create_network_wireless_settings: {e}")
         return [{
             "type": "text",
-            "text": f"❌ **WIRELESS SETTINGS UPDATE FAILED**\n\nError: {str(e)}\n\nPlease check your settings and try again."
+            "text": f"❌ **WIRELESS SETTINGS CREATION FAILED**\n\nError: {str(e)}\n\nPlease check your settings and try again."
         }]
-

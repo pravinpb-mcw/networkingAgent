@@ -1,68 +1,87 @@
+#!/usr/bin/env python3
 """
-Configuration file for the Networking Agent
-Set up environment variables and configuration settings
+Configuration management for the Network Agent
 """
 
 import os
+import logging
+from pathlib import Path
+from typing import Dict, Any, Optional
+from dotenv import load_dotenv
 
-# Set default environment variables if not already set
-def setup_environment():
-    """Setup environment variables for the networking agent"""
-    
-    # Meraki API Configuration
-    if not os.getenv("MERAKI_API_KEY"):
-        os.environ["MERAKI_API_KEY"] = "demo_api_key_for_mock_mode"
-    
-    if not os.getenv("NETWORK_ID"):
-        os.environ["NETWORK_ID"] = "main_network"
-    
-    if not os.getenv("ORGANIZATION_ID"):
-        os.environ["ORGANIZATION_ID"] = "demo_org_id"
-    
-    # Gemini API Configuration
-    if not os.getenv("GEMINI_API_KEY"):
-        os.environ["GEMINI_API_KEY"] = "AIzaSyB_1234567890abcdefghijklmnopqrstuvwxyz"  # Demo key for testing
-    
-    # Server Configuration
-    if not os.getenv("USE_MOCK"):
-        os.environ["USE_MOCK"] = "true"
-    
-    if not os.getenv("BASE_URL"):
-        os.environ["BASE_URL"] = "http://127.0.0.1:5000"
-    
-    if not os.getenv("TIMESPAN"):
-        os.environ["TIMESPAN"] = "7200"
-    
-    if not os.getenv("PRODUCT_TYPE"):
-        os.environ["PRODUCT_TYPE"] = "appliance"
-    
-    # MCP Configuration
-    if not os.getenv("MCP_USE_ANONYMIZED_TELEMETRY"):
-        os.environ["MCP_USE_ANONYMIZED_TELEMETRY"] = "false"
+logger = logging.getLogger("config")
 
-# Configuration for mock mode
-MOCK_CONFIG = {
-    "api_key": "demo_api_key_for_mock_mode",
-    "network_id": "main_network",
-    "organization_id": "demo_org_id",
-    "base_url": "http://127.0.0.1:5000",
-    "use_mock": True
-}
+class Config:
+    """Configuration manager for the Network Agent"""
+    
+    def __init__(self, env_file: Optional[str] = None):
+        """Initialize configuration"""
+        self.env_file = env_file or ".env"
+        self._load_environment()
+        self._validate_config()
+    
+    def _load_environment(self):
+        """Load environment variables from .env file"""
+        env_path = Path(self.env_file)
+        if env_path.exists():
+            load_dotenv(env_path)
+            logger.info(f"Loaded environment from {env_path}")
+        else:
+            logger.warning(f"Environment file {env_path} not found, using system environment")
+    
+    def _validate_config(self):
+        """Validate required configuration"""
+        required_vars = [
+            "MERAKI_API_KEY",
+            "NETWORK_ID", 
+            "ORGANIZATION_ID"
+        ]
+        
+        missing_vars = []
+        for var in required_vars:
+            if not os.getenv(var):
+                missing_vars.append(var)
+        
+        if missing_vars:
+            logger.warning(f"Missing required environment variables: {missing_vars}")
+    
+    @property
+    def meraki_config(self) -> Dict[str, Any]:
+        """Get Meraki API configuration"""
+        return {
+            "api_key": os.getenv("MERAKI_API_KEY"),
+            "base_url": os.getenv("BASE_URL", "https://api.meraki.com/api/v1"),
+            "network_id": os.getenv("NETWORK_ID"),
+            "organization_id": os.getenv("ORGANIZATION_ID"),
+            "serial": os.getenv("SERIAL"),
+            "ip": os.getenv("IP"),
+            "product_type": os.getenv("PRODUCT_TYPE", "appliance"),
+            "timespan": int(os.getenv("TIMESPAN", "86400"))
+        }
+    
+    @property
+    def llm_config(self) -> Dict[str, Any]:
+        """Get LLM configuration"""
+        return {
+            "gemini_api_key": os.getenv("GEMINI_API_KEY"),
+            "model": os.getenv("LLM_MODEL", "gemini-2.5-flash"),
+            "temperature": float(os.getenv("LLM_TEMPERATURE", "0.3")),
+            "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "1024"))
+        }
+    
+    @property
+    def server_config(self) -> Dict[str, Any]:
+        """Get server configuration"""
+        return {
+            "use_mock": os.getenv("USE_MOCK", "false").lower() == "true",
+            "mock_base_url": os.getenv("MOCK_BASE_URL", "http://127.0.0.1:5000"),
+            "force_mock_all": os.getenv("FORCE_MOCK_ALL", "false").lower() == "true",
+            "force_real_all": os.getenv("FORCE_REAL_ALL", "false").lower() == "true"
+        }
 
-# Configuration for real API mode
-REAL_CONFIG = {
-    "api_key": os.getenv("MERAKI_API_KEY", ""),
-    "network_id": os.getenv("NETWORK_ID", ""),
-    "organization_id": os.getenv("ORGANIZATION_ID", ""),
-    "base_url": os.getenv("BASE_URL", "https://api.meraki.com/api/v1"),
-    "use_mock": False
-}
+def setup_environment(env_file: Optional[str] = None) -> Config:
+    """Setup and return configuration"""
+    return Config(env_file)
 
-# Get current configuration
-def get_config():
-    """Get current configuration based on USE_MOCK setting"""
-    use_mock = os.getenv("USE_MOCK", "true").lower() == "true"
-    return MOCK_CONFIG if use_mock else REAL_CONFIG
-
-# Initialize environment when module is imported
-setup_environment()
+# Global configuration instance
+config = setup_environment()

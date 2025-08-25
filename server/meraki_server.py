@@ -23,14 +23,14 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import configuration
-try:
-    from config import setup_environment
-    setup_environment()
-except ImportError:
-    # If config.py is not available, set basic defaults
-    os.environ.setdefault("USE_MOCK", "true")
-    os.environ.setdefault("BASE_URL", "http://127.0.0.1:5000")
+# # Import configuration
+# try:
+#     from config import setup_environment
+#     setup_environment()
+# except ImportError:
+#     # If config.py is not available, set basic defaults
+#     os.environ.setdefault("USE_MOCK", "true")
+#     os.environ.setdefault("BASE_URL", "http://127.0.0.1:5000")
 
 from meraki_client import MerakiAPIClient
 from get_network_clients import get_network_clients
@@ -38,9 +38,22 @@ from get_network_traffic import get_network_traffic
 from get_device_loss_and_latency_history import get_device_loss_and_latency_history
 from get_network_vpn_stats import get_organization_vpn_stats
 from get_network_events import get_network_events
+from get_network_settings import get_network_settings
+from update_network_settings import update_network_settings
 from get_organization_uplinks_statuses import get_organization_uplinks_statuses
-from update_network_wireless_settings import update_network_wireless_settings
+from get_network_group_policies import get_network_group_policies
+from create_network_wireless_settings import create_network_wireless_settings
 from update_network_group_policy import update_network_group_policy
+from get_organization_networks import get_organization_networks
+from create_organization_network import create_organization_network
+from get_connectivity_monitoring import get_connectivity_monitoring_destinations
+from get_access_control_lists import get_network_access_control_lists
+from get_login_security import get_organization_login_security
+from get_security_intrusion import get_network_security_intrusion
+from update_connectivity_monitoring import update_connectivity_monitoring_destinations
+from update_access_control_lists import update_network_access_control_lists
+from update_login_security import update_organization_login_security
+from update_security_intrusion import update_network_security_intrusion
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -108,8 +121,40 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
         Tool(
+            name="get_network_settings",
+            description="Get network-wide configuration settings. Returns: appliance settings, wireless settings, and other network-wide configurations.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        ),
+        Tool(
+            name="update_network_settings",
+            description="Create network-wide configuration settings. Just tell me what you want in simple text. Example: 'Enable local status page and secure port' or 'Configure named VLANs and webhooks'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable local status page and secure port', I will create: {'localStatusPage': {'enabled': True}, 'securePort': {'enabled': True}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. This tool creates comprehensive network-wide settings including local status page, secure port, named VLANs, webhooks, and other configurations.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "settings_data": {
+                        "type": "string",
+                        "description": "Network settings to apply (natural language or JSON)"
+                    }
+                },
+                "required": ["settings_data"]
+            }
+        ),
+        Tool(
             name="get_organization_uplinks_statuses",
             description="Get device uplink status. Returns: uplink status, failover info, interface details.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_network_group_policies",
+            description="Get network group policies. Returns: policy details, bandwidth limits, content filtering, scheduling settings.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -124,7 +169,7 @@ async def handle_list_tools() -> List[Tool]:
                 "properties": {
                     "settings_data": {
                         "type": "string",
-                        "description": "JSON string containing the appliance settings to update (e.g., DHCP, VLAN)."
+                        "description": "JSON string containing the appliance settings to create (e.g., DHCP, VLAN)."
                     }
                 },
                 "required": ["settings_data"]
@@ -138,36 +183,13 @@ async def handle_list_tools() -> List[Tool]:
                 "properties": {
                     "settings_data": {
                         "type": "string",
-                        "description": "JSON string containing the appliance settings to update (e.g., DHCP, VLAN)."
+                        "description": "JSON string containing the wireless settings to create (e.g., SSID, bandwidth)."
                     }
                 },
                 "required": ["settings_data"]
             }
         ),
 
-        Tool(
-            name="continue_wireless_update_after_policy",
-            description="Continue wireless settings update after group policy has been completed. This tool applies the wireless settings that were collected earlier. Use this after you have completed the group policy update to finish the wireless configuration.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "wireless_settings": {
-                        "oneOf": [
-                            {
-                                "type": "object",
-                                "description": "Dictionary containing the wireless settings to apply"
-                            },
-                            {
-                                "type": "string",
-                                "description": "JSON string containing the wireless settings to apply"
-                            }
-                        ],
-                        "description": "Wireless settings data (can be dictionary or JSON string)"
-                    }
-                },
-                "required": ["wireless_settings"]
-            }
-        ),
 
         Tool(
             name="update_network_group_policy",
@@ -190,9 +212,221 @@ async def handle_list_tools() -> List[Tool]:
                 "required": ["policy_id", "policy_data"]
             }
         ),
-       
-    
-
+        Tool(
+            name="get_organization_networks",
+            description="Get all networks in an organization. Returns: network list with IDs, names, product types, and configuration details.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "organization_id": {
+                        "type": "string",
+                        "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="create_organization_network",
+            description="Create a new network in an organization. Just tell me what you want in simple text. Example: 'Create a network named MCW San Jose with wireless and appliance products' or 'Add a new network for testing with cameras and sensors'. I'll automatically convert your text to the right format. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_data": {
+                        "oneOf": [
+                            {"type": "object"},
+                            {"type": "string"}
+                        ],
+                        "description": "Network configuration data (can be dictionary or natural language string)"
+                    },
+                    "organization_id": {
+                        "type": "string",
+                        "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["network_data"]
+            }
+        ),
+        Tool(
+            name="get_connectivity_monitoring_destinations",
+            description="Get connectivity monitoring destinations for a network. Returns: monitoring destinations, connectivity status, and configuration details.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_network_access_control_lists",
+            description="Get network access control lists for a network. Returns: ACL rules, access policies, and security configurations.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_organization_login_security",
+            description="Get organization login security settings. Returns: authentication policies, security rules, and access controls.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "organization_id": {
+                        "type": "string",
+                        "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_network_security_intrusion",
+            description="Get network security intrusion settings. Returns: intrusion detection rules, security policies, and threat prevention settings.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="update_connectivity_monitoring_destinations",
+            description="Update connectivity monitoring destinations for a network. Just tell me what you want in simple text. Example: 'Add Google DNS as monitoring destination' or 'Set monitoring to 8.8.8.8 and 1.1.1.1'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "monitoring_data": {
+                        "oneOf": [
+                            {"type": "object"},
+                            {"type": "string"}
+                        ],
+                        "description": "Connectivity monitoring configuration (can be dictionary or natural language string)"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["monitoring_data"]
+            }
+        ),
+        Tool(
+            name="update_network_access_control_lists",
+            description="Update network access control lists for a network. Just tell me what you want in simple text. Example: 'Allow access to port 80 and 443' or 'Block access to social media sites'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "acl_data": {
+                        "oneOf": [
+                            {"type": "object"},
+                            {"type": "string"}
+                        ],
+                        "description": "Access control list configuration (can be dictionary or natural language string)"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["acl_data"]
+            }
+        ),
+        Tool(
+            name="update_organization_login_security",
+            description="Update organization login security settings. Just tell me what you want in simple text. Example: 'Enable two-factor authentication' or 'Set password policy to require 12 characters'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "security_data": {
+                        "oneOf": [
+                            {"type": "object"},
+                            {"type": "string"}
+                        ],
+                        "description": "Login security configuration (can be dictionary or natural language string)"
+                    },
+                    "organization_id": {
+                        "type": "string",
+                        "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["security_data"]
+            }
+        ),
+        Tool(
+            name="update_network_security_intrusion",
+            description="Update network security intrusion settings. Just tell me what you want in simple text. Example: 'Enable intrusion detection' or 'Set security mode to prevention'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "intrusion_data": {
+                        "oneOf": [
+                            {"type": "object"},
+                            {"type": "string"}
+                        ],
+                        "description": "Security intrusion configuration (can be dictionary or natural language string)"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["intrusion_data"]
+            }
+        )
     ]
 
 @app.call_tool()
@@ -210,15 +444,22 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             return await get_organization_vpn_stats()
         elif name == "get_network_events":
             return await get_network_events()
+        elif name == "get_network_settings":
+            return await get_network_settings()
+        elif name == "update_network_settings":
+            settings_data = arguments.get("settings_data", {})
+            return await update_network_settings(settings_data, use_mock=USE_MOCK)
         elif name == "get_organization_uplinks_statuses":
             return await get_organization_uplinks_statuses()
+        elif name == "get_network_group_policies":
+            return await get_network_group_policies()
         elif name == "create_network_appliance_settings":
             settings_data = arguments.get("settings_data", {})
             from create_network_appliance_settings import create_network_appliance_settings
             return await create_network_appliance_settings(settings_data, use_mock=USE_MOCK)
         elif name == "create_network_wireless_settings":
             settings_data = arguments.get("settings_data", {})
-            return await update_network_wireless_settings(settings_data, use_mock=USE_MOCK)
+            return await create_network_wireless_settings(settings_data, use_mock=USE_MOCK)
 
 
 
@@ -226,6 +467,41 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             policy_id = arguments.get("policy_id", "")
             policy_data = arguments.get("policy_data", {})
             return await update_network_group_policy(policy_id, policy_data, use_mock=USE_MOCK)
+        elif name == "get_organization_networks":
+            organization_id = arguments.get("organization_id", None)
+            return await get_organization_networks(organization_id, use_mock=USE_MOCK)
+        elif name == "create_organization_network":
+            network_data = arguments.get("network_data", {})
+            organization_id = arguments.get("organization_id", None)
+            return await create_organization_network(network_data, organization_id, use_mock=USE_MOCK)
+        elif name == "get_connectivity_monitoring_destinations":
+            network_id = arguments.get("network_id", None)
+            return await get_connectivity_monitoring_destinations(network_id, use_mock=USE_MOCK)
+        elif name == "get_network_access_control_lists":
+            network_id = arguments.get("network_id", None)
+            return await get_network_access_control_lists(network_id, use_mock=USE_MOCK)
+        elif name == "get_organization_login_security":
+            organization_id = arguments.get("organization_id", None)
+            return await get_organization_login_security(organization_id, use_mock=USE_MOCK)
+        elif name == "get_network_security_intrusion":
+            network_id = arguments.get("network_id", None)
+            return await get_network_security_intrusion(network_id, use_mock=USE_MOCK)
+        elif name == "update_connectivity_monitoring_destinations":
+            monitoring_data = arguments.get("monitoring_data", {})
+            network_id = arguments.get("network_id", None)
+            return await update_connectivity_monitoring_destinations(monitoring_data, network_id, use_mock=USE_MOCK)
+        elif name == "update_network_access_control_lists":
+            acl_data = arguments.get("acl_data", {})
+            network_id = arguments.get("network_id", None)
+            return await update_network_access_control_lists(acl_data, network_id, use_mock=USE_MOCK)
+        elif name == "update_organization_login_security":
+            security_data = arguments.get("security_data", {})
+            organization_id = arguments.get("organization_id", None)
+            return await update_organization_login_security(security_data, organization_id, use_mock=USE_MOCK)
+        elif name == "update_network_security_intrusion":
+            intrusion_data = arguments.get("intrusion_data", {})
+            network_id = arguments.get("network_id", None)
+            return await update_network_security_intrusion(intrusion_data, network_id, use_mock=USE_MOCK)
 
 
         else:
