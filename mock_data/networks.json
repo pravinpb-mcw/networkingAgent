@@ -25,7 +25,7 @@
           "enabled": true
         },
         "created_at": "2025-08-20T14:57:08.483280",
-        "updated_at": "2025-08-25T09:51:17.738218"
+        "updated_at": "2025-08-26T14:20:07.507620"
       }
     ],
     "wireless_settings": [
@@ -117,11 +117,11 @@
       }
     },
     "network_settings": {
-      "localStatusPageEnabled": true,
-      "remoteStatusPageEnabled": false,
       "securePort": {
         "enabled": true
       },
+      "localStatusPageEnabled": true,
+      "remoteStatusPageEnabled": false,
       "localStatusPage": {
         "authentication": {
           "enabled": true,
@@ -141,24 +141,6 @@
     "access_control_lists": {
       "rules": [
         {
-          "policy": "allow",
-          "protocol": "tcp",
-          "srcPort": "any",
-          "srcCidr": "any",
-          "destPort": "80",
-          "destCidr": "any",
-          "syslogEnabled": false
-        },
-        {
-          "policy": "allow",
-          "protocol": "tcp",
-          "srcPort": "any",
-          "srcCidr": "any",
-          "destPort": "443",
-          "destCidr": "any",
-          "syslogEnabled": false
-        },
-        {
           "policy": "deny",
           "protocol": "tcp",
           "srcPort": "any",
@@ -171,7 +153,7 @@
       ]
     },
     "security_intrusion": {
-      "mode": "prevention",
+      "mode": "detection",
       "idsRulesets": "connectivity"
     }
   },

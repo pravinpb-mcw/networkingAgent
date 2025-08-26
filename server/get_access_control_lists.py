@@ -30,6 +30,8 @@ async def get_network_access_control_lists(network_id: str = None, use_mock: boo
         List of response objects with access control list information
     """
     try:
+        logger.info("I am working on get_network_access_control_lists API tool to get data")
+        
         client = MerakiAPIClient(use_mock=use_mock)
         logger.info("Retrieving network access control lists...")
         
@@ -53,7 +55,7 @@ async def get_network_access_control_lists(network_id: str = None, use_mock: boo
         )]
         
     except Exception as e:
-        logger.error(f"get_network_access_control_lists failed: {str(e)}")
+        logger.error(f"❌ Error in get_network_access_control_lists: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_network_access_control_lists: {str(e)}"

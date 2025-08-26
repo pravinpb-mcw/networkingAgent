@@ -24,6 +24,8 @@ async def get_device_loss_and_latency_history() -> List[TextContent]:
     Uses SERIAL and IP from .env file.
     """
     try:
+        logger.info("I am working on get_device_loss_and_latency_history API tool to get data")
+        
         # Initialize client (will load API key, serial, and ip from .env file)
         client = MerakiAPIClient()
         data = await client.get_device_loss_and_latency_history()
@@ -46,7 +48,7 @@ async def get_device_loss_and_latency_history() -> List[TextContent]:
         )]
         
     except Exception as e:
-        logger.error(f"get_device_loss_and_latency_history failed: {str(e)}")
+        logger.error(f"❌ Error in get_device_loss_and_latency_history: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_device_loss_and_latency_history: {str(e)}"

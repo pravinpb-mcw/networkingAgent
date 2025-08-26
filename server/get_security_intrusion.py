@@ -30,6 +30,8 @@ async def get_network_security_intrusion(network_id: str = None, use_mock: bool 
         List of response objects with security intrusion information
     """
     try:
+        logger.info("I am working on get_network_security_intrusion API tool to get data")
+        
         client = MerakiAPIClient(use_mock=use_mock)
         logger.info("Retrieving network security intrusion settings...")
         
@@ -53,7 +55,7 @@ async def get_network_security_intrusion(network_id: str = None, use_mock: bool 
         )]
         
     except Exception as e:
-        logger.error(f"get_network_security_intrusion failed: {str(e)}")
+        logger.error(f"❌ Error in get_network_security_intrusion: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_network_security_intrusion: {str(e)}"

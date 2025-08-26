@@ -1,6 +1,6 @@
 """
 Get Network Settings Tool
-Retrieves network-wide configuration settings for a specific network
+Retrieves settings for a specific network
 """
 
 import json
@@ -19,12 +19,14 @@ mcp = FastMCP("get-network-settings")
 @mcp.tool()
 async def get_network_settings() -> List[TextContent]:
     """
-    Retrieve network-wide configuration settings for your configured network.
-    Returns network settings including appliance, wireless, and other network-wide configurations.
+    Retrieve settings for your configured network.
+    Returns network configuration including local status page, remote status page, and secure port settings.
     Uses NETWORK_ID from .env file.
     """
     try:
-        # Initialize client (will load API key, network_id from .env file)
+        logger.info("I am working on get_network_settings API tool to get data")
+        
+        # Initialize client (will load API key and network_id from .env file)
         client = MerakiAPIClient()
         data = await client.get_network_settings()
         
@@ -37,7 +39,7 @@ async def get_network_settings() -> List[TextContent]:
         }
         
         json_output = json.dumps(result, indent=2, default=str)
-        logger.info(f"get_network_settings completed successfully. Retrieved settings for network {client.network_id}.")
+        logger.info(f"get_network_settings completed successfully for network {client.network_id}.")
         
         return [TextContent(
             type="text",
@@ -45,7 +47,7 @@ async def get_network_settings() -> List[TextContent]:
         )]
         
     except Exception as e:
-        logger.error(f"get_network_settings failed: {str(e)}")
+        logger.error(f"❌ Error in get_network_settings: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_network_settings: {str(e)}"

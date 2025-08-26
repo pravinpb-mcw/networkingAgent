@@ -36,7 +36,7 @@ from meraki_client import MerakiAPIClient
 from get_network_clients import get_network_clients
 from get_network_traffic import get_network_traffic
 from get_device_loss_and_latency_history import get_device_loss_and_latency_history
-from get_network_vpn_stats import get_organization_vpn_stats
+from get_network_vpn_stats import get_network_vpn_stats
 from get_network_events import get_network_events
 from get_network_settings import get_network_settings
 from update_network_settings import update_network_settings
@@ -441,7 +441,7 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
         elif name == "get_device_loss_and_latency_history":
             return await get_device_loss_and_latency_history()
         elif name == "get_organization_vpn_stats":
-            return await get_organization_vpn_stats()
+            return await get_network_vpn_stats()
         elif name == "get_network_events":
             return await get_network_events()
         elif name == "get_network_settings":

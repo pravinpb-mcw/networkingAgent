@@ -57,7 +57,7 @@ class MerakiAPIClient:
             self.timespan = 86400
             logger.warning(f"Invalid TIMESPAN value '{timespan_str}', using default 86400")
     
-    async def _make_request(self, endpoint: str, params: Optional[Dict] = None, method: str = "GET", data: Optional[Dict] = None) -> Dict[str, Any]:
+    async def _make_request(self, endpoint: str, params: Optional[Dict] = None, method: str = "GET", data: Optional[Dict] = None, tool_name: str = None) -> Dict[str, Any]:
         """Make HTTP request with method-based routing.
 
         - GET -> real Meraki API (requires MERAKI_API_KEY)
@@ -84,6 +84,10 @@ class MerakiAPIClient:
                 headers = self.headers_mock
 
         url = f"{base}{endpoint}"
+
+        # Log GET requests to show which tool is being used
+        if method.upper() == "GET" and tool_name:
+            logger.info(f"🔍 GET API CALL: Using tool '{tool_name}' to fetch data from endpoint: {endpoint}")
 
         async with httpx.AsyncClient() as client:
             try:
@@ -115,7 +119,7 @@ class MerakiAPIClient:
             raise ValueError("NETWORK_ID not found in .env file")
         span = timespan or self.timespan
         params = {"timespan": span}
-        return await self._make_request(f"/networks/{net_id}/clients", params)
+        return await self._make_request(f"/networks/{net_id}/clients", params, tool_name="get_network_clients")
     
     async def get_network_traffic(self, network_id: str = None, timespan: int = None) -> List[Dict[str, Any]]:
         """Get network traffic analysis"""
@@ -124,7 +128,7 @@ class MerakiAPIClient:
             raise ValueError("NETWORK_ID not found in .env file")
         span = timespan or self.timespan
         params = {"timespan": span}
-        return await self._make_request(f"/networks/{net_id}/traffic", params)
+        return await self._make_request(f"/networks/{net_id}/traffic", params, tool_name="get_network_traffic")
     
     async def get_device_loss_and_latency_history(self, serial: str = None, ip: str = None) -> List[Dict[str, Any]]:
         """Get device loss and latency history"""
@@ -135,7 +139,7 @@ class MerakiAPIClient:
         if not device_ip:
             raise ValueError("IP not found in .env file")
         params = {"ip": device_ip}
-        return await self._make_request(f"/devices/{device_serial}/lossAndLatencyHistory", params)
+        return await self._make_request(f"/devices/{device_serial}/lossAndLatencyHistory", params, tool_name="get_device_loss_and_latency_history")
     
     async def get_organization_vpn_stats(self, organization_id: str = None, timespan: int = None) -> List[Dict[str, Any]]:
         """Get organization VPN statistics"""
@@ -144,7 +148,7 @@ class MerakiAPIClient:
             raise ValueError("ORGANIZATION_ID not found in .env file")
         span = timespan or self.timespan
         params = {"timespan": span}
-        return await self._make_request(f"/organizations/{org_id}/appliance/vpn/stats", params)
+        return await self._make_request(f"/organizations/{org_id}/appliance/vpn/stats", params, tool_name="get_organization_vpn_stats")
     
     async def get_network_events(self, network_id: str = None, product_type: str = None) -> List[Dict[str, Any]]:
         """Get network events"""
@@ -155,14 +159,14 @@ class MerakiAPIClient:
         if not prod_type:
             raise ValueError("PRODUCT_TYPE not found in .env file")
         params = {"productType": prod_type}
-        return await self._make_request(f"/networks/{net_id}/events", params) 
+        return await self._make_request(f"/networks/{net_id}/events", params, tool_name="get_network_events") 
 
     async def get_network_settings(self, network_id: str = None) -> Dict[str, Any]:
         """Get network-wide configuration settings"""
         net_id = network_id or self.network_id
         if not net_id:
             raise ValueError("NETWORK_ID not found in .env file")
-        return await self._make_request(f"/networks/{net_id}/settings")
+        return await self._make_request(f"/networks/{net_id}/settings", tool_name="get_network_settings")
 
     async def get_organization_uplinks_statuses(
         self,
@@ -182,7 +186,7 @@ class MerakiAPIClient:
             raise ValueError("ORGANIZATION_ID not found in .env file")
 
         # No query params by default; add filters here if needed
-        return await self._make_request(f"/organizations/{org_id}/uplinks/statuses")
+        return await self._make_request(f"/organizations/{org_id}/uplinks/statuses", tool_name="get_organization_uplinks_statuses")
 
     async def create_network_appliance_settings(
         self, 
@@ -327,7 +331,8 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/organizations/{org_id}/networks",
-            method="GET"
+            method="GET",
+            tool_name="get_organization_networks"
         )
 
     async def create_organization_network(
@@ -366,7 +371,8 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/appliance/connectivityMonitoringDestinations",
-            method="GET"
+            method="GET",
+            tool_name="get_connectivity_monitoring_destinations"
         )
 
     async def update_connectivity_monitoring_destinations(
@@ -405,7 +411,8 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/switch/accessControlLists",
-            method="GET"
+            method="GET",
+            tool_name="get_network_access_control_lists"
         )
 
     async def update_network_access_control_lists(
@@ -444,7 +451,8 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/organizations/{org_id}/loginSecurity",
-            method="GET"
+            method="GET",
+            tool_name="get_organization_login_security"
         )
 
     async def update_organization_login_security(
@@ -483,7 +491,8 @@ class MerakiAPIClient:
         
         return await self._make_request(
             f"/networks/{net_id}/appliance/security/intrusion",
-            method="GET"
+            method="GET",
+            tool_name="get_network_security_intrusion"
         )
 
     async def update_network_security_intrusion(

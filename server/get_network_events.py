@@ -24,6 +24,8 @@ async def get_network_events() -> List[TextContent]:
     Uses NETWORK_ID and PRODUCT_TYPE from .env file.
     """
     try:
+        logger.info("I am working on get_network_events API tool to get data")
+        
         # Initialize client (will load API key, network_id, and product_type from .env file)
         client = MerakiAPIClient()
         data = await client.get_network_events()
@@ -46,7 +48,7 @@ async def get_network_events() -> List[TextContent]:
         )]
         
     except Exception as e:
-        logger.error(f"get_network_events failed: {str(e)}")
+        logger.error(f"❌ Error in get_network_events: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_network_events: {str(e)}"

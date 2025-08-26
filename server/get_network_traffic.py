@@ -1,6 +1,6 @@
 """
 Get Network Traffic Tool
-Analyzes network traffic patterns and bandwidth usage
+Retrieves traffic analysis for a specific network
 """
 
 import json
@@ -19,11 +19,13 @@ mcp = FastMCP("get-network-traffic")
 @mcp.tool()
 async def get_network_traffic() -> List[TextContent]:
     """
-    Analyze network traffic patterns, bandwidth usage, and application breakdown
-    for network optimization insights.
+    Retrieve traffic analysis for your configured network.
+    Returns traffic data including application usage, protocol distribution, and bandwidth utilization.
     Uses NETWORK_ID and TIMESPAN from .env file.
     """
     try:
+        logger.info("I am working on get_network_traffic API tool to get data")
+        
         # Initialize client (will load API key, network_id, and timespan from .env file)
         client = MerakiAPIClient()
         data = await client.get_network_traffic()
@@ -46,7 +48,7 @@ async def get_network_traffic() -> List[TextContent]:
         )]
         
     except Exception as e:
-        logger.error(f"get_network_traffic failed: {str(e)}")
+        logger.error(f"❌ Error in get_network_traffic: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_network_traffic: {str(e)}"

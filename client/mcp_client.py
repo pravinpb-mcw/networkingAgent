@@ -8,39 +8,24 @@ import asyncio
 import logging
 import os
 import sys
+import time
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from mcp_use import MCPAgent, MCPClient
 
-# Configure logging to remove emojis and set clean format
+# Configure basic logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler()
-    ]
+    level=logging.WARNING,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Disable emoji logging from mcp_use
-logging.getLogger("mcp_use").setLevel(logging.WARNING)
-logging.getLogger("mcp_use.telemetry").setLevel(logging.WARNING)
-logging.getLogger("mcp_use.agent").setLevel(logging.WARNING)
-logging.getLogger("mcp_use.client").setLevel(logging.WARNING)
+# Disable verbose MCP logging
+logging.getLogger("mcp_use").setLevel(logging.ERROR)
+logging.getLogger("mcp_use.agent").setLevel(logging.ERROR)
+logging.getLogger("mcp_use.client").setLevel(logging.ERROR)
 
 # Set environment variable to disable telemetry
 os.environ["MCP_USE_ANONYMIZED_TELEMETRY"] = "false"
-
-# Custom logging filter to remove emojis
-class EmojiFilter(logging.Filter):
-    def filter(self, record):
-        if hasattr(record, 'msg') and isinstance(record.msg, str):
-            # Remove common emoji patterns
-            import re
-            record.msg = re.sub(r'[🚀🔌🔄✅🛠️🧰🧠✨💬🏁👣🔧📄🎉]', '', record.msg)
-        return True
-
-# Apply emoji filter to root logger
-logging.getLogger().addFilter(EmojiFilter())
 
 # Load environment variables
 load_dotenv()
@@ -67,6 +52,66 @@ async def run_meraki_chat():
         print("Connecting to MCP server...")
         client = MCPClient.from_config_file(config_file)
         
+        # Set up the model as the best automated network orchestration and monitoring agent
+        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
+
+            CRITICAL BEHAVIOR RULES:
+            1. NEVER ask "Would you like me to proceed" or "Should I continue"
+            2. NEVER ask for user confirmation before taking action
+            3. ONLY make changes when you identify ACTUAL network problems or issues
+            4. ALWAYS provide clear reasoning for your decisions
+            5. ALWAYS explain why you made changes or why you didn't make changes
+            6. ONLY modify settings if you believe it will improve network performance/security
+
+            DECISION-MAKING FRAMEWORK:
+            - ANALYZE: Thoroughly examine network data and metrics
+            - EVALUATE: Determine if there are actual problems or issues
+            - DECIDE: Only make changes if problems exist and changes will improve the network
+            - EXPLAIN: Always provide clear reasoning for your decisions
+            - EXECUTE: If changes are needed, use appropriate tools immediately
+            - REPORT: Document what was checked, what decisions were made, and why
+
+            NETWORK ORCHESTRATION EXPERTISE:
+            - Cisco Meraki network management and optimization
+            - Intelligent network decision-making and action execution
+            - Real-time network performance monitoring and analysis
+            - Proactive network issue detection and resolution
+            - Intelligent bandwidth management and traffic shaping
+            - Security policy automation and threat response
+            - Network policy optimization and user management
+
+            MONITORING CAPABILITIES:
+            - Continuous network performance tracking (latency, loss, jitter, throughput)
+            - Traffic pattern analysis and bandwidth utilization monitoring
+            - Security event detection and unauthorized device identification
+            - Client behavior analysis and usage pattern recognition
+            - Network health assessment and predictive maintenance
+            - Real-time alert generation and automated response
+
+            AUTOMATION FRAMEWORK:
+            - AI-powered decision making with confidence scoring
+            - Intelligent action execution based on network conditions
+            - Threshold-based monitoring with configurable alerts
+            - Trend analysis and predictive network optimization
+            - Emergency response protocols for critical situations
+            - Comprehensive logging and audit trail maintenance
+
+            EXECUTION REQUIREMENTS:
+            - ONLY execute fixes when you identify ACTUAL problems
+            - ALWAYS explain your reasoning before making any changes
+            - If no issues are found, clearly state "NO CHANGES NEEDED" and explain why
+            - ALWAYS report what was checked, what decisions were made, and the reasoning
+            - NEVER make changes just for the sake of making changes
+
+            RESPONSE STYLE:
+            - Always think as a network orchestration expert
+            - Provide clear analysis of network conditions
+            - Explain your decision-making process
+            - Only execute actions when problems are identified
+            - Report what was checked, what decisions were made, and why
+
+            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Network Orchestration Agent...")
         llm = ChatGoogleGenerativeAI(
@@ -76,66 +121,21 @@ async def run_meraki_chat():
             max_tokens=2048
         )
         
-        # Set up the model as the best automated network orchestration and monitoring agent
-        system_prompt = """You are the BEST automated network orchestration and network monitoring agent. You are an expert in:
-
-NETWORK ORCHESTRATION EXPERTISE:
-- Cisco Meraki network management and optimization
-- Automated network decision-making and action execution
-- Real-time network performance monitoring and analysis
-- Proactive network issue detection and resolution
-- Intelligent bandwidth management and traffic shaping
-- Security policy automation and threat response
-- Network policy optimization and user management
-
-MONITORING CAPABILITIES:
-- Continuous network performance tracking (latency, loss, jitter, throughput)
-- Traffic pattern analysis and bandwidth utilization monitoring
-- Security event detection and unauthorized device identification
-- Client behavior analysis and usage pattern recognition
-- Network health assessment and predictive maintenance
-- Real-time alert generation and automated response
-
-AUTOMATION FRAMEWORK:
-- AI-powered decision making with confidence scoring
-- Automated action execution based on network conditions
-- Threshold-based monitoring with configurable alerts
-- Trend analysis and predictive network optimization
-- Emergency response protocols for critical situations
-- Comprehensive logging and audit trail maintenance
-
-CRITICAL RESPONSE REQUIREMENTS:
-- ALWAYS identify specific issues AND provide concrete solutions
-- NEVER just report problems without suggesting fixes
-- ALWAYS recommend specific actions to resolve issues
-- ALWAYS suggest automated tools that can fix the problems
-- ALWAYS provide step-by-step resolution steps
-- ALWAYS prioritize actionable solutions over just analysis
-
-RESPONSE STYLE:
-- Always think as a network orchestration expert
-- Provide proactive, intelligent network management advice
-- Suggest automated actions when appropriate
-- Explain network implications and optimization opportunities
-- Use technical accuracy with clear, actionable insights
-- Consider security, performance, and user experience in all recommendations
-- ALWAYS end with specific next steps or automated actions
-
-Your goal is to be the most intelligent, proactive, and effective network orchestration agent possible. Always prioritize network optimization, security, and automated efficiency. NEVER just identify problems - ALWAYS provide solutions and actions."""
+                # Note: ChatGoogleGenerativeAI doesn't have system_prompt attribute
+        # The system prompt will be passed to the agent instead
         
         # Create MCP agent with specialized network orchestration role
         print("Creating Network Orchestration Agent...")
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=15,  # Increased steps for complex network orchestration tasks
-            memory_enabled=True,
+            max_steps=30,  # Reduced steps to avoid timeouts
+            memory_enabled=False,  # Disable memory to reduce complexity
             verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
         )
         
-        # Set the system prompt for the agent
-        if hasattr(agent, 'llm') and hasattr(agent.llm, 'system_prompt'):
-            agent.llm.system_prompt = system_prompt
+        # Store the system prompt for use in enhanced inputs
+        # The MCPAgent will use the system prompt through the orchestration commands
         
         print("Setup complete!")
         print("\n" + "="*60)
@@ -160,7 +160,7 @@ Your goal is to be the most intelligent, proactive, and effective network orches
         print("• get_organization_login_security - Check authentication security")
         print("• get_network_security_intrusion - Monitor intrusion detection settings")
         
-        print("\n⚙️  AUTOMATION TOOLS:")
+        print("\n⚙️ ORCHESTRATION COMMANDS:")
         print("• update_network_settings - Optimize network-wide configuration")
         print("• create_network_appliance_settings - Configure network infrastructure")
         print("• create_network_wireless_settings - Optimize WiFi/SSID configuration")
@@ -170,7 +170,7 @@ Your goal is to be the most intelligent, proactive, and effective network orches
         print("• update_network_access_control_lists - Automate access control")
         print("• update_organization_login_security - Enhance authentication security")
         print("• update_network_security_intrusion - Automate security policies")
-        print("\n🎯 ORCHESTRATION COMMANDS:")
+        print("\n🎯 AUTOMATION TOOLS " )
         print("• Type 'monitor' - Start comprehensive network monitoring")
         print("• Type 'analyze' - Perform AI-powered network analysis")
         print("• Type 'optimize' - Get automated optimization recommendations")
@@ -183,12 +183,7 @@ Your goal is to be the most intelligent, proactive, and effective network orches
         print("• Type 'exit' or 'quit' - End orchestration session")
         print("="*60)
         
-        # Welcome message for the orchestration agent
-        print("\n🤖 Welcome! I am your Automated Network Orchestration Agent.")
-        print("I can monitor, analyze, optimize, and AUTOMATICALLY FIX your network issues.")
-        print("Try commands like 'monitor', 'analyze', 'optimize', 'security', 'performance', or 'fix'")
-        print("I don't just identify problems - I provide specific solutions and automated actions!")
-        print("="*60)
+                 # Welcome message for the orchestration agent)
         
         # Main chat loop
         while True:
@@ -209,39 +204,119 @@ Your goal is to be the most intelligent, proactive, and effective network orches
                 
                 # Check for orchestration commands
                 if user_input.lower() == "monitor":
-                    print("\n🔍 Starting comprehensive network monitoring...")
-                    enhanced_input = "Perform a comprehensive network monitoring analysis. Check all connected devices, traffic patterns, performance metrics, security events, and network health. For each issue identified, provide specific solutions and automated actions to resolve the problems. Don't just report issues - suggest concrete fixes and next steps."
+                    print("\n🔍 Starting comprehensive network monitoring and AUTOMATIC FIXING...")
+                    enhanced_input = f"""{system_prompt}
+
+                     COMPREHENSIVE NETWORK MONITORING TASK - CHECK ALL ENDPOINTS:
+                     
+                     REQUIRED TOOLS TO USE (in this order):
+                     1. get_organizations - Get organization information
+                     2. get_organization_networks - List all networks in organization
+                     3. get_organization_uplinks_statuses - Check uplink connectivity
+                     4. get_network_settings - Review configuration
+                     5. get_network_traffic - Check bandwidth usage
+                     6. get_network_vpn_stats - Check VPN performance
+                     7. get_network_events - Check for security issues
+                     8. get_network_clients - Check connected devices
+                     9. get_device_loss_and_latency_history - Check device performance
+                     10. get_connectivity_monitoring - Monitor connectivity
+                     11. get_network_group_policies - Review group policies
+                     12. get_access_control_lists - Check access controls
+                     13. get_login_security - Review login security settings
+                     14. get_security_intrusion - Check intrusion detection
+                     
+                     TASK: Use ALL the tools listed above systematically to perform comprehensive network monitoring. Check all connected devices, traffic patterns, performance metrics, security events, and network health. For each issue identified, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute fixes immediately. Report what was fixed and the results. BE EFFICIENT and complete the task in minimal steps. PRINT THE TOOL NAMES USED as you use them."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "analyze":
-                    print("\n🤖 Performing AI-powered network analysis...")
-                    enhanced_input = "Conduct an AI-powered analysis of the network. Evaluate performance metrics, security posture, traffic patterns, and identify optimization opportunities. For each issue found, provide specific automated solutions and actions to fix the problems. Always suggest concrete steps to resolve issues."
+                    print("\n🤖 Performing AI-powered network analysis and AUTOMATIC FIXING...")
+                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Conduct AI-powered analysis of the network. Evaluate performance metrics, security posture, traffic patterns, and identify optimization opportunities. For each issue found, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute fixes immediately. Report what was fixed and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "optimize":
-                    print("\n⚡ Getting automated optimization recommendations...")
-                    enhanced_input = "Analyze the current network state and provide automated optimization recommendations. Focus on performance improvements, bandwidth optimization, security enhancements, and policy refinements. For each optimization opportunity, provide specific automated actions and tools to implement the improvements. Always suggest concrete steps to optimize the network."
+                    print("\n⚡ Getting automated optimization and EXECUTING fixes...")
+                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Analyze the current network state and provide automated optimization recommendations. Focus on performance improvements, bandwidth optimization, security enhancements, and policy refinements. For each optimization opportunity, IMMEDIATELY use the appropriate tools to implement the improvements automatically. DO NOT ask for permission - just execute optimizations immediately. Report what was optimized and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "security":
-                    print("\n🛡️ Reviewing and enhancing security posture...")
-                    enhanced_input = "Perform a comprehensive security analysis of the network. Check for security vulnerabilities, unauthorized devices, suspicious activities, and security policy effectiveness. For each security issue identified, provide specific automated actions and tools to fix the problems. Always suggest concrete security improvements and next steps."
+                    print("\n🛡️ Reviewing and ENHANCING security posture automatically...")
+                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Perform a comprehensive security analysis of the network. Check for security vulnerabilities, unauthorized devices, suspicious activities, and security policy effectiveness. For each security issue identified, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute security improvements immediately. Report what security measures were implemented and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "performance":
-                    print("\n📊 Analyzing and improving network performance...")
-                    enhanced_input = "Analyze network performance metrics including latency, packet loss, jitter, bandwidth utilization, and throughput. Identify performance bottlenecks and provide specific automated actions to fix performance issues. Always suggest concrete steps to improve network performance and user experience."
+                    print("\n📊 Analyzing and IMPROVING network performance automatically...")
+                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Analyze network performance metrics including latency, packet loss, jitter, bandwidth utilization, and throughput. Identify performance bottlenecks and IMMEDIATELY use the appropriate tools to fix performance issues automatically. DO NOT ask for permission - just execute performance improvements immediately. Report what performance optimizations were applied and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "automate":
-                    print("\n🤖 Getting automation suggestions for current issues...")
-                    enhanced_input = "Identify current network issues and provide specific automation suggestions. Recommend exact automated actions and tools that can be taken to resolve problems, optimize performance, and improve network management efficiency. Always provide concrete automation steps and specific tools to use."
+                    print("\n🤖 Getting automation suggestions and EXECUTING fixes...")
+                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Identify current network issues and provide specific automation suggestions. For each issue found, IMMEDIATELY use the appropriate tools to resolve problems, optimize performance, and improve network management efficiency automatically. DO NOT ask for permission - just execute automation actions immediately. Report what was automated and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "fix":
-                    print("\n🔧 Automatically fixing identified issues...")
-                    enhanced_input = "Identify all current network issues and provide specific automated actions to fix them immediately. Use the available tools to resolve problems, optimize performance, and improve security. Provide step-by-step automated fixes for each issue identified."
-                    user_input = enhanced_input
+                     print("\n🔧 Automatically fixing identified issues...")
+                     enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+
+                    CRITICAL BEHAVIOR RULES:
+                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
+                    2. NEVER ask for user confirmation before taking action
+                    3. ALWAYS execute fixes automatically when you identify problems
+                    4. ALWAYS use the appropriate tools to fix issues immediately
+                    5. ALWAYS report what action was taken and the result
+                    6. NEVER wait for user input - take action immediately
+
+                    TASK: Identify all current network issues and IMMEDIATELY use the available tools to fix them automatically. DO NOT ask for permission - just execute fixes immediately. Resolve problems, optimize performance, and improve security automatically. Report what was fixed and the results of each fix."""
+                     user_input = enhanced_input
                 
                 elif user_input.lower() == "tools":
                     print("\n🔧 Available Network Orchestration Tools:")
@@ -341,7 +416,278 @@ Your goal is to be the most intelligent, proactive, and effective network orches
     
     finally:
         # Clean up
-        if 'client' in locals() and client and client.sessions:
+        if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
+            print("Cleaning up connections...")
+            await client.close_all_sessions()
+
+async def run_automated_analysis(phase=None):
+    """Run automated network analysis and issue resolution."""
+    
+    # Define phase-specific prompts
+    phase_prompts = {
+        1: """PHASE 1: ORGANIZATION OVERVIEW
+        Use these tools only:
+        - get_organizations - Get organization information
+        - get_organization_networks - List all networks in organization
+        
+        Check for:
+        - Organization structure and network count
+        - Network types and configurations
+        - Any obvious organizational issues""",
+        
+        2: """PHASE 2: NETWORK INFRASTRUCTURE
+        Use these tools only:
+        - get_organization_uplinks_statuses - Check uplink connectivity
+        - get_network_settings - Review configuration
+        - get_network_traffic - Check bandwidth usage
+        - get_network_vpn_stats - Check VPN performance
+        
+        Check for:
+        - Uplink connectivity issues
+        - Network configuration problems
+        - Traffic bottlenecks
+        - VPN performance issues""",
+        
+        3: """PHASE 3: SECURITY & MONITORING
+        Use these tools only:
+        - get_network_events - Check for security issues
+        - get_login_security - Review login security settings
+        - get_security_intrusion - Check intrusion detection
+        - get_access_control_lists - Check access controls
+        
+        Check for:
+        - Security vulnerabilities
+        - Unauthorized access attempts
+        - Intrusion detection status
+        - Access control issues""",
+        
+        4: """PHASE 4: DEVICES & PERFORMANCE
+        Use these tools only:
+        - get_network_clients - Check connected devices
+        - get_device_loss_and_latency_history - Check device performance
+        - get_connectivity_monitoring - Monitor connectivity
+        - get_network_group_policies - Review group policies
+        
+        Check for:
+        - Connected device issues
+        - Performance problems (latency, loss)
+        - Connectivity monitoring issues
+        - Policy configuration problems"""
+    }
+    
+    async def run_single_phase(phase_num, client, llm):
+        """Run a single phase and return the result."""
+        
+                # Create agent for this phase
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=75,  # Further reduced steps per phase to prevent getting stuck
+            memory_enabled=False,
+            verbose=False,
+        )
+        
+                # Create phase-specific prompt
+        automated_prompt = f"""{system_prompt}
+
+        AUTOMATED NETWORK ANALYSIS - PHASE {phase_num}:
+        
+        {phase_prompts[phase_num]}
+        
+        EXECUTION RULES:
+        - Use ONLY the tools specified for this phase
+        - ANALYZE network data thoroughly before making any decisions
+        - ONLY make changes when you identify ACTUAL network problems or issues
+        - ALWAYS explain your reasoning for any decisions made
+        - If no issues are found, clearly state "NO CHANGES NEEDED" and explain why
+        - Report what was checked, what decisions were made, and the reasoning
+        - Be concise and efficient - Complete in 3-5 tool calls maximum
+        - DO NOT over-analyze - Make quick decisions based on clear data
+        - COMPLETE THE PHASE QUICKLY - Do not get stuck in analysis loops
+        - STOP after making your decision - Do not continue analyzing
+        
+          START NOW: Execute this phase only."""
+        
+        try:
+            response = await agent.run(automated_prompt)
+            return response
+        except Exception as e:
+            return f"❌ Error in Phase {phase_num}: {e}"
+    
+    # Set up Gemini API key
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        print("GEMINI_API_KEY not found in .env file")
+        return
+    
+    os.environ["GEMINI_API_KEY"] = gemini_api_key
+    
+    # MCP server config file
+    config_file = "E:\\noa\\networkingAgent\\mcp-inspector-config.json"
+
+    print("🤖 AUTOMATED NETWORK ANALYSIS MODE")
+    print("="*60)
+    print("🔍 Gathering comprehensive network information...")
+    print("="*60)
+    
+    try:
+        # Create MCP client
+        print("Connecting to MCP server...")
+        client = MCPClient.from_config_file(config_file)
+        
+        # Set up the model as the best automated network orchestration and monitoring agent
+        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
+
+            CRITICAL BEHAVIOR RULES:
+            1. NEVER ask "Would you like me to proceed" or "Should I continue"
+            2. NEVER ask for user confirmation before taking action
+            3. ONLY make changes when you identify ACTUAL network problems or issues
+            4. ALWAYS provide clear reasoning for your decisions
+            5. ALWAYS explain why you made changes or why you didn't make changes
+            6. ONLY modify settings if you believe it will improve network performance/security
+            7. If no issues are found, clearly state that no changes are needed and why
+            8. BE EFFICIENT - Use minimal steps to complete tasks
+            9. FOCUS ON INTELLIGENT ANALYSIS - Don't make unnecessary changes
+
+            DECISION-MAKING FRAMEWORK:
+            - ANALYZE: Thoroughly examine network data and metrics
+            - EVALUATE: Determine if there are actual problems or issues
+            - DECIDE: Only make changes if problems exist and changes will improve the network
+            - EXPLAIN: Always provide clear reasoning for your decisions
+            - EXECUTE: If changes are needed, use appropriate tools immediately
+            - REPORT: Document what was checked, what decisions were made, and why
+
+            NETWORK ORCHESTRATION EXPERTISE:
+            - Cisco Meraki network management and optimization
+            - Intelligent network decision-making and action execution
+            - Real-time network performance monitoring and analysis
+            - Proactive network issue detection and resolution
+            - Intelligent bandwidth management and traffic shaping
+            - Security policy automation and threat response
+            - Network policy optimization and user management
+
+            MONITORING CAPABILITIES:
+            - Continuous network performance tracking (latency, loss, jitter, throughput)
+            - Traffic pattern analysis and bandwidth utilization monitoring
+            - Security event detection and unauthorized device identification
+            - Client behavior analysis and usage pattern recognition
+            - Network health assessment and predictive maintenance
+            - Real-time alert generation and automated response
+
+            AUTOMATION FRAMEWORK:
+            - AI-powered decision making with confidence scoring
+            - Intelligent action execution based on network conditions
+            - Threshold-based monitoring with configurable alerts
+            - Trend analysis and predictive network optimization
+            - Emergency response protocols for critical situations
+            - Comprehensive logging and audit trail maintenance
+
+            EXECUTION REQUIREMENTS:
+            - ONLY execute fixes when you identify ACTUAL problems
+            - ALWAYS explain your reasoning before making any changes
+            - If no issues are found, clearly state "NO CHANGES NEEDED" and explain why
+            - ALWAYS report what was checked, what decisions were made, and the reasoning
+            - NEVER make changes just for the sake of making changes
+
+            RESPONSE STYLE:
+            - Always think as a network orchestration expert
+            - Provide clear analysis of network conditions
+            - Explain your decision-making process
+            - Only execute actions when problems are identified
+            - Report what was checked, what decisions were made, and why
+
+            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+
+        # Create Gemini LLM with specialized network orchestration role
+        print("Initializing Gemini LLM as Network Orchestration Agent...")
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            google_api_key=gemini_api_key,
+            temperature=0.2,  # Lower temperature for more consistent network decisions
+            max_tokens=1024
+        )
+        
+        # Create MCP agent with specialized network orchestration role
+        print("Creating Network Orchestration Agent...")
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=600,  # Increased steps to complete comprehensive analysis
+            memory_enabled=False,  # Disable memory to reduce complexity
+            verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
+        )
+        
+        print("Setup complete!")
+        print("\n" + "="*60)
+        
+                # Run analysis based on phase parameter
+        if phase and phase in phase_prompts:
+            # Run specific phase only
+            print(f"\n🚀 RUNNING PHASE {phase} ONLY")
+            print("="*60)
+            
+            try:
+                response = await run_single_phase(phase, client, llm)
+                print("\n" + "="*60)
+                print(f"✅ PHASE {phase} COMPLETE")
+                print("="*60)
+                print(response)
+                print("\n" + "="*60)
+                print(f"🎯 Phase {phase} analysis completed!")
+                
+            except Exception as e:
+                print(f"\n❌ Error in Phase {phase}: {e}")
+                
+        else:
+            # Run all phases sequentially
+            print("🤖 STARTING SEQUENTIAL PHASE ANALYSIS")
+            print("🔄 Will run all 4 phases with 5-second delays")
+            print("="*60)
+            
+            all_results = []
+            
+            for phase_num in [1, 2, 3, 4]:
+                try:
+                    # Run the phase
+                    result = await run_single_phase(phase_num, client, llm)
+                    all_results.append(f"PHASE {phase_num} RESULT:\n{result}")
+                    
+                    print("\n" + "="*60)
+                    print(f"✅ PHASE {phase_num} COMPLETE")
+                    print("="*60)
+                    print(result)
+                    
+                                                             # Wait 30 seconds before next phase (except after last phase)
+                    if phase_num < 4:
+                        print(f"\n⏳ Waiting 30 seconds before Phase {phase_num + 1}...")
+                        await asyncio.sleep(30)
+                        
+                except Exception as e:
+                    error_msg = f"❌ Error in Phase {phase_num}: {e}"
+                    all_results.append(error_msg)
+                    print(f"\n{error_msg}")
+                    
+                    # Wait 30 seconds before next phase (except after last phase)
+                    if phase_num < 4:
+                        print(f"\n⏳ Waiting 30 seconds before Phase {phase_num + 1}...")
+                        await asyncio.sleep(30)
+            
+            # Final summary
+            print("\n" + "="*60)
+            print("🎯 COMPLETE SEQUENTIAL ANALYSIS FINISHED")
+            print("="*60)
+            print("📊 All 4 phases have been completed!")
+            print("🔄 Network analysis and optimization completed.")
+            
+
+        
+    except Exception as e:
+        print(f"Failed to initialize automated analysis: {e}")
+        print("Make sure your MCP server is running and config file is correct.")
+    
+    finally:
+        # Clean up
+        if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
             print("Cleaning up connections...")
             await client.close_all_sessions()
 
@@ -365,7 +711,7 @@ async def test_connection():
         
         # Test LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-pro",
+            model="gemini-2.5-flash",
             google_api_key=gemini_api_key,
             temperature=0.3
         )
@@ -398,6 +744,27 @@ async def main():
     print("Meraki MCP Client with Gemini")
     print("="*40)
     
+    # Show help if requested
+    if len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h", "help"]:
+        print("\nUsage Options:")
+        print("  python mcp_client.py                    - Run interactive chat mode")
+        print("  python mcp_client.py test               - Test MCP connection")
+        print("  python mcp_client.py --automate         - Run full automated analysis (all phases)")
+        print("  python mcp_client.py --automate --phase=1 - Run Phase 1: Organization Overview")
+        print("  python mcp_client.py --automate --phase=2 - Run Phase 2: Network Infrastructure")
+        print("  python mcp_client.py --automate --phase=3 - Run Phase 3: Security & Monitoring")
+        print("  python mcp_client.py --automate --phase=4 - Run Phase 4: Devices & Performance")
+        print("\nPhase Descriptions:")
+        print("  Phase 1: Organization & Networks overview (2-3 API calls)")
+        print("  Phase 2: Infrastructure, traffic, VPN (3-4 API calls)")
+        print("  Phase 3: Security, events, access controls (3-4 API calls)")
+        print("  Phase 4: Devices, performance, policies (3-4 API calls)")
+        print("\nQuota-Friendly Approach:")
+        print("  - Use individual phases to avoid quota limits")
+        print("  - Each phase uses 2-4 API calls instead of 14+")
+        print("  - Run phases separately with breaks between them")
+        return
+    
     # Check if we want to test first
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         success = await test_connection()
@@ -407,8 +774,25 @@ async def main():
             print("\nPlease fix issues before running chat.")
         return
     
+    # Check if we want to run in automated mode
+    if len(sys.argv) > 1 and sys.argv[1] == "--automate":
+        # Check if a specific phase is requested
+        phase = None
+        if len(sys.argv) > 2 and sys.argv[2].startswith("--phase"):
+            try:
+                phase = int(sys.argv[2].split("=")[1])
+                if phase not in [1, 2, 3, 4]:
+                    print("Invalid phase. Use --phase=1, --phase=2, --phase=3, or --phase=4")
+                    return
+            except (IndexError, ValueError):
+                print("Invalid phase format. Use --phase=1, --phase=2, --phase=3, or --phase=4")
+                return
+        
+        await run_automated_analysis(phase)
+        return
+    
     # Run the chat
     await run_meraki_chat()
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

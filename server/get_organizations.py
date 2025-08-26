@@ -23,6 +23,8 @@ async def get_organizations() -> List[TextContent]:
     Returns organization details including ID, name, and URL.
     """
     try:
+        logger.info("I am working on get_organizations API tool to get data")
+        
         # Initialize client (will load API key from .env file)
         client = MerakiAPIClient()
         data = await client.get_organizations()
@@ -40,7 +42,7 @@ async def get_organizations() -> List[TextContent]:
         )]
         
     except Exception as e:
-        logger.error(f"get_organizations failed: {str(e)}")
+        logger.error(f"❌ Error in get_organizations: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_organizations: {str(e)}"

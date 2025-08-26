@@ -30,6 +30,8 @@ async def get_organization_login_security(organization_id: str = None, use_mock:
         List of response objects with login security information
     """
     try:
+        logger.info("I am working on get_organization_login_security API tool to get data")
+        
         client = MerakiAPIClient(use_mock=use_mock)
         logger.info("Retrieving organization login security settings...")
         
@@ -53,7 +55,7 @@ async def get_organization_login_security(organization_id: str = None, use_mock:
         )]
         
     except Exception as e:
-        logger.error(f"get_organization_login_security failed: {str(e)}")
+        logger.error(f"❌ Error in get_organization_login_security: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_organization_login_security: {str(e)}"
