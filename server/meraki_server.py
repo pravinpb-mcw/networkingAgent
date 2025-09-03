@@ -33,6 +33,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #     os.environ.setdefault("BASE_URL", "http://127.0.0.1:5000")
 
 from meraki_client import MerakiAPIClient
+from get_organizations import get_organizations
 from get_network_clients import get_network_clients
 from get_network_traffic import get_network_traffic
 from get_device_loss_and_latency_history import get_device_loss_and_latency_history
@@ -75,6 +76,15 @@ app = Server("cisco-meraki-observability")
 async def handle_list_tools() -> List[Tool]:
     """List available Meraki API tools"""
     return [
+        Tool(
+            name="get_organizations",
+            description="Get organization information. Returns: organization details, structure, and configuration.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        ),
         Tool(
             name="get_network_clients",
             description="Get connected network clients. Returns: device details, usage patterns, connection history.",
@@ -434,7 +444,9 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
     """Handle tool execution by delegating to individual tool functions"""
     
     try:
-        if name == "get_network_clients":
+        if name == "get_organizations":
+            return await get_organizations()
+        elif name == "get_network_clients":
             return await get_network_clients()
         elif name == "get_network_traffic":
             return await get_network_traffic()

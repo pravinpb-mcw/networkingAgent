@@ -46,6 +46,25 @@ def save_to_json_file(filename: str, data: Dict[str, Any]):
     except Exception as e:
         logger.error(f"Error saving to {filepath}: {e}")
 
+def save_to_comprehensive_json(data: Dict[str, Any]):
+    """Save data to the comprehensive API data file"""
+    filepath = os.path.join(DATA_DIR, "comprehensive_api_data.json")
+    try:
+        # Load existing comprehensive data
+        existing_data = load_from_json_file("comprehensive_api_data.json")
+        if not existing_data:
+            existing_data = {}
+        
+        # Update with new data
+        existing_data.update(data)
+        
+        # Save back to comprehensive file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(existing_data, f, indent=2, ensure_ascii=False, default=str)
+        logger.info(f"Data saved to comprehensive file: {filepath}")
+    except Exception as e:
+        logger.error(f"Error saving to comprehensive file: {e}")
+
 def load_from_json_file(filename: str) -> Dict[str, Any]:
     """Load data from a JSON file"""
     filepath = os.path.join(DATA_DIR, filename)
@@ -64,22 +83,52 @@ def load_from_json_file(filename: str) -> Dict[str, Any]:
 
 # Load existing data from JSON files on startup
 def initialize_mock_data():
-    """Initialize mock data from JSON files"""
+    """Initialize mock data from comprehensive JSON file"""
     global mock_data
     
-    # Load network data
-    networks_data = load_from_json_file("networks.json")
-    if networks_data:
-        mock_data["networks"] = networks_data
-    
-    # Load other data types
-    mock_data["clients"] = load_from_json_file("clients.json").get("clients", [])
-    mock_data["traffic"] = load_from_json_file("traffic.json").get("traffic", [])
-    mock_data["events"] = load_from_json_file("events.json").get("events", [])
-    mock_data["vpn_stats"] = load_from_json_file("vpn_stats.json").get("vpn_stats", [])
-    mock_data["uplinks_statuses"] = load_from_json_file("uplinks_statuses.json").get("uplinks_statuses", [])
-    
-    logger.info("Mock data initialized from JSON files")
+    # Load comprehensive API data
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data:
+        # Map the comprehensive data to our mock_data structure
+        mock_data["organizations"] = comprehensive_data.get("organizations", [])
+        mock_data["networks"] = comprehensive_data.get("networks", {})
+        mock_data["network_clients"] = comprehensive_data.get("network_clients", {})
+        mock_data["network_traffic"] = comprehensive_data.get("network_traffic", {})
+        mock_data["network_events"] = comprehensive_data.get("network_events", {})
+        mock_data["network_settings"] = comprehensive_data.get("network_settings", {})
+        mock_data["organization_uplinks_statuses"] = comprehensive_data.get("organization_uplinks_statuses", {})
+        mock_data["network_vpn_stats"] = comprehensive_data.get("network_vpn_stats", {})
+        mock_data["device_loss_and_latency_history"] = comprehensive_data.get("device_loss_and_latency_history", {})
+        mock_data["connectivity_monitoring_destinations"] = comprehensive_data.get("connectivity_monitoring_destinations", {})
+        mock_data["network_group_policies"] = comprehensive_data.get("network_group_policies", {})
+        mock_data["network_access_control_lists"] = comprehensive_data.get("network_access_control_lists", {})
+        mock_data["organization_login_security"] = comprehensive_data.get("organization_login_security", {})
+        mock_data["network_security_intrusion"] = comprehensive_data.get("network_security_intrusion", {})
+        mock_data["appliance_settings"] = comprehensive_data.get("appliance_settings", {})
+        mock_data["wireless_settings"] = comprehensive_data.get("wireless_settings", {})
+        
+        # Backward compatibility with old structure
+        mock_data["clients"] = comprehensive_data.get("clients", [])
+        mock_data["traffic"] = comprehensive_data.get("traffic", [])
+        mock_data["events"] = comprehensive_data.get("events", [])
+        mock_data["vpn_stats"] = comprehensive_data.get("vpn_stats", [])
+        mock_data["uplinks_statuses"] = comprehensive_data.get("uplinks_statuses", [])
+        
+        logger.info("Mock data initialized from comprehensive API data file")
+    else:
+        # Fallback to old individual files
+        networks_data = load_from_json_file("networks.json")
+        if networks_data:
+            mock_data["networks"] = networks_data
+        
+        # Load other data types
+        mock_data["clients"] = load_from_json_file("clients.json").get("clients", [])
+        mock_data["traffic"] = load_from_json_file("traffic.json").get("traffic", [])
+        mock_data["events"] = load_from_json_file("events.json").get("events", [])
+        mock_data["vpn_stats"] = load_from_json_file("vpn_stats.json").get("vpn_stats", [])
+        mock_data["uplinks_statuses"] = load_from_json_file("uplinks_statuses.json").get("uplinks_statuses", [])
+        
+        logger.info("Mock data initialized from individual JSON files (fallback)")
 
 # Initialize data on startup
 initialize_mock_data()
@@ -138,12 +187,32 @@ async def test_endpoint():
     """Simple test endpoint"""
     return {"message": "Mock server is working!", "timestamp": datetime.now().isoformat()}
 
+@app.get("/organizations")
+async def get_organizations():
+    """Mock endpoint for getting organizations"""
+    logger.info(f"GET /organizations")
+    
+    # Return data from comprehensive API data structure
+    if "organizations" in mock_data:
+        return mock_data["organizations"]
+    
+    # Fallback to empty list
+    return []
+
 @app.get("/organizations/uplinks/statuses")
 async def get_organization_uplinks_statuses():
     """Mock endpoint for organization uplinks statuses"""
     logger.info(f"GET /organizations/uplinks/statuses")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "organization_uplinks_statuses" in mock_data:
+        # Return all uplink statuses for all organizations
+        all_uplinks = []
+        for org_id, uplinks in mock_data["organization_uplinks_statuses"].items():
+            all_uplinks.extend(uplinks)
+        return all_uplinks
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "uplinks_statuses" in common_data:
         return common_data["uplinks_statuses"]
@@ -182,8 +251,8 @@ async def create_network_appliance_settings(network_id: str, settings: Appliance
             # Replace the latest entry with the updated one
             mock_data["networks"][network_id]["appliance_settings"][-1] = updated_entry
             
-            # Save to JSON file
-            save_to_json_file("networks.json", mock_data["networks"])
+            # Save to comprehensive JSON file
+            save_to_comprehensive_json({"networks": mock_data["networks"]})
             
             logger.info(f"Successfully updated appliance settings for network {network_id}")
             
@@ -206,8 +275,8 @@ async def create_network_appliance_settings(network_id: str, settings: Appliance
             # Add the new entry to the list
             mock_data["networks"][network_id]["appliance_settings"].append(new_entry)
             
-            # Save to JSON file
-            save_to_json_file("networks.json", mock_data["networks"])
+            # Save to comprehensive JSON file
+            save_to_comprehensive_json({"networks": mock_data["networks"]})
             
             logger.info(f"Successfully added new appliance settings for network {network_id}")
             
@@ -249,8 +318,8 @@ async def update_network_appliance_settings(network_id: str, settings: Appliance
         # Replace the latest entry with the updated one
         mock_data["networks"][network_id]["appliance_settings"][-1] = updated_entry
         
-        # Save to JSON file
-        save_to_json_file("networks.json", mock_data["networks"])
+        # Save to comprehensive JSON file
+        save_to_comprehensive_json({"networks": mock_data["networks"]})
         
         logger.info(f"Successfully updated appliance settings for network {network_id}")
         
@@ -291,8 +360,8 @@ async def create_network_wireless_settings(network_id: str, settings: WirelessSe
         # Add the new entry to the list
         mock_data["networks"][network_id]["wireless_settings"].append(new_entry)
         
-        # Save to JSON file
-        save_to_json_file("networks.json", mock_data["networks"])
+        # Save to comprehensive JSON file
+        save_to_comprehensive_json({"networks": mock_data["networks"]})
         
         logger.info(f"Successfully created new wireless settings for network {network_id}")
 
@@ -346,8 +415,8 @@ async def update_network_settings(network_id: str, settings: dict):
         # Store the settings in mock data
         mock_data["networks"][network_id]["network_settings"] = settings
         
-        # Save to JSON file
-        save_to_json_file("networks.json", mock_data["networks"])
+        # Save to comprehensive JSON file
+        save_to_comprehensive_json({"networks": mock_data["networks"]})
         
         return {
             "message": "Network settings updated successfully",
@@ -387,8 +456,8 @@ async def create_network_group_policy(network_id: str, policy: GroupPolicy):
         "bonjourForwarding": policy.bonjourForwarding
     }
     
-    # Save to JSON file
-    save_to_json_file("networks.json", mock_data["networks"])
+    # Save to comprehensive JSON file
+    save_to_comprehensive_json({"networks": mock_data["networks"]})
     
     return {
         "message": "Group policy created successfully",
@@ -434,8 +503,8 @@ async def update_network_group_policy(network_id: str, policy_id: str, policy: G
     # Add updated timestamp
     existing_policy["updated_at"] = datetime.now().isoformat()
     
-    # Save to JSON file
-    save_to_json_file("networks.json", mock_data["networks"])
+    # Save to comprehensive JSON file
+    save_to_comprehensive_json({"networks": mock_data["networks"]})
     
     return {
         "message": "Group policy updated successfully",
@@ -459,8 +528,8 @@ async def delete_network_group_policy(network_id: str, policy_id: str):
     # Delete the existing policy
     deleted_policy = mock_data["networks"][network_id]["groupPolicies"].pop(policy_id)
     
-    # Save to JSON file
-    save_to_json_file("networks.json", mock_data["networks"])
+    # Save to comprehensive JSON file
+    save_to_comprehensive_json({"networks": mock_data["networks"]})
     
     return {
         "message": "Group policy deleted successfully",
@@ -483,7 +552,11 @@ async def get_network_clients(network_id: str):
     """Mock endpoint for getting network clients"""
     logger.info(f"GET /networks/{network_id}/clients")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_clients" in mock_data and network_id in mock_data["network_clients"]:
+        return mock_data["network_clients"][network_id]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "clients" in common_data:
         return common_data["clients"]
@@ -496,7 +569,11 @@ async def get_network_traffic(network_id: str):
     """Mock endpoint for getting network traffic"""
     logger.info(f"GET /networks/{network_id}/traffic")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_traffic" in mock_data and network_id in mock_data["network_traffic"]:
+        return mock_data["network_traffic"][network_id]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "traffic" in common_data:
         return common_data["traffic"]
@@ -509,7 +586,11 @@ async def get_network_events(network_id: str):
     """Mock endpoint for getting network events"""
     logger.info(f"GET /networks/{network_id}/events")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_events" in mock_data and network_id in mock_data["network_events"]:
+        return mock_data["network_events"][network_id]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "events" in common_data:
         return common_data["events"]
@@ -522,7 +603,15 @@ async def get_organization_vpn_stats():
     """Mock endpoint for getting organization VPN stats"""
     logger.info(f"GET /organizations/appliance/vpn/stats")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_vpn_stats" in mock_data:
+        # Return all VPN stats for all networks
+        all_vpn_stats = []
+        for network_id, vpn_stats in mock_data["network_vpn_stats"].items():
+            all_vpn_stats.extend(vpn_stats)
+        return all_vpn_stats
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "vpn_stats" in common_data:
         return common_data["vpn_stats"]
@@ -535,7 +624,15 @@ async def get_device_loss_and_latency_history():
     """Mock endpoint for getting device loss and latency history"""
     logger.info(f"GET /devices/lossAndLatencyHistory")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "device_loss_and_latency_history" in mock_data:
+        # Return all device history for all devices
+        all_device_history = []
+        for serial, device_history in mock_data["device_loss_and_latency_history"].items():
+            all_device_history.extend(device_history)
+        return all_device_history
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "device_history" in common_data:
         return common_data["device_history"]
@@ -548,7 +645,11 @@ async def get_device_loss_and_latency_history(serial: str):
     """Mock endpoint for getting device loss and latency history"""
     logger.info(f"GET /devices/{serial}/lossAndLatencyHistory")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "device_loss_and_latency_history" in mock_data and serial in mock_data["device_loss_and_latency_history"]:
+        return mock_data["device_loss_and_latency_history"][serial]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "device_history" in common_data:
         return common_data["device_history"]
@@ -561,7 +662,11 @@ async def get_organization_uplinks_statuses(organization_id: str):
     """Mock endpoint for getting organization uplink statuses"""
     logger.info(f"GET /organizations/{organization_id}/uplinks/statuses")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "organization_uplinks_statuses" in mock_data and organization_id in mock_data["organization_uplinks_statuses"]:
+        return mock_data["organization_uplinks_statuses"][organization_id]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "uplinks_statuses" in common_data:
         return common_data["uplinks_statuses"]
@@ -574,7 +679,11 @@ async def get_network_group_policies(network_id: str):
     """Mock endpoint for getting network group policies"""
     logger.info(f"GET /networks/{network_id}/groupPolicies")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_group_policies" in mock_data and network_id in mock_data["network_group_policies"]:
+        return mock_data["network_group_policies"][network_id]
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "group_policies" in common_data:
         return common_data["group_policies"]
@@ -587,7 +696,15 @@ async def get_organization_vpn_stats(organization_id: str):
     """Mock endpoint for getting organization VPN stats"""
     logger.info(f"GET /organizations/{organization_id}/appliance/vpn/stats")
     
-    # Load data from common JSON file
+    # Return data from comprehensive API data structure
+    if "network_vpn_stats" in mock_data:
+        # Return all VPN stats for all networks in the organization
+        all_vpn_stats = []
+        for network_id, vpn_stats in mock_data["network_vpn_stats"].items():
+            all_vpn_stats.extend(vpn_stats)
+        return all_vpn_stats
+    
+    # Fallback to old common_data.json
     common_data = load_from_json_file("common_data.json")
     if common_data and "vpn_stats" in common_data:
         return common_data["vpn_stats"]
@@ -600,25 +717,50 @@ async def get_organization_networks(organization_id: str):
     """Mock endpoint for getting organization networks"""
     logger.info(f"GET /organizations/{organization_id}/networks")
     
-    # Load networks data from JSON file
-    networks_data = load_from_json_file("networks.json")
+    # Return data from comprehensive API data structure
+    if "networks" in mock_data:
+        # Convert the networks data structure to a list format
+        networks_list = []
+        for network_id, network_info in mock_data["networks"].items():
+            if network_info.get("organizationId") == organization_id:
+                network_entry = {
+                    "id": network_id,
+                    "organizationId": organization_id,
+                    "name": network_info.get("name", f"Network {network_id}"),
+                    "productTypes": network_info.get("productTypes", ["appliance", "camera", "cellularGateway", "sensor", "switch", "wireless"]),
+                    "timeZone": network_info.get("timeZone", "America/Los_Angeles"),
+                    "tags": network_info.get("tags", []),
+                    "enrollmentString": network_info.get("enrollmentString", None),
+                    "notes": network_info.get("notes", ""),
+                    "isBoundToConfigTemplate": network_info.get("isBoundToConfigTemplate", False),
+                    "isVirtual": network_info.get("isVirtual", False)
+                }
+                networks_list.append(network_entry)
+        
+        logger.info(f"Returning {len(networks_list)} networks for organization {organization_id}")
+        return networks_list
+    
+    # Fallback to comprehensive JSON file
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
     
     # Convert the networks data structure to a list format
     networks_list = []
-    for network_id, network_info in networks_data.items():
-        network_entry = {
-            "id": network_id,
-            "organizationId": organization_id,
-            "name": network_info.get("name", f"Network {network_id}"),
-            "productTypes": network_info.get("productTypes", ["appliance", "camera", "cellularGateway", "sensor", "switch", "wireless"]),
-            "timeZone": network_info.get("timeZone", "America/Los_Angeles"),
-            "tags": network_info.get("tags", []),
-            "enrollmentString": network_info.get("enrollmentString", None),
-            "notes": network_info.get("notes", ""),
-            "isBoundToConfigTemplate": network_info.get("isBoundToConfigTemplate", False),
-            "isVirtual": network_info.get("isVirtual", False)
-        }
-        networks_list.append(network_entry)
+    if comprehensive_data and "networks" in comprehensive_data:
+        for network_id, network_info in comprehensive_data["networks"].items():
+            if network_info.get("organizationId") == organization_id:
+                network_entry = {
+                    "id": network_id,
+                    "organizationId": organization_id,
+                    "name": network_info.get("name", f"Network {network_id}"),
+                    "productTypes": network_info.get("productTypes", ["appliance", "camera", "cellularGateway", "sensor", "switch", "wireless"]),
+                    "timeZone": network_info.get("timeZone", "America/Los_Angeles"),
+                    "tags": network_info.get("tags", []),
+                    "enrollmentString": network_info.get("enrollmentString", None),
+                    "notes": network_info.get("notes", ""),
+                    "isBoundToConfigTemplate": network_info.get("isBoundToConfigTemplate", False),
+                    "isVirtual": network_info.get("isVirtual", False)
+                }
+                networks_list.append(network_entry)
     
     logger.info(f"Returning {len(networks_list)} networks for organization {organization_id}")
     return networks_list
@@ -641,14 +783,16 @@ async def create_organization_network(organization_id: str, request: Request):
         network_data["id"] = network_id
         network_data["organizationId"] = organization_id
         
-        # Load existing networks data
-        networks_data = load_from_json_file("networks.json")
+        # Load existing comprehensive data
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"networks": {}}
         
         # Add the new network
-        networks_data[network_id] = network_data
+        comprehensive_data["networks"][network_id] = network_data
         
-        # Save updated data back to file
-        save_to_json_file("networks.json", networks_data)
+        # Save updated data back to comprehensive file
+        save_to_comprehensive_json(comprehensive_data)
         
         logger.info(f"Successfully created new network {network_id} for organization {organization_id}")
         return network_data
@@ -663,11 +807,15 @@ async def get_connectivity_monitoring_destinations(network_id: str):
     """Get connectivity monitoring destinations for a network"""
     logger.info(f"Getting connectivity monitoring destinations for network {network_id}")
     
-    # Load networks data
-    networks_data = load_from_json_file("networks.json")
+    # Return data from comprehensive API data structure
+    if "connectivity_monitoring_destinations" in mock_data and network_id in mock_data["connectivity_monitoring_destinations"]:
+        return mock_data["connectivity_monitoring_destinations"][network_id]
     
-    if network_id in networks_data:
-        connectivity_data = networks_data[network_id].get("connectivity_monitoring", {
+    # Fallback to comprehensive JSON file
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    
+    if comprehensive_data and "networks" in comprehensive_data and network_id in comprehensive_data["networks"]:
+        connectivity_data = comprehensive_data["networks"][network_id].get("connectivity_monitoring", {
             "destinations": ["8.8.8.8", "1.1.1.1"]
         })
         return connectivity_data
@@ -683,15 +831,17 @@ async def update_connectivity_monitoring_destinations(network_id: str, request: 
         monitoring_data = await request.json()
         logger.info(f"Monitoring data: {monitoring_data}")
         
-        # Load networks data
-        networks_data = load_from_json_file("networks.json")
+        # Load comprehensive data
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"networks": {}}
         
-        if network_id in networks_data:
+        if network_id in comprehensive_data["networks"]:
             # Update the connectivity monitoring data
-            networks_data[network_id]["connectivity_monitoring"] = monitoring_data
+            comprehensive_data["networks"][network_id]["connectivity_monitoring"] = monitoring_data
             
-            # Save back to file
-            save_to_json_file("networks.json", networks_data)
+            # Save back to comprehensive file
+            save_to_comprehensive_json(comprehensive_data)
             
             logger.info(f"Updated connectivity monitoring for network {network_id}")
             return monitoring_data
@@ -707,11 +857,15 @@ async def get_network_access_control_lists(network_id: str):
     """Get network access control lists"""
     logger.info(f"Getting access control lists for network {network_id}")
     
-    # Load networks data
-    networks_data = load_from_json_file("networks.json")
+    # Return data from comprehensive API data structure
+    if "network_access_control_lists" in mock_data and network_id in mock_data["network_access_control_lists"]:
+        return mock_data["network_access_control_lists"][network_id]
     
-    if network_id in networks_data:
-        acl_data = networks_data[network_id].get("access_control_lists", {
+    # Fallback to comprehensive JSON file
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    
+    if comprehensive_data and "networks" in comprehensive_data and network_id in comprehensive_data["networks"]:
+        acl_data = comprehensive_data["networks"][network_id].get("access_control_lists", {
             "rules": [
                 {
                     "policy": "allow",
@@ -737,15 +891,17 @@ async def update_network_access_control_lists(network_id: str, request: Request)
         acl_data = await request.json()
         logger.info(f"ACL data: {acl_data}")
         
-        # Load networks data
-        networks_data = load_from_json_file("networks.json")
+        # Load comprehensive data
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"networks": {}}
         
-        if network_id in networks_data:
+        if network_id in comprehensive_data["networks"]:
             # Update the ACL data
-            networks_data[network_id]["access_control_lists"] = acl_data
+            comprehensive_data["networks"][network_id]["access_control_lists"] = acl_data
             
-            # Save back to file
-            save_to_json_file("networks.json", networks_data)
+            # Save back to comprehensive file
+            save_to_comprehensive_json(comprehensive_data)
             
             logger.info(f"Updated access control lists for network {network_id}")
             return acl_data
@@ -761,7 +917,11 @@ async def get_organization_login_security(organization_id: str):
     """Get organization login security settings"""
     logger.info(f"Getting login security settings for organization {organization_id}")
     
-    # Return login security data (stored at organization level)
+    # Return data from comprehensive API data structure
+    if "organization_login_security" in mock_data and organization_id in mock_data["organization_login_security"]:
+        return mock_data["organization_login_security"][organization_id]
+    
+    # Fallback to default login security data
     login_security_data = {
         "enforcePasswordExpiration": False,
         "passwordExpirationDays": 365,
@@ -788,8 +948,20 @@ async def update_organization_login_security(organization_id: str, request: Requ
         security_data = await request.json()
         logger.info(f"Security data: {security_data}")
         
-        # For mock purposes, we'll just return the updated data
-        # In a real implementation, this would be stored in a database
+        # Load comprehensive data and update login security
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"organization_login_security": {}}
+        
+        # Update the login security data
+        if "organization_login_security" not in comprehensive_data:
+            comprehensive_data["organization_login_security"] = {}
+        
+        comprehensive_data["organization_login_security"][organization_id] = security_data
+        
+        # Save back to comprehensive file
+        save_to_comprehensive_json(comprehensive_data)
+        
         logger.info(f"Updated login security for organization {organization_id}")
         return security_data
     except Exception as e:
@@ -802,11 +974,15 @@ async def get_network_security_intrusion(network_id: str):
     """Get network security intrusion settings"""
     logger.info(f"Getting security intrusion settings for network {network_id}")
     
-    # Load networks data
-    networks_data = load_from_json_file("networks.json")
+    # Return data from comprehensive API data structure
+    if "network_security_intrusion" in mock_data and network_id in mock_data["network_security_intrusion"]:
+        return mock_data["network_security_intrusion"][network_id]
     
-    if network_id in networks_data:
-        intrusion_data = networks_data[network_id].get("security_intrusion", {
+    # Fallback to comprehensive JSON file
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    
+    if comprehensive_data and "networks" in comprehensive_data and network_id in comprehensive_data["networks"]:
+        intrusion_data = comprehensive_data["networks"][network_id].get("security_intrusion", {
             "mode": "prevention",
             "idsRulesets": "connectivity"
         })
@@ -823,15 +999,17 @@ async def update_network_security_intrusion(network_id: str, request: Request):
         intrusion_data = await request.json()
         logger.info(f"Intrusion data: {intrusion_data}")
         
-        # Load networks data
-        networks_data = load_from_json_file("networks.json")
+        # Load comprehensive data
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"networks": {}}
         
-        if network_id in networks_data:
+        if network_id in comprehensive_data["networks"]:
             # Update the intrusion data
-            networks_data[network_id]["security_intrusion"] = intrusion_data
+            comprehensive_data["networks"][network_id]["security_intrusion"] = intrusion_data
             
-            # Save back to file
-            save_to_json_file("networks.json", networks_data)
+            # Save back to comprehensive file
+            save_to_comprehensive_json(comprehensive_data)
             
             logger.info(f"Updated security intrusion for network {network_id}")
             return intrusion_data
@@ -922,3 +1100,6 @@ async def get_json_file_content(filename: str):
 if __name__ == "__main__":
     logger.info("Starting Mock Meraki API Server on http://127.0.0.5000")
     uvicorn.run(app, host="127.0.0.1", port=5000, log_level="info") 
+    # uvicorn.run(app, host="0.0.0.0", port=5000)
+    # uvicorn.run(app, host="0.0.0.0", port=5000, log_level="info")
+

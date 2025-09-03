@@ -116,7 +116,7 @@ class MerakiAPIClient:
         """Get clients connected to a network"""
         net_id = network_id or self.network_id
         if not net_id:
-            raise ValueError("NETWORK_ID not found in .env file")
+            raise ValueError("NETWORK_ID not found in .env file. Please create a .env file with NETWORK_ID=your_network_id")
         span = timespan or self.timespan
         params = {"timespan": span}
         return await self._make_request(f"/networks/{net_id}/clients", params, tool_name="get_network_clients")
@@ -135,9 +135,9 @@ class MerakiAPIClient:
         device_serial = serial or self.serial
         device_ip = ip or self.ip
         if not device_serial:
-            raise ValueError("SERIAL not found in .env file")
+            raise ValueError("SERIAL not found in .env file. Please create a .env file with SERIAL=your_device_serial")
         if not device_ip:
-            raise ValueError("IP not found in .env file")
+            raise ValueError("IP not found in .env file. Please create a .env file with IP=your_device_ip")
         params = {"ip": device_ip}
         return await self._make_request(f"/devices/{device_serial}/lossAndLatencyHistory", params, tool_name="get_device_loss_and_latency_history")
     
@@ -155,9 +155,9 @@ class MerakiAPIClient:
         net_id = network_id or self.network_id
         prod_type = product_type or self.product_type
         if not net_id:
-            raise ValueError("NETWORK_ID not found in .env file")
+            raise ValueError("NETWORK_ID not found in .env file. Please create a .env file with NETWORK_ID=your_network_id")
         if not prod_type:
-            raise ValueError("PRODUCT_TYPE not found in .env file")
+            raise ValueError("PRODUCT_TYPE not found in .env file. Please create a .env file with PRODUCT_TYPE=appliance")
         params = {"productType": prod_type}
         return await self._make_request(f"/networks/{net_id}/events", params, tool_name="get_network_events") 
 

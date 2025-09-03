@@ -49,9 +49,11 @@ pip install -r requirements.txt
 
 ### 2. **Configure Environment**
 ```bash
-# Create .env file with your API keys
-GEMINI_API_KEY=your_gemini_api_key
-MERAKI_API_KEY=your_meraki_api_key
+# Run setup script to create .env file
+python setup_env.py
+
+# Edit .env file with your actual API keys and network IDs
+# Required: MERAKI_API_KEY, GEMINI_API_KEY, NETWORK_ID, ORGANIZATION_ID
 ```
 
 ### 3. **Start Mock Server** (for testing)
@@ -98,7 +100,7 @@ The agent follows a structured decision-making process:
 ### **Behavior Rules**
 - ✅ **NEVER asks for permission** - Takes action automatically
 - ✅ **Only makes changes when actual problems exist**
-- ✅ **Always explains reasoning** for decisions
+- ✅ **Clear output format** - "NO CHANGES NEEDED." at end of report
 - ✅ **Conservative approach** - When in doubt, doesn't make changes
 - ✅ **Efficient execution** - Completes analysis in minimal steps
 

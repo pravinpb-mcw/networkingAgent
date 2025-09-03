@@ -153,8 +153,8 @@
       ]
     },
     "security_intrusion": {
-      "mode": "detection",
-      "idsRulesets": "connectivity"
+      "mode": "prevention",
+      "idsRulesets": "security"
     }
   },
   "L_2012fba816244809": {

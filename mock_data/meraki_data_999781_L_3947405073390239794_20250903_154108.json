@@ -1,0 +1,858 @@
+{
+  "metadata": {
+    "collection_start": "2025-09-02T10:10:45.660911+00:00",
+    "collection_end": "2025-09-03T10:10:45.660911+00:00",
+    "api_base_url": "https://api.meraki.com/api/v1",
+    "target_organization_id": "999781",
+    "target_network_id": "L_3947405073390239794",
+    "total_networks": 1,
+    "total_organizations": 1
+  },
+  "organizations": {
+    "999781": {
+      "info": {
+        "id": "999781",
+        "name": "Multicoreware, Inc",
+        "url": "https://n1012.meraki.com/o/S3n4wa/manage/organization/overview",
+        "api": {
+          "enabled": true
+        },
+        "licensing": {
+          "model": "per-device"
+        },
+        "cloud": {
+          "region": {
+            "name": "North America",
+            "host": {
+              "name": "United States"
+            }
+          }
+        },
+        "management": {
+          "details": [
+            {
+              "name": "customer number",
+              "value": "98289457"
+            },
+            {
+              "name": "IP restriction mode for API",
+              "value": "client allowed"
+            }
+          ]
+        }
+      },
+      "networks": [
+        "L_3947405073390239794"
+      ],
+      "uplinks": [
+        {
+          "networkId": "N_615304299089554558",
+          "serial": "Q2GY-ECCL-A9TE",
+          "model": "MX67W",
+          "highAvailability": {
+            "enabled": false,
+            "role": "primary"
+          },
+          "lastReportedAt": "2025-09-03T10:10:34Z",
+          "uplinks": [
+            {
+              "interface": "wan1",
+              "status": "active",
+              "ip": "216.169.5.21",
+              "gateway": "216.169.5.1",
+              "publicIp": "216.169.5.21",
+              "primaryDns": "8.8.8.8",
+              "secondaryDns": "8.8.4.4",
+              "ipAssignedBy": "static"
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089607871",
+          "serial": "Q2GY-G4TM-QKM5",
+          "model": "MX67W",
+          "highAvailability": {
+            "enabled": false,
+            "role": "primary"
+          },
+          "lastReportedAt": "2025-09-03T10:10:06Z",
+          "uplinks": [
+            {
+              "interface": "wan1",
+              "status": "active",
+              "ip": "23.186.136.29",
+              "gateway": "23.186.136.1",
+              "publicIp": "23.186.136.29",
+              "primaryDns": "23.186.136.2",
+              "secondaryDns": "8.8.8.8",
+              "ipAssignedBy": "dhcp"
+            }
+          ]
+        },
+        {
+          "networkId": "L_3947405073390239794",
+          "serial": "Q2MN-Q3J9-YJHW",
+          "model": "MX64W",
+          "highAvailability": {
+            "enabled": false,
+            "role": "primary"
+          },
+          "lastReportedAt": "2025-09-03T10:10:45Z",
+          "uplinks": [
+            {
+              "interface": "wan1",
+              "status": "active",
+              "ip": "192.168.1.69",
+              "gateway": "192.168.1.254",
+              "publicIp": "162.204.214.129",
+              "primaryDns": "192.168.1.254",
+              "secondaryDns": "0.0.0.0",
+              "ipAssignedBy": "dhcp"
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089708249",
+          "serial": "Q2YN-QP5Z-LUVG",
+          "model": "MX85",
+          "highAvailability": {
+            "enabled": false,
+            "role": "primary"
+          },
+          "lastReportedAt": "2025-09-03T10:10:44Z",
+          "uplinks": [
+            {
+              "interface": "wan1",
+              "status": "active",
+              "ip": "14.99.9.74",
+              "gateway": "14.99.9.73",
+              "publicIp": "14.99.9.74",
+              "primaryDns": "8.8.8.8",
+              "secondaryDns": "4.2.2.2",
+              "ipAssignedBy": "static"
+            },
+            {
+              "interface": "wan2",
+              "status": "not connected",
+              "ip": null,
+              "gateway": null,
+              "publicIp": null,
+              "primaryDns": null,
+              "secondaryDns": null,
+              "ipAssignedBy": null
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089707419",
+          "serial": "Q3FA-NP9D-L4PE",
+          "model": "MX75",
+          "highAvailability": {
+            "enabled": false,
+            "role": "primary"
+          },
+          "lastReportedAt": "2025-09-03T10:10:33Z",
+          "uplinks": [
+            {
+              "interface": "wan1",
+              "status": "active",
+              "ip": "106.51.44.178",
+              "gateway": "106.51.44.177",
+              "publicIp": "106.51.44.178",
+              "primaryDns": "106.51.255.135",
+              "secondaryDns": "106.51.156.186",
+              "ipAssignedBy": "static"
+            },
+            {
+              "interface": "wan2",
+              "status": "not connected",
+              "ip": null,
+              "gateway": null,
+              "publicIp": null,
+              "primaryDns": null,
+              "secondaryDns": null,
+              "ipAssignedBy": null
+            }
+          ]
+        }
+      ],
+      "vpn_stats": [
+        {
+          "networkId": "L_3947405073390239794",
+          "networkName": "MCW San Jose New ",
+          "merakiVpnPeers": [
+            {
+              "networkId": "N_615304299089607871",
+              "networkName": "MCW Hayward",
+              "usageSummary": {
+                "receivedInKilobytes": "10360030",
+                "sentInKilobytes": "5613640"
+              }
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089607871",
+          "networkName": "MCW Hayward",
+          "merakiVpnPeers": [
+            {
+              "networkId": "N_615304299089707419",
+              "networkName": "MCW CBE",
+              "usageSummary": {
+                "receivedInKilobytes": "10257392",
+                "sentInKilobytes": "2480760"
+              }
+            },
+            {
+              "networkId": "N_615304299089708249",
+              "networkName": "MCW CHN",
+              "usageSummary": {
+                "receivedInKilobytes": "274",
+                "sentInKilobytes": "270"
+              }
+            },
+            {
+              "networkId": "L_3947405073390239794",
+              "networkName": "MCW San Jose New ",
+              "usageSummary": {
+                "receivedInKilobytes": "5613640",
+                "sentInKilobytes": "10360030"
+              }
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089707419",
+          "networkName": "MCW CBE",
+          "merakiVpnPeers": [
+            {
+              "networkId": "N_615304299089607871",
+              "networkName": "MCW Hayward",
+              "usageSummary": {
+                "receivedInKilobytes": "2480760",
+                "sentInKilobytes": "10257392"
+              }
+            },
+            {
+              "networkId": "N_615304299089708249",
+              "networkName": "MCW CHN",
+              "usageSummary": {
+                "receivedInKilobytes": "5275960",
+                "sentInKilobytes": "2964297"
+              }
+            }
+          ]
+        },
+        {
+          "networkId": "N_615304299089708249",
+          "networkName": "MCW CHN",
+          "merakiVpnPeers": [
+            {
+              "networkId": "N_615304299089607871",
+              "networkName": "MCW Hayward",
+              "usageSummary": {
+                "receivedInKilobytes": "270",
+                "sentInKilobytes": "274"
+              }
+            },
+            {
+              "networkId": "N_615304299089707419",
+              "networkName": "MCW CBE",
+              "usageSummary": {
+                "receivedInKilobytes": "2964297",
+                "sentInKilobytes": "5275960"
+              }
+            }
+          ]
+        }
+      ],
+      "login_security": {
+        "enforcePasswordExpiration": false,
+        "passwordExpirationDays": null,
+        "enforceDifferentPasswords": true,
+        "numDifferentPasswords": 2,
+        "enforceStrongPasswords": true,
+        "minimumPasswordLength": 8,
+        "enforceAccountLockout": false,
+        "accountLockoutAttempts": null,
+        "enforceIdleTimeout": false,
+        "idleTimeoutMinutes": null,
+        "enforceTwoFactorAuth": false,
+        "enforceLoginIpRanges": false,
+        "loginIpRanges": [],
+        "apiAuthentication": {
+          "ipRestrictionsForKeys": {
+            "enabled": true,
+            "ranges": []
+          }
+        }
+      }
+    }
+  },
+  "networks": {
+    "L_3947405073390239794": {
+      "info": {
+        "id": "L_3947405073390239794",
+        "organizationId": "999781",
+        "productTypes": [
+          "appliance",
+          "camera",
+          "cellularGateway",
+          "sensor",
+          "switch",
+          "wireless"
+        ],
+        "url": "https://n1012.meraki.com/MCW-San-Jose-New/n/xyR_Yd8Db/manage/usage/list",
+        "name": "MCW San Jose New ",
+        "timeZone": "America/Los_Angeles",
+        "enrollmentString": null,
+        "tags": [],
+        "notes": "",
+        "isBoundToConfigTemplate": false,
+        "isVirtual": false
+      },
+      "organization_id": "999781",
+      "clients": [
+        {
+          "id": "k99b579",
+          "mac": "28:11:a8:97:15:e9",
+          "description": "mcw-dell",
+          "ip": "192.168.22.7",
+          "ip6": "2600:1700:450:a550:29ab:ab97:5166:2a41",
+          "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
+          "user": null,
+          "firstSeen": "2024-10-26T02:02:49Z",
+          "lastSeen": "2025-09-03T10:10:42Z",
+          "manufacturer": "Intel",
+          "os": "Windows 10",
+          "deviceTypePrediction": null,
+          "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
+          "recentDeviceName": "San Jose 2",
+          "recentDeviceMac": "0c:8d:db:8d:30:80",
+          "recentDeviceConnection": "Wired",
+          "ssid": "BrightAngel1",
+          "vlan": "0",
+          "switchport": null,
+          "usage": {
+            "sent": 43912,
+            "recv": 1628601,
+            "total": 1672514
+          },
+          "status": "Online",
+          "notes": null,
+          "groupPolicy8021x": null,
+          "adaptivePolicyGroup": null,
+          "smInstalled": false,
+          "namedVlan": null,
+          "pskGroup": null,
+          "wirelessCapabilities": "802.11ax - 2.4 and 5 GHz",
+          "mcgSerial": null,
+          "mcgNodeName": null,
+          "mcgNodeMac": null,
+          "mcgNetworkId": null
+        },
+        {
+          "id": "kc4b091",
+          "mac": "00:e0:4c:4a:44:70",
+          "description": "AMD-Crater-1-Yocto-Linux",
+          "ip": "192.168.22.136",
+          "ip6": null,
+          "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
+          "user": null,
+          "firstSeen": "2025-06-17T01:17:45Z",
+          "lastSeen": "2025-09-03T02:03:19Z",
+          "manufacturer": "Realtek Semiconductor",
+          "os": null,
+          "deviceTypePrediction": null,
+          "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
+          "recentDeviceName": "San Jose 2",
+          "recentDeviceMac": "0c:8d:db:8d:30:80",
+          "recentDeviceConnection": "Wired",
+          "ssid": null,
+          "vlan": "0",
+          "switchport": null,
+          "usage": {
+            "sent": 1,
+            "recv": 0,
+            "total": 1
+          },
+          "status": "Offline",
+          "notes": null,
+          "groupPolicy8021x": null,
+          "adaptivePolicyGroup": null,
+          "smInstalled": false,
+          "namedVlan": null,
+          "pskGroup": null,
+          "wirelessCapabilities": "802.11b - 2.4 GHz",
+          "mcgSerial": null,
+          "mcgNodeName": null,
+          "mcgNodeMac": null,
+          "mcgNetworkId": null
+        },
+        {
+          "id": "kea2057",
+          "mac": "00:00:1a:20:40:62",
+          "description": "amd-Lilac-19",
+          "ip": "192.168.22.158",
+          "ip6": null,
+          "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
+          "user": null,
+          "firstSeen": "2025-07-23T21:12:50Z",
+          "lastSeen": "2025-09-03T10:10:42Z",
+          "manufacturer": "Advanced Micro Devices",
+          "os": null,
+          "deviceTypePrediction": null,
+          "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
+          "recentDeviceName": "San Jose 2",
+          "recentDeviceMac": "0c:8d:db:8d:30:80",
+          "recentDeviceConnection": "Wired",
+          "ssid": null,
+          "vlan": "0",
+          "switchport": null,
+          "usage": {
+            "sent": 5466900,
+            "recv": 2792398,
+            "total": 8259298
+          },
+          "status": "Online",
+          "notes": null,
+          "groupPolicy8021x": null,
+          "adaptivePolicyGroup": null,
+          "smInstalled": false,
+          "namedVlan": null,
+          "pskGroup": null,
+          "wirelessCapabilities": "802.11b - 2.4 GHz",
+          "mcgSerial": null,
+          "mcgNodeName": null,
+          "mcgNodeMac": null,
+          "mcgNetworkId": null
+        },
+        {
+          "id": "kfe90a4",
+          "mac": "00:00:1a:20:3e:d2",
+          "description": "amd-Lilac-HPT1",
+          "ip": "192.168.22.159",
+          "ip6": null,
+          "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
+          "user": null,
+          "firstSeen": "2025-07-23T23:16:20Z",
+          "lastSeen": "2025-09-03T10:10:42Z",
+          "manufacturer": "Advanced Micro Devices",
+          "os": null,
+          "deviceTypePrediction": null,
+          "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
+          "recentDeviceName": "San Jose 2",
+          "recentDeviceMac": "0c:8d:db:8d:30:80",
+          "recentDeviceConnection": "Wired",
+          "ssid": null,
+          "vlan": "0",
+          "switchport": null,
+          "usage": {
+            "sent": 252916,
+            "recv": 10055952,
+            "total": 10308869
+          },
+          "status": "Online",
+          "notes": null,
+          "groupPolicy8021x": null,
+          "adaptivePolicyGroup": null,
+          "smInstalled": false,
+          "namedVlan": null,
+          "pskGroup": null,
+          "wirelessCapabilities": "802.11b - 2.4 GHz",
+          "mcgSerial": null,
+          "mcgNodeName": null,
+          "mcgNodeMac": null,
+          "mcgNetworkId": null
+        },
+        {
+          "id": "k4e9996",
+          "mac": "6a:f5:4b:1e:a8:40",
+          "description": "AMD-Crater-2-Yocto-Linux",
+          "ip": "192.168.22.137",
+          "ip6": null,
+          "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
+          "user": null,
+          "firstSeen": "2025-06-19T17:40:14Z",
+          "lastSeen": "2025-09-03T00:50:42Z",
+          "manufacturer": null,
+          "os": null,
+          "deviceTypePrediction": null,
+          "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
+          "recentDeviceName": "San Jose 2",
+          "recentDeviceMac": "0c:8d:db:8d:30:80",
+          "recentDeviceConnection": "Wired",
+          "ssid": null,
+          "vlan": "0",
+          "switchport": null,
+          "usage": {
+            "sent": 1,
+            "recv": 0,
+            "total": 1
+          },
+          "status": "Offline",
+          "notes": null,
+          "groupPolicy8021x": null,
+          "adaptivePolicyGroup": null,
+          "smInstalled": false,
+          "namedVlan": null,
+          "pskGroup": null,
+          "wirelessCapabilities": "802.11b - 2.4 GHz",
+          "mcgSerial": null,
+          "mcgNodeName": null,
+          "mcgNodeMac": null,
+          "mcgNetworkId": null
+        }
+      ],
+      "traffic": [
+        {
+          "application": "SSH",
+          "destination": "192.168.42.84",
+          "protocol": "TCP",
+          "port": 22,
+          "recv": 1953,
+          "sent": 12262,
+          "flows": 0,
+          "activeTime": 5460,
+          "numClients": 1
+        },
+        {
+          "application": "SSH",
+          "destination": "192.168.63.18",
+          "protocol": "TCP",
+          "port": 22,
+          "recv": 1514,
+          "sent": 2230,
+          "flows": 0,
+          "activeTime": 6000,
+          "numClients": 1
+        },
+        {
+          "application": "SSH",
+          "destination": "192.168.63.196",
+          "protocol": "TCP",
+          "port": 22,
+          "recv": 29829,
+          "sent": 2527,
+          "flows": 1,
+          "activeTime": 6000,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "92.38.148.17",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 60,
+          "sent": 60,
+          "flows": 0,
+          "activeTime": 5820,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "api.snapcraft.io",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 309,
+          "sent": 4,
+          "flows": 1,
+          "activeTime": 60,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "default.exp-tas.com",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 120,
+          "sent": 28,
+          "flows": 14,
+          "activeTime": 420,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "files.pythonhosted.org",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 808,
+          "sent": 7,
+          "flows": 1,
+          "activeTime": 60,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "pcapp.store",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 11,
+          "sent": 3,
+          "flows": 0,
+          "activeTime": 120,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "proxy.individual.githubcopilot.com",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 61,
+          "sent": 545,
+          "flows": 0,
+          "activeTime": 360,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "pypi.org",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 856,
+          "sent": 103,
+          "flows": 3,
+          "activeTime": 120,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "repository.pcapp.store",
+          "protocol": "TCP",
+          "port": 443,
+          "recv": 605,
+          "sent": 23,
+          "flows": 0,
+          "activeTime": 600,
+          "numClients": 1
+        },
+        {
+          "application": "Encrypted TCP (SSL)",
+          "destination": "203.10.96.34",
+          "protocol": "TCP",
+          "port": 80,
+          "recv": 24,
+          "sent": 24,
+          "flows": 0,
+          "activeTime": 1980,
+          "numClients": 1
+        },
+        {
+          "application": "Microsoft Teams",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 194,
+          "sent": 15,
+          "flows": 0,
+          "activeTime": 360,
+          "numClients": 1
+        },
+        {
+          "application": "Microsoft Windows Update Service",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 48516,
+          "sent": 1101,
+          "flows": 14,
+          "activeTime": 540,
+          "numClients": 1
+        },
+        {
+          "application": "Microsoft Windows Live Services Authentication",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 26,
+          "sent": 9,
+          "flows": 1,
+          "activeTime": 120,
+          "numClients": 1
+        },
+        {
+          "application": "Google Services",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 30,
+          "sent": 19,
+          "flows": 5,
+          "activeTime": 120,
+          "numClients": 1
+        },
+        {
+          "application": "Amazon Web Services",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 57,
+          "sent": 14,
+          "flows": 0,
+          "activeTime": 480,
+          "numClients": 1
+        },
+        {
+          "application": "GitHub",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 141,
+          "sent": 1916,
+          "flows": 5,
+          "activeTime": 960,
+          "numClients": 1
+        },
+        {
+          "application": "Microsoft Services",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 575,
+          "sent": 305,
+          "flows": 68,
+          "activeTime": 3120,
+          "numClients": 1
+        },
+        {
+          "application": "Azure",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 6,
+          "sent": 2,
+          "flows": 1,
+          "activeTime": 60,
+          "numClients": 1
+        },
+        {
+          "application": "Bing",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 8,
+          "sent": 9,
+          "flows": 1,
+          "activeTime": 60,
+          "numClients": 1
+        },
+        {
+          "application": "MSN",
+          "destination": null,
+          "protocol": "-",
+          "port": "-",
+          "recv": 43,
+          "sent": 9,
+          "flows": 2,
+          "activeTime": 420,
+          "numClients": 1
+        }
+      ],
+      "events": [],
+      "settings": {
+        "localStatusPageEnabled": true,
+        "remoteStatusPageEnabled": false,
+        "securePort": {
+          "enabled": false
+        },
+        "localStatusPage": {
+          "authentication": {
+            "enabled": true,
+            "username": "admin"
+          }
+        },
+        "namedVlans": {
+          "enabled": false
+        }
+      },
+      "group_policies": [],
+      "appliance_settings": {
+        "clientTrackingMethod": "MAC address",
+        "deploymentMode": "routed",
+        "dynamicDns": {
+          "enabled": true,
+          "prefix": "mcw-san-jose-2",
+          "url": "mcw-san-jose-2-hbgdcwzttmmc.dynamic-m.com"
+        }
+      },
+      "wireless_settings": {
+        "meshingEnabled": true,
+        "ipv6BridgeEnabled": true,
+        "locationAnalyticsEnabled": false,
+        "ledLightsOn": true,
+        "regulatoryDomain": {
+          "name": "FCC",
+          "countryCode": "US",
+          "permits6e": true
+        },
+        "upgradeStrategy": "minimizeUpgradeTime",
+        "namedVlans": {
+          "poolDhcpMonitoring": {
+            "enabled": false,
+            "duration": 5
+          }
+        }
+      },
+      "connectivity_monitoring": {
+        "destinations": [
+          {
+            "ip": "8.8.8.8",
+            "description": "Google",
+            "default": true
+          }
+        ]
+      },
+      "security_intrusion": {
+        "mode": "disabled"
+      },
+      "access_control_lists": {
+        "rules": [
+          {
+            "comment": "Default rule",
+            "policy": "allow",
+            "ipVersion": "any",
+            "protocol": "any",
+            "srcCidr": "any",
+            "srcPort": "any",
+            "dstCidr": "any",
+            "dstPort": "any",
+            "vlan": "any"
+          }
+        ]
+      },
+      "devices": [
+        {
+          "lat": 37.4180951010362,
+          "lng": -122.098531723022,
+          "address": "",
+          "serial": "Q2MN-Q3J9-YJHW",
+          "mac": "0c:8d:db:8d:30:80",
+          "wan1Ip": "192.168.1.69",
+          "wan2Ip": null,
+          "url": "https://n1012.meraki.com/MCW-San-Jose-New/n/ems4pd8Db/manage/nodes/new_list/13803413385344",
+          "networkId": "L_3947405073390239794",
+          "tags": [],
+          "name": "San Jose 2",
+          "details": [],
+          "model": "MX64W",
+          "firmware": "wired-18-1-07",
+          "floorPlanId": null
+        }
+      ]
+    }
+  },
+  "devices": {},
+  "traffic_data": {},
+  "performance_metrics": {
+    "L_3947405073390239794": {
+      "latency": [],
+      "jitter": [],
+      "packet_loss": [],
+      "throughput": [],
+      "error_rates": []
+    }
+  },
+  "policies": {},
+  "configurations": {},
+  "changes_history": {}
+}
