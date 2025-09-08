@@ -1,0 +1,56 @@
+NETWORK REROUTING UPLINK POLICIES
+================================
+
+1. WAN CAPACITY POLICY
+   - Each WAN can handle maximum 20 devices
+   - If a WAN has >20 devices, it is considered overloaded
+   - If a WAN has ≤20 devices, it is considered healthy
+
+2. EXCESS DEVICE REROUTING RULE
+   - Only reroute devices beyond the 20-device limit, not all devices
+   - If WAN1 has >20 devices: Keep first 20 on WAN1, reroute ONLY excess to WAN2 (if WAN2 has space)
+   - If WAN2 has >20 devices: Keep first 20 on WAN2, reroute ONLY excess to WAN1 (if WAN1 has space)
+
+3. DOWN WAN REROUTING POLICY
+   - If a WAN is "down", reroute ONLY excess devices (beyond 20) to available WANs
+   - Do NOT reroute all devices from a down WAN
+   - Check available WAN capacity before rerouting devices
+
+4. AVAILABLE WAN CHECK
+   - Only reroute to WANs that have space (< 20 devices)
+   - If no WANs have space, create a new WAN3 and reroute excess devices to it
+
+5. WAN STATUS UPDATE
+   - After rerouting excess devices, update down WAN status to "ok" if under 20 devices
+   - Example: If WAN2 has 22 devices and is down, reroute only 2 excess devices to WAN1, then WAN2 becomes ok
+
+6. NEW WAN CREATION POLICY
+   - If ALL existing WANs exceed 20-device limit, create WAN3
+   - Use update_appliance_settings to add WAN3 to degradedLinks
+   - Reroute excess devices from overloaded WANs to the new WAN3
+   - Example: If WAN1=25 devices, WAN2=23 devices, create WAN3 and reroute 5+3=8 excess devices to WAN3
+
+7. DEVICE REROUTING RULES
+   - Use interface="wan2" when rerouting TO WAN2
+   - Use interface="wan1" when rerouting TO WAN1
+   - Use interface="wan3" when rerouting TO WAN3
+   - Reroute devices one by one using update_uplink tool
+   - Report each device rerouting
+
+8. EXECUTION REQUIREMENTS
+   - MUST call get_network_settings to get current network configuration
+   - MUST call get_organization_uplinks_statuses to get device uplink data
+   - MUST count devices per WAN accurately
+   - MUST execute update_uplink tool calls for each device to reroute
+   - MUST call update_appliance_settings to create WAN3 if needed
+   - MUST report before/after device counts
+
+9. NO REROUTING RULE
+   - If all WANs have ≤20 devices, no rerouting is needed
+   - Report "No uplink rerouting needed - all WANs are within capacity"
+
+10. CRITICAL FAILURE CONDITIONS
+   - If LLM does not call update_uplink tool, this is a CRITICAL FAILURE
+   - If LLM reroutes all devices instead of only excess devices, this is a CRITICAL FAILURE
+   - If LLM reroutes devices to WANs that are already at capacity, this is a CRITICAL FAILURE
+   - If ALL WANs exceed limit and LLM does not create WAN3, this is a CRITICAL FAILURE

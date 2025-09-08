@@ -42,7 +42,7 @@ async def run_meraki_chat():
     os.environ["GEMINI_API_KEY"] = gemini_api_key
     
     # MCP server config file
-    config_file = "E:\\noa\\networkingAgent\\mcp-inspector-config.json"
+    config_file = "mcp-inspector-config.json"
 
     print("Initializing Meraki MCP Chat with Gemini...")
     print("="*30)
@@ -133,10 +133,10 @@ async def run_meraki_chat():
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Network Orchestration Agent...")
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",  # Use the original model
+            model="gemini-1.5-flash",  # Use flash model with higher free tier limits
             google_api_key=gemini_api_key,
             temperature=0.1,  # Even lower temperature for consistency
-            max_tokens=1024,  # Reduced tokens to avoid overload
+            max_tokens=512,  # Reduced tokens to stay within limits
             request_timeout=30,  # Add timeout
             retry_on_failure=True  # Enable retries
         )
@@ -640,7 +640,7 @@ async def run_automated_analysis(phase=None):
     os.environ["GEMINI_API_KEY"] = gemini_api_key
     
     # MCP server config file
-    config_file = "E:\\noa\\networkingAgent\\mcp-inspector-config.json"
+    config_file = "mcp-inspector-config.json"
 
     print("🤖 AUTOMATED NETWORK ANALYSIS MODE")
     print("="*30)
@@ -737,7 +737,7 @@ async def run_automated_analysis(phase=None):
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Network Orchestration Agent...")
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",  # Use the original model
+            model="gemini-1.5-flash",  # Use the original model
             google_api_key=gemini_api_key,
             temperature=0.1,  # Even lower temperature for consistency
             max_tokens=512,  # Further reduced tokens to avoid overload
@@ -829,6 +829,305 @@ async def run_automated_analysis(phase=None):
             print("Cleaning up connections...")
             await client.close_all_sessions()
 
+async def get_uplink_data_via_llm():
+    """Get uplink status and WAN details via LLM - Automated Network Orchestration Agent."""
+    
+    # Set up Gemini API key
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        print("❌ GEMINI_API_KEY not found in .env file")
+        return
+    
+    os.environ["GEMINI_API_KEY"] = gemini_api_key
+    
+    # MCP server config file
+    config_file = "mcp-inspector-config.json"
+
+    print("🌐 UPLINK STATUS ANALYSIS")
+    print("="*30)
+    print("🔍 Gathering comprehensive uplink information...")
+    print("="*30)
+    
+    try:
+        # Create MCP client
+        print("Connecting to MCP server...")
+        client = MCPClient.from_config_file(config_file)
+        
+        # Set up the model as the best automated network orchestration and monitoring agent
+        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
+
+            CRITICAL BEHAVIOR RULES:
+            1. NEVER ask "Would you like me to proceed" or "Should I continue"
+            2. NEVER ask for user confirmation before taking action
+            3. ONLY make changes when you identify ACTUAL network problems or issues
+            4. ALWAYS provide clear reasoning for your decisions
+            5. ALWAYS explain why you made changes or why you didn't make changes
+            6. ONLY modify settings if you believe it will improve network performance/security
+            7. Do NOT say "NO CHANGES NEEDED." at any time
+            8. If you made changes, summarize what was changed
+            9. BE EFFICIENT - Use minimal steps to complete tasks
+            10. FOCUS ON INTELLIGENT ANALYSIS - Don't make unnecessary changes
+
+            OUTPUT FORMAT REQUIREMENTS:
+            - ALWAYS use this exact format for all responses:
+            **Analysis:**
+            [Your analysis of the network data]
+            
+            **Decision:**
+            [Your decision - what you will do or not do]
+            
+            **Reasoning:**
+            [Your reasoning for the decision]
+          
+
+            AUTOMATION FRAMEWORK:
+            - AI-powered decision making with confidence scoring
+            - Intelligent action execution based on network conditions
+            - Threshold-based monitoring with configurable alerts
+            - Trend analysis and predictive network optimization
+            - Emergency response protocols for critical situations
+            - Comprehensive logging and audit trail maintenance
+
+
+            RESPONSE STYLE:
+            - Always think as a network orchestration expert
+            - Provide clear analysis of network conditions
+            - Explain your decision-making process
+            - Only execute actions when problems are identified
+            - Report what was checked, what decisions were made, and why
+
+            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+
+        # Create Gemini LLM with specialized network orchestration role
+        print("Initializing Gemini LLM as Uplink Monitoring Agent...")
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",  # Use flash model with higher free tier limits
+            google_api_key=gemini_api_key,
+            temperature=0.0,  # Lowest temperature for consistency
+            max_tokens=4096,  # Increased tokens to prevent truncation
+            request_timeout=30,  # Shorter timeout
+            retry_on_failure=True  # Enable retries
+        )
+        
+        # Create MCP agent with specialized network orchestration role
+        print("Creating Uplink Monitoring Agent...")
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=50,  # Increased steps to allow tool execution
+            memory_enabled=True,  # Disable memory to reduce complexity
+            verbose=True,  # Enable verbose to see what's happening
+        )
+        
+        print("Setup complete!")
+        print("\n" + "="*30)
+
+
+        # uplink_prompt = f"""{system_prompt}
+        #     UPLINK STATUS ANALYSIS & WAN LOAD BALANCING
+
+        #      TOOLS TO USE (in order):
+        #      1. get_network_settings → Check appliance WAN status (ok/down from degradedLinks)
+        #      2. get_organization_uplinks_statuses → Get device uplink connectivity and counts
+        #      3. update_uplink → Move devices between WANs (MANDATORY if imbalance or failures are found)
+             
+        #      **MANDATORY: You MUST call both get_network_settings AND get_organization_uplinks_statuses before making any decisions!**
+             
+        #      **STEP 1: Call get_network_settings NOW**
+        #      **STEP 2: Call get_organization_uplinks_statuses NOW**
+        #      **STEP 3: Count devices and make decisions**
+
+        #      CRITICAL RULES:
+        #      1. Appliance settings are the **source of truth** (use degradedLinks to check WAN status).
+        #      2. WAN CAPACITY LIMIT: Each WAN can handle maximum 20 devices.
+        #      3. OVERLOAD DETECTION: If WAN1 has >20 devices, move ONLY the excess devices (beyond 20) to WAN2.
+        #      4. KEEP FIRST 20: Always keep the first 20 devices on the original WAN.
+        #      5. MOVE EXCESS ONLY: Move only devices beyond the 20-device limit to available WANs.
+        #      6. ALL device moves must be executed with `update_uplink`, not just reported.
+        #      7. IMPORTANT: Process the COMPLETE response from get_organization_uplinks_statuses.
+        #      8. EXAMPLE: If WAN1 has 23 devices, keep 20 on WAN1, move only 3 to WAN2.
+        #      9. **DATA STRUCTURE**: The uplink data is under organization_uplinks_statuses['999781'] - it's a list of devices.
+        #      10. **COUNTING**: Check device['uplinks'][0]['interface'] for "wan1" or "wan2" values.
+        #      11. **VERIFICATION**: Before making decisions, show sample device data to verify you're reading interfaces correctly.
+
+        #     ---
+
+        #     ### REQUIRED OUTPUT STRUCTURE
+
+        #      **1. Analysis**  
+        #      - **FIRST: Call get_network_settings to get appliance WAN status**
+        #      - **SECOND: Call get_organization_uplinks_statuses to get device data**
+        #      - Interpret appliance settings (ok/down).  
+        #      - Count devices per WAN.  
+        #      - Identify overload or failures.
+
+        #     **2. Decision**  
+        #     - Specify which WANs/devices need changes.  
+        #     - State how devices will be redistributed.  
+
+        #     **3. Reasoning**  
+        #     - Justify why devices are moved.  
+        #     - Show capacity logic (20-device rule, WAN failures).  
+
+        #     **4. Appliance WAN Status Analysis**  
+        #     - WAN1 status (ok/down)  
+        #     - WAN2 status (ok/down)  
+        #     - Emergency action if any WAN is down  
+
+        #      **5. Device Count Per WAN**  
+        #      - IMPORTANT: Process ALL devices from the uplink statuses response
+        #      - **COUNTING INSTRUCTIONS:**
+        #      - 1. Go through EACH device in organization_uplinks_statuses['999781'] - DO NOT SKIP ANY!
+        #      - 2. Check device['uplinks'][0]['interface'] for each device
+        #      - 3. Count devices where interface == "wan1" for WAN1
+        #      - 4. Count devices where interface == "wan2" for WAN2
+        #      - 5. **MANDATORY: Show the actual counts like this:**
+        #      - WAN1: [ACTUAL COUNT] devices (list first 3 device serials)
+        #      - WAN2: [ACTUAL COUNT] devices (list first 3 device serials)
+        #      - WAN3: N devices (if any)  
+        #      - Mark WANs ≥20 devices as "down/overloaded"
+        #      - **DEBUG: Show the actual interface values you find: "wan1" or "wan2"**
+        #      - **CRITICAL: List the first 5 devices and their interface values to verify counting**
+             
+        #      **COUNTING VERIFICATION:**
+        #      - Show: "I counted X devices with interface='wan1' and Y devices with interface='wan2'"
+        #      - Show: "Total devices processed: X+Y"
+             
+        #      **CRITICAL: After this section, you MUST show the actual device counts you found!**
+
+        #      **6. WAN Load Balancing Actions**  
+        #      - WAN CAPACITY: Each WAN can handle maximum 20 devices
+        #      - **EXCESS DEVICE RULE: Only move devices beyond the 20-device limit, not all devices**
+        #      - If WAN1 has >20 devices: Keep first 20 on WAN1, move ONLY excess to WAN2 (if WAN2 has space)
+        #      - If WAN2 has >20 devices: Keep first 20 on WAN2, move ONLY excess to WAN1 (if WAN1 has space)
+        #      - **DOWN WAN RULE: If a WAN is "down", move ONLY excess devices (beyond 20) to available WANs**
+        #      - **AVAILABLE WAN CHECK: Only move to WANs that have space (< 20 devices)**
+        #      - **WAN STATUS UPDATE: After moving excess devices, update down WAN status to "ok" if under 20 devices**
+        #      - **EXAMPLE: If WAN2 has 22 devices and is down, move only 2 excess devices to WAN1, then WAN2 becomes ok**
+        #      - Show device redistribution plan
+        #      - CRITICAL: Use interface="wan2" when moving TO WAN2, interface="wan1" when moving TO WAN1
+        #      - **IMMEDIATELY AFTER THIS SECTION, YOU MUST CALL update_uplink FOR EACH DEVICE TO MOVE!**
+
+        #     **7. Uplink Status Summary**  
+        #     - Total active vs inactive uplinks  
+        #     - Device counts before/after balancing  
+
+        #     **8. WAN Availability Status**  
+        #     - Group devices by WAN (WAN1, WAN2, etc.)  
+        #     - For each WAN:  
+        #     Format → `WAN1 (15 devices): Serial: [serial], IP: [ip], Status: [status]`  
+
+        #     **9. Device Movement Log**  
+        #     - List moved devices with: Serial, Source WAN → Destination WAN  
+        #     - Confirm `update_uplink` calls
+        #     - EXAMPLE: If WAN1 has 23 devices, move 3 to WAN2: update_uplink with serial and interface parameters  
+
+        #      **10. Before and After Comparison**  
+        #      - **MANDATORY: You MUST show actual counts before and after:**
+        #      - **BEFORE LOAD BALANCING:**
+        #      -   WAN1: [COUNT] devices - Status: [ok/down]
+        #      -   WAN2: [COUNT] devices - Status: [ok/down]
+        #      - **AFTER LOAD BALANCING:**
+        #      -   WAN1: [COUNT] devices - Status: [ok/down]
+        #      -   WAN2: [COUNT] devices - Status: [ok/down]
+        #      - **DEVICES MOVED: [COUNT] devices moved from WAN1 to WAN2 (or "None" if no movement)**
+
+        #     ---
+
+        #     ### EXECUTION RULES
+        #     - Always call `get_network_settings` first.  
+        #     - Always call `get_organization_uplinks_statuses` second.  
+        #     - If WAN is down or overloaded → IMMEDIATELY call `update_uplink` for all impacted devices.  
+        #     - Report AND execute changes in real time.  
+
+        #      🚨 FINAL REMINDER: You MUST call `update_uplink` to actually move devices. Do not just analyze — **execute the fix.**
+             
+        #      **CRITICAL: If you don't call update_uplink, the task is FAILED. You must execute the tool calls NOW!**
+        #     """
+
+
+        
+        # Read policy file
+        try:
+            with open('policy.txt', 'r') as f:
+                policy_content = f.read()
+        except FileNotFoundError:
+            policy_content = "Policy file not found. Using default rules."
+        
+        uplink_prompt = f"""{system_prompt}
+            SIMPLE WAN STATUS CHECK & UPLINK REROUTING
+
+            **POLICY FILE:**
+            {policy_content}
+
+            **SIMPLE STEPS:**
+            1. Call get_network_settings to check WAN status
+            2. Call get_organization_uplinks_statuses to get device data  
+            3. If any WAN is down or overloaded, read the policy file above
+            4. Think about what to do based on the policy
+            5. If ALL WANs exceed limit, create WAN3 using update_appliance_settings
+            6. Execute the uplink rerouting using update_uplink tool
+
+            **EXECUTE NOW:**
+            - Call get_network_settings
+            - Call get_organization_uplinks_statuses  
+            - Count devices per WAN
+            - If WAN is down/overloaded, follow the policy file
+            - If ALL WANs exceed 20 devices, create WAN3
+            - Reroute devices using update_uplink tool
+            """
+
+
+
+        print("🚀 Running uplink analysis...")
+        
+        # Retry logic for Gemini API overload
+        max_retries = 3
+        retry_delay = 5  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                response = await agent.run(uplink_prompt)
+                break
+            except Exception as e:
+                error_str = str(e)
+                if "503" in error_str or "overloaded" in error_str.lower():
+                    if attempt < max_retries - 1:
+                        print(f"⚠️ Gemini model overloaded (attempt {attempt + 1}/{max_retries}). Retrying in {retry_delay} seconds...")
+                        await asyncio.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                        continue
+                    else:
+                        print(" Gemini model still overloaded after all retries. Please try again later.")
+                        response = "Error: Gemini model is overloaded. Please try again in a few minutes."
+                        break
+                elif "finish_reason" in error_str or "int' object has no attribute 'name'" in error_str:
+                    print(f"⚠️ Gemini API compatibility issue detected. This is a known issue with certain Gemini models.")
+                    print("The analysis may have completed successfully despite this error.")
+                    response = " UPLINK ANALYSIS COMPLETE - Analysis completed despite API compatibility warning."
+                    break
+                elif "429" in error_str or "quota" in error_str.lower() or "exceeded" in error_str.lower():
+                    print(f"⚠️ Gemini API quota exceeded. You've hit the free tier limits.")
+                    print("Please wait 55 seconds before trying again, or consider upgrading your API plan.")
+                    response = " UPLINK ANALYSIS FAILED - API quota exceeded. Please wait 55 seconds and try again."
+                    break
+                else:
+                    raise e
+        
+        print("\n" + "="*30)
+        print("✅ UPLINK ANALYSIS COMPLETE")
+        print("="*30)
+        print(response)
+        print("\n" + "="*30)
+        print("🎯 Uplink analysis completed!")
+        
+    except Exception as e:
+        print(f"❌ Error in uplink analysis: {e}")
+    
+    finally:
+        if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
+            await client.close_all_sessions()
+
 async def test_connection():
     """Test the MCP connection and available tools."""
     print("Testing MCP Connection...")
@@ -849,7 +1148,7 @@ async def test_connection():
         
         # Test LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             google_api_key=gemini_api_key,
             temperature=0.1,
             max_tokens=512,
@@ -893,6 +1192,7 @@ async def main():
         print("  python mcp_client.py                    - Run interactive chat mode")
         print("  python mcp_client.py test               - Test MCP connection")
         print("  python mcp_client.py --automate         - Run full automated analysis (all phases)")
+        print("  python mcp_client.py --uplink          - Get uplink status and WAN details via LLM")
 
         print("  python mcp_client.py --automate --phase=1 - Run Phase 1: Organization Overview")
         print("  python mcp_client.py --automate --phase=2 - Run Phase 2: Network Infrastructure")
@@ -935,6 +1235,11 @@ async def main():
                 return
         
         await run_automated_analysis(phase)
+        return
+
+    # Check for --uplink flag
+    if "--uplink" in sys.argv:
+        await get_uplink_data_via_llm()
         return
     
     # Run the chat

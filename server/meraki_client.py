@@ -252,6 +252,48 @@ class MerakiAPIClient:
             data=settings_data
         )
 
+    async def update_appliance_settings(
+        self, 
+        network_id: str = None, 
+        settings_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update appliance settings for a network
+        
+        PUT /networks/{networkId}/appliance/settings
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not settings_data:
+            raise ValueError("settings_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/appliance/settings",
+            method="PUT",
+            data=settings_data
+        )
+
+    async def update_uplink_status(
+        self, 
+        network_id: str = None, 
+        uplink_data: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Update uplink status for a device
+        
+        PUT /networks/{networkId}/uplinks/statuses
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        if not uplink_data:
+            raise ValueError("uplink_data is required")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/uplinks/statuses",
+            method="PUT",
+            data=uplink_data
+        )
+
     async def create_network_group_policy(
         self, 
         network_id: str = None, 

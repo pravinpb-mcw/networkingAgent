@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Mock Meraki API Server for Local Testing
 Handles the same endpoints as the real Meraki API for development and testing
@@ -220,6 +221,70 @@ async def get_organization_uplinks_statuses():
     # Return empty list if no data found
     return []
 
+@app.put("/networks/{network_id}/uplinks/statuses")
+async def update_uplink_status(network_id: str, uplink_data: dict):
+    """Mock endpoint for updating uplink status"""
+    try:
+        logger.info(f"PUT /networks/{network_id}/uplinks/statuses")
+        logger.info(f"Uplink data: {uplink_data}")
+        
+        # Load comprehensive data
+        comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+        if not comprehensive_data:
+            comprehensive_data = {"organization_uplinks_statuses": {}}
+        
+        # Update the uplink data in both mock_data and comprehensive_data
+        if "organization_uplinks_statuses" in mock_data:
+            # Find and update the specific device uplink in mock_data
+            updated_devices = []
+            for org_id, uplinks in mock_data["organization_uplinks_statuses"].items():
+                for device in uplinks:
+                    # If serial is provided, match by serial; otherwise update all devices with matching interface
+                    if (uplink_data.get("serial") and device.get("serial") == uplink_data.get("serial")) or \
+                       (not uplink_data.get("serial") and uplink_data.get("interface")):
+                        # Update the uplink interface
+                        for uplink in device.get("uplinks", []):
+                            # Update the interface to the new one
+                            uplink["interface"] = uplink_data.get("interface")
+                            # Update other uplink data
+                            uplink.update(uplink_data)
+                            updated_devices.append(device['serial'])
+                            logger.info(f"Updated uplink for device {device['serial']} in mock_data")
+                            break
+                        if uplink_data.get("serial"):  # If serial was provided, stop after finding the match
+                            break
+            
+            # Also update in comprehensive_data
+            if "organization_uplinks_statuses" in comprehensive_data:
+                for org_id, uplinks in comprehensive_data["organization_uplinks_statuses"].items():
+                    for device in uplinks:
+                        # If serial is provided, match by serial; otherwise update all devices with matching interface
+                        if (uplink_data.get("serial") and device.get("serial") == uplink_data.get("serial")) or \
+                           (not uplink_data.get("serial") and uplink_data.get("interface")):
+                            # Update the uplink interface
+                            for uplink in device.get("uplinks", []):
+                                # Update the interface to the new one
+                                uplink["interface"] = uplink_data.get("interface")
+                                # Update other uplink data
+                                uplink.update(uplink_data)
+                                logger.info(f"Updated uplink for device {device['serial']} in comprehensive_data")
+                                break
+                            if uplink_data.get("serial"):  # If serial was provided, stop after finding the match
+                                break
+        
+        # Save back to comprehensive file
+        save_to_comprehensive_json(comprehensive_data)
+        
+        return {
+            "message": "Uplink status updated successfully", 
+            "updated_data": uplink_data,
+            "updated_devices": updated_devices if 'updated_devices' in locals() else []
+        }
+        
+    except Exception as e:
+        logger.error(f"Error updating uplink status: {e}")
+        return {"error": str(e)}
+
 @app.post("/networks/{network_id}/appliance/settings")
 async def create_network_appliance_settings(network_id: str, settings: ApplianceSettings):
     """Mock endpoint for creating/updating network appliance settings"""
@@ -390,11 +455,21 @@ async def get_network_settings(network_id: str):
         # Get network settings from mock data
         network_settings = mock_data["networks"][network_id].get("network_settings", {})
         
+        # Also include appliance settings if available
+        # Get appliance settings from the network data (contains degradedLinks)
+        appliance_settings = mock_data["networks"][network_id].get("appliance_settings", [])
+        
+        # Combine network settings and appliance settings
+        combined_data = {
+            **network_settings,
+            "appliance_settings": appliance_settings
+        }
+        
         return {
             "message": "Network settings retrieved successfully",
             "networkId": network_id,
             "timestamp": datetime.now().isoformat(),
-            "data": network_settings
+            "data": combined_data
         }
     except Exception as e:
         logger.error(f"Error getting network settings: {e}")

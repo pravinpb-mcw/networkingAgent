@@ -41,7 +41,9 @@ from get_network_vpn_stats import get_network_vpn_stats
 from get_network_events import get_network_events
 from get_network_settings import get_network_settings
 from update_network_settings import update_network_settings
+from update_appliance_settings import update_appliance_settings
 from get_organization_uplinks_statuses import get_organization_uplinks_statuses
+from update_uplink import update_uplink
 from get_network_group_policies import get_network_group_policies
 from create_network_wireless_settings import create_network_wireless_settings
 from update_network_group_policy import update_network_group_policy
@@ -78,7 +80,7 @@ async def handle_list_tools() -> List[Tool]:
     return [
         Tool(
             name="get_organizations",
-            description="Get organization information. Returns: organization details, structure, and configuration.",
+            description="Get Cisco Meraki organization information including organization ID, name, and basic details.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -87,7 +89,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_clients",
-            description="Get connected network clients. Returns: device details, usage patterns, connection history.",
+            description="Get list of devices connected to the network including client details, IP addresses, and connection status.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -96,7 +98,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_traffic",
-            description="Analyze network traffic patterns. Returns: bandwidth usage, application breakdown, optimization insights.",
+            description="Get network traffic analysis including bandwidth usage, top applications, and traffic patterns.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -105,7 +107,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_device_loss_and_latency_history",
-            description="Get device performance metrics. Returns: packet loss, latency, goodput history.",
+            description="Get device performance metrics including packet loss percentage, latency measurements, and throughput data.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -114,7 +116,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_organization_vpn_stats",
-            description="Get VPN statistics. Returns: connection status, traffic metrics, performance data.",
+            description="Get VPN connection statistics including connection status, traffic metrics, and performance data.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -123,7 +125,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_events",
-            description="Get network events. Returns: device status, security events, system notifications.",
+            description="Get network events log including device status changes, security events, and system notifications.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -132,7 +134,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_settings",
-            description="Get network-wide configuration settings. Returns: appliance settings, wireless settings, and other network-wide configurations.",
+            description="Get network configuration settings including appliance settings with degradedLinks status (WAN1/WAN2 status), wireless settings, and other network-wide configurations.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -141,7 +143,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_network_settings",
-            description="Create network-wide configuration settings. Just tell me what you want in simple text. Example: 'Enable local status page and secure port' or 'Configure named VLANs and webhooks'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable local status page and secure port', I will create: {'localStatusPage': {'enabled': True}, 'securePort': {'enabled': True}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. This tool creates comprehensive network-wide settings including local status page, secure port, named VLANs, webhooks, and other configurations.",
+            description="Update network-wide configuration settings. Use natural language to describe what you want. Example: 'Enable local status page and secure port' or 'Configure named VLANs and webhooks'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -154,8 +156,22 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
         Tool(
+            name="update_appliance_settings",
+            description="Update appliance settings including degradedLinks status, DHCP configuration, and VLAN settings. Use natural language. Example: 'Set degradedLinks to ok for WAN1 and WAN2' or 'Update WAN1 status to down'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "settings_data": {
+                        "type": "string",
+                        "description": "Appliance settings to apply (natural language or JSON)"
+                    }
+                },
+                "required": ["settings_data"]
+            }
+        ),
+        Tool(
             name="get_organization_uplinks_statuses",
-            description="Get device uplink status. Returns: uplink status, failover info, interface details.",
+            description="Get device uplink status information including which WAN interface each device is connected to (wan1/wan2) and connection status.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -163,8 +179,22 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
         Tool(
+            name="update_uplink",
+            description="Move devices between WAN interfaces (wan1/wan2) for load balancing. Use natural language. Example: 'Move device Q2GY-ECCL-A9TE from wan1 to wan2' or 'Change device Q2MN-Q3J9-YJHW to wan2'.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "uplink_data": {
+                        "type": "string",
+                        "description": "Uplink change request in natural language (e.g., 'Move device SERIAL from wan1 to wan2')"
+                    }
+                },
+                "required": ["uplink_data"]
+            }
+        ),
+        Tool(
             name="get_network_group_policies",
-            description="Get network group policies. Returns: policy details, bandwidth limits, content filtering, scheduling settings.",
+            description="Get user group policies including bandwidth limits, content filtering rules, and scheduling settings.",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -173,13 +203,13 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_network_appliance_settings",
-            description="Create new NETWORK INFRASTRUCTURE settings (DHCP, VLAN, etc.). Just tell me what you want in simple text. Example: 'Enable DHCP with 24-hour lease and VLAN 100' or 'Turn on DHCP and enable VLAN'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable DHCP with 24-hour lease and VLAN 100', I will create: {'dhcp': {'enabled': True, 'leaseTime': 86400}, 'vlan': {'enabled': True, 'id': 100}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. NOTE: This is for NETWORK INFRASTRUCTURE, not user policies or bandwidth limits.",
+            description="Create network infrastructure settings including DHCP configuration and VLAN settings. Use natural language. Example: 'Enable DHCP with 24-hour lease and VLAN 100'.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "settings_data": {
                         "type": "string",
-                        "description": "JSON string containing the appliance settings to create (e.g., DHCP, VLAN)."
+                        "description": "Appliance settings to create (natural language or JSON)"
                     }
                 },
                 "required": ["settings_data"]
@@ -187,13 +217,13 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_network_wireless_settings",
-            description="Create new network wireless settings. Just tell me what you want in simple text. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth' or 'Turn on wireless network with name Guest_WiFi'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth', I will create: {'enabled': True, 'ssid': 'My_SSID', 'bandwidth': {'limitUp': 1000, 'limitDown': 1000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. This tool directly applies wireless settings without complex workflows.",
+            description="Create wireless network settings including SSID, bandwidth limits, and security configuration. Use natural language. Example: 'Enable wireless with SSID My_SSID and 1000 Mbps bandwidth'.",
              inputSchema={
                 "type": "object",
                 "properties": {
                     "settings_data": {
                         "type": "string",
-                        "description": "JSON string containing the wireless settings to create (e.g., SSID, bandwidth)."
+                        "description": "Wireless settings to create (natural language or JSON)"
                     }
                 },
                 "required": ["settings_data"]
@@ -203,7 +233,7 @@ async def handle_list_tools() -> List[Tool]:
 
         Tool(
             name="update_network_group_policy",
-            description="Update an existing USER GROUP POLICY (bandwidth limits, traffic shaping, content filtering, etc.). Just tell me what you want in simple text. Example: 'Update policy 123 with new name Updated Guest Policy' or 'Change policy ABC to enable traffic shaping' or 'Set bandwidth limits to 500 Kbps upload and 10000 Kbps download'. I'll automatically convert your text to the right format - you don't need to know any technical details. IMPORTANT: I will convert your natural language into the proper JSON structure automatically. When you say 'Update policy 123 with new name Updated Guest Policy', I will create: {'name': 'Updated Guest Policy'}. When you say 'enable traffic shaping', I will create: {'firewallAndTrafficShaping': {'settings': {'trafficShapingEnabled': True}}}. When you say 'set bandwidth limits to 500 Kbps upload and 10000 Kbps download', I will create: {'bandwidth': {'limitUp': 500, 'limitDown': 10000}}. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything. NOTE: This is for USER POLICIES, not network infrastructure.",
+            description="Update user group policies including bandwidth limits, traffic shaping, and content filtering. Use natural language. Example: 'Update policy 123 with new name Updated Guest Policy' or 'Set bandwidth limits to 500 Kbps upload and 10000 Kbps download'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -224,7 +254,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_organization_networks",
-            description="Get all networks in an organization. Returns: network list with IDs, names, product types, and configuration details.",
+            description="Get list of all networks in the organization including network IDs, names, and product types.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -242,7 +272,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_organization_network",
-            description="Create a new network in an organization. Just tell me what you want in simple text. Example: 'Create a network named MCW San Jose with wireless and appliance products' or 'Add a new network for testing with cameras and sensors'. I'll automatically convert your text to the right format. SMART: If you provide some details, I'll only ask for what's missing. If you provide nothing, I'll ask for everything.",
+            description="Create a new network in the organization. Use natural language. Example: 'Create a network named MCW San Jose with wireless and appliance products'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -267,7 +297,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_connectivity_monitoring_destinations",
-            description="Get connectivity monitoring destinations for a network. Returns: monitoring destinations, connectivity status, and configuration details.",
+            description="Get connectivity monitoring destinations and their status for network health monitoring.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -285,7 +315,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_access_control_lists",
-            description="Get network access control lists for a network. Returns: ACL rules, access policies, and security configurations.",
+            description="Get network access control lists (ACL) including firewall rules and access policies.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -303,7 +333,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_organization_login_security",
-            description="Get organization login security settings. Returns: authentication policies, security rules, and access controls.",
+            description="Get organization login security settings including authentication policies and access controls.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -321,7 +351,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_network_security_intrusion",
-            description="Get network security intrusion settings. Returns: intrusion detection rules, security policies, and threat prevention settings.",
+            description="Get network security intrusion detection settings including threat prevention and security policies.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -339,7 +369,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_connectivity_monitoring_destinations",
-            description="Update connectivity monitoring destinations for a network. Just tell me what you want in simple text. Example: 'Add Google DNS as monitoring destination' or 'Set monitoring to 8.8.8.8 and 1.1.1.1'.",
+            description="Update connectivity monitoring destinations for network health monitoring. Use natural language. Example: 'Add Google DNS as monitoring destination' or 'Set monitoring to 8.8.8.8 and 1.1.1.1'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -364,7 +394,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_network_access_control_lists",
-            description="Update network access control lists for a network. Just tell me what you want in simple text. Example: 'Allow access to port 80 and 443' or 'Block access to social media sites'.",
+            description="Update network access control lists (ACL) for firewall rules and access policies. Use natural language. Example: 'Allow access to port 80 and 443' or 'Block access to social media sites'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -389,7 +419,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_organization_login_security",
-            description="Update organization login security settings. Just tell me what you want in simple text. Example: 'Enable two-factor authentication' or 'Set password policy to require 12 characters'.",
+            description="Update organization login security settings including authentication policies and password requirements. Use natural language. Example: 'Enable two-factor authentication' or 'Set password policy to require 12 characters'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -414,7 +444,7 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_network_security_intrusion",
-            description="Update network security intrusion settings. Just tell me what you want in simple text. Example: 'Enable intrusion detection' or 'Set security mode to prevention'.",
+            description="Update network security intrusion detection settings including threat prevention and security policies. Use natural language. Example: 'Enable intrusion detection' or 'Set security mode to prevention'.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -461,8 +491,14 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
         elif name == "update_network_settings":
             settings_data = arguments.get("settings_data", {})
             return await update_network_settings(settings_data, use_mock=USE_MOCK)
+        elif name == "update_appliance_settings":
+            settings_data = arguments.get("settings_data", {})
+            return await update_appliance_settings(settings_data, use_mock=USE_MOCK)
         elif name == "get_organization_uplinks_statuses":
             return await get_organization_uplinks_statuses()
+        elif name == "update_uplink":
+            uplink_data = arguments.get("uplink_data", {})
+            return await update_uplink(uplink_data, use_mock=USE_MOCK)
         elif name == "get_network_group_policies":
             return await get_network_group_policies()
         elif name == "create_network_appliance_settings":
