@@ -258,9 +258,10 @@ async def update_uplink_status(network_id: str, uplink_data: dict):
             if "organization_uplinks_statuses" in comprehensive_data:
                 for org_id, uplinks in comprehensive_data["organization_uplinks_statuses"].items():
                     for device in uplinks:
-                        # If serial is provided, match by serial; otherwise update all devices with matching interface
-                        if (uplink_data.get("serial") and device.get("serial") == uplink_data.get("serial")) or \
-                           (not uplink_data.get("serial") and uplink_data.get("interface")):
+                        # Check if device belongs to the target network and matches serial
+                        if (device.get("networkId") == network_id and 
+                            uplink_data.get("serial") and 
+                            device.get("serial") == uplink_data.get("serial")):
                             # Update the uplink interface
                             for uplink in device.get("uplinks", []):
                                 # Update the interface to the new one
@@ -269,8 +270,7 @@ async def update_uplink_status(network_id: str, uplink_data: dict):
                                 uplink.update(uplink_data)
                                 logger.info(f"Updated uplink for device {device['serial']} in comprehensive_data")
                                 break
-                            if uplink_data.get("serial"):  # If serial was provided, stop after finding the match
-                                break
+                            break  # Found the device, stop searching
         
         # Save back to comprehensive file
         save_to_comprehensive_json(comprehensive_data)

@@ -24,7 +24,6 @@ async def get_network_events() -> List[TextContent]:
     Uses NETWORK_ID and PRODUCT_TYPE from .env file.
     """
     try:
-        logger.info("I am working on get_network_events API tool to get data")
         
         # Initialize client (will load API key, network_id, and product_type from .env file)
         client = MerakiAPIClient()

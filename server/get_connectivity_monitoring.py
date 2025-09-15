@@ -30,7 +30,6 @@ async def get_connectivity_monitoring_destinations(network_id: str = None, use_m
         List of response objects with connectivity monitoring information
     """
     try:
-        logger.info("I am working on get_connectivity_monitoring_destinations API tool to get data")
         
         client = MerakiAPIClient(use_mock=use_mock)
         logger.info("Retrieving connectivity monitoring destinations...")

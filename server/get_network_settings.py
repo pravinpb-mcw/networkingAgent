@@ -24,7 +24,6 @@ async def get_network_settings() -> List[TextContent]:
     Uses NETWORK_ID from .env file.
     """
     try:
-        logger.info("I am working on get_network_settings API tool to get data")
         
         # Initialize client (will load API key and network_id from .env file)
         client = MerakiAPIClient()

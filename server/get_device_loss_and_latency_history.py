@@ -24,7 +24,6 @@ async def get_device_loss_and_latency_history() -> List[TextContent]:
     Uses SERIAL and IP from .env file.
     """
     try:
-        logger.info("I am working on get_device_loss_and_latency_history API tool to get data")
         
         # Initialize client (will load API key, serial, and ip from .env file)
         client = MerakiAPIClient()

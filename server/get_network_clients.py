@@ -24,8 +24,7 @@ async def get_network_clients() -> List[TextContent]:
     Uses NETWORK_ID and TIMESPAN from .env file.
     """
     try:
-        logger.info("I am working on get_network_clients API tool to get data")
-        
+
         # Initialize client (will load API key, network_id, and timespan from .env file)
         client = MerakiAPIClient()
         data = await client.get_network_clients()

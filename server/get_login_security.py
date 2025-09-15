@@ -30,7 +30,6 @@ async def get_organization_login_security(organization_id: str = None, use_mock:
         List of response objects with login security information
     """
     try:
-        logger.info("I am working on get_organization_login_security API tool to get data")
         
         client = MerakiAPIClient(use_mock=use_mock)
         logger.info("Retrieving organization login security settings...")

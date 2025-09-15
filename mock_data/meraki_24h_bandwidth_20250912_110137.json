@@ -1,0 +1,1694 @@
+{
+  "metadata": {
+    "timestamp": "2025-09-12T11:01:28.813874",
+    "timespan_hours": 24,
+    "network_id": "L_3947405073390239794",
+    "organization_id": "999781"
+  },
+  "traffic_data": [
+    {
+      "application": "SSH",
+      "destination": "192.168.42.124",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 9278,
+      "sent": 56117,
+      "flows": 2,
+      "activeTime": 18060,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.42.84",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 18408,
+      "sent": 86196,
+      "flows": 2,
+      "activeTime": 26100,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.42.87",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 10319,
+      "sent": 24548,
+      "flows": 3,
+      "activeTime": 14220,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.63.196",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 3384,
+      "sent": 5921,
+      "flows": 1,
+      "activeTime": 4620,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.63.197",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 286,
+      "sent": 627,
+      "flows": 0,
+      "activeTime": 4080,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.63.250",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 4993,
+      "sent": 219820,
+      "flows": 3,
+      "activeTime": 14820,
+      "numClients": 1
+    },
+    {
+      "application": "SSH",
+      "destination": "192.168.63.75",
+      "protocol": "TCP",
+      "port": 22,
+      "recv": 1374,
+      "sent": 6410,
+      "flows": 2,
+      "activeTime": 5340,
+      "numClients": 1
+    },
+    {
+      "application": "Miscellaneous secure web",
+      "destination": "scontent-sjc3-1.cdninstagram.com",
+      "protocol": "UDP",
+      "port": 443,
+      "recv": 66428,
+      "sent": 344,
+      "flows": 2,
+      "activeTime": 960,
+      "numClients": 1
+    },
+    {
+      "application": "Binary over HTTP",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 95367,
+      "sent": 279,
+      "flows": 4,
+      "activeTime": 240,
+      "numClients": 2
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "1671639327.rsc.cdn77.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 13197,
+      "sent": 166,
+      "flows": 10,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "203.10.96.34",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1006,
+      "sent": 1011,
+      "flows": 2,
+      "activeTime": 91020,
+      "numClients": 3
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "api.snapcraft.io",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 499,
+      "sent": 56,
+      "flows": 5,
+      "activeTime": 540,
+      "numClients": 2
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "assets.striiiipst.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 2599,
+      "sent": 177,
+      "flows": 20,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "autoware.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 8423,
+      "sent": 46,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "bmedia-gcore.justservingfiles.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 28095,
+      "sent": 74,
+      "flows": 8,
+      "activeTime": 420,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "c104216-ucdn.mp.lura.live",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 4428,
+      "sent": 11,
+      "flows": 1,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "canonical-bos01.cdn.snapcraftcontent.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1502,
+      "sent": 17,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn.adtheorent.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 51893,
+      "sent": 277,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn.flashtalking.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 299022,
+      "sent": 1005,
+      "flows": 8,
+      "activeTime": 240,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn.fwupd.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3404,
+      "sent": 22,
+      "flows": 2,
+      "activeTime": 120,
+      "numClients": 2
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn77-pic.xvideos-cdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 15894,
+      "sent": 335,
+      "flows": 18,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn77-vid.xvi",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 9314,
+      "sent": 53,
+      "flows": 2,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn77-vid.xvideos-c",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3421,
+      "sent": 27,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "cdn77-vid.xvideos-cdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 358539,
+      "sent": 1570,
+      "flows": 53,
+      "activeTime": 720,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "clientstream.launchdarkly.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3290,
+      "sent": 107,
+      "flows": 4,
+      "activeTime": 2880,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "com.lds.rncdn7.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 32696,
+      "sent": 83,
+      "flows": 3,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "conda.anaconda.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 384489,
+      "sent": 2306,
+      "flows": 6,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "customer-pp0t2fahc1hu8o6o.cloudflarestream.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1944,
+      "sent": 36,
+      "flows": 1,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "dashboard.snapcraft.io",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 59,
+      "sent": 2,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "default.exp-tas.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 420,
+      "sent": 94,
+      "flows": 48,
+      "activeTime": 1800,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "dellupdater.dell.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 815,
+      "sent": 15,
+      "flows": 1,
+      "activeTime": 240,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "downloads.dell.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3009,
+      "sent": 45,
+      "flows": 2,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "edge.sdk.awswaf.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1777,
+      "sent": 3539,
+      "flows": 428,
+      "activeTime": 4320,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "ei.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 6628,
+      "sent": 164,
+      "flows": 24,
+      "activeTime": 480,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "embed-cloudfront.wistia.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 9252,
+      "sent": 44,
+      "flows": 5,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "ev-h.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 433366,
+      "sent": 1228,
+      "flows": 58,
+      "activeTime": 480,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "evtubescms.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 11225,
+      "sent": 31,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "ew.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3866,
+      "sent": 45,
+      "flows": 3,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "exchange.kueezrtb.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 971,
+      "sent": 58,
+      "flows": 3,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "files.pythonhosted.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 9885535,
+      "sent": 45018,
+      "flows": 6,
+      "activeTime": 780,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "frontend.public.atl-paas.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 6884,
+      "sent": 41,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "galleryn3.vcmdiawe.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 8137,
+      "sent": 18,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "gcore-pic.xvideos-cdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 5721,
+      "sent": 125,
+      "flows": 16,
+      "activeTime": 240,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "github-cloud.githubusercontent.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 4135602,
+      "sent": 46087,
+      "flows": 2,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "h104216-fcdn.mp.lura.live",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 24606,
+      "sent": 73,
+      "flows": 1,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "ht-cdn2.adtng.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 814,
+      "sent": 12,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "huggingface.co",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1,
+      "sent": 1,
+      "flows": 0,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "hv-h.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 29521,
+      "sent": 68,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "kv-h.phncdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 19792,
+      "sent": 55,
+      "flows": 3,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "l.clarity.ms",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 75,
+      "sent": 3196,
+      "flows": 1,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "launchpadlibrarian.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 6823,
+      "sent": 103,
+      "flows": 8,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "live-media-fly.warnermediacdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 15570,
+      "sent": 108,
+      "flows": 12,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "media-hls.doppiocdn.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 36972,
+      "sent": 160,
+      "flows": 2,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "nakednews-static.xcdnpro.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 11333,
+      "sent": 61,
+      "flows": 6,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "nakednews-video.xcdnpro.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 13998,
+      "sent": 90,
+      "flows": 9,
+      "activeTime": 300,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "nnprod.us-north-3.mojocloud.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 365801,
+      "sent": 1234,
+      "flows": 9,
+      "activeTime": 300,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "polarcdn-terrax.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 942,
+      "sent": 15,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "prod.smassets.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 2619,
+      "sent": 25,
+      "flows": 6,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "profile-pics-cdn77.xvideos-cdn.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 2873,
+      "sent": 60,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "pypi.org",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 3406,
+      "sent": 64,
+      "flows": 6,
+      "activeTime": 300,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "r5---sn-n4v7snse.c.2mdn.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 269215,
+      "sent": 717,
+      "flows": 4,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "r5---sn-o097znzk.c.2mdn.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 4224,
+      "sent": 11,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "relay-61bd7e5f.net.anydesk.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 515,
+      "sent": 515,
+      "flows": 6,
+      "activeTime": 47700,
+      "numClients": 3
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "repo.anaconda.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 178996,
+      "sent": 1145,
+      "flows": 35,
+      "activeTime": 780,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "s3t3d2y9.afcdn.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1478,
+      "sent": 8,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "targethype.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1687,
+      "sent": 9,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "tempted-prod.xcdnpro.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 100554,
+      "sent": 353,
+      "flows": 19,
+      "activeTime": 240,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "thehill.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 1784,
+      "sent": 48,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "transfer.xethub.hf.co",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 196092,
+      "sent": 3224,
+      "flows": 4,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "vod3.cf.dmcdn.net",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 14205,
+      "sent": 40,
+      "flows": 4,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "xx.bstatic.com",
+      "protocol": "TCP",
+      "port": 443,
+      "recv": 326,
+      "sent": 13,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "192.168.42.199",
+      "protocol": "TCP",
+      "port": 7070,
+      "recv": 1282,
+      "sent": 48636,
+      "flows": 1,
+      "activeTime": 1140,
+      "numClients": 1
+    },
+    {
+      "application": "Encrypted TCP (SSL)",
+      "destination": "192.168.42.26",
+      "protocol": "TCP",
+      "port": 7070,
+      "recv": 32478,
+      "sent": 468140,
+      "flows": 1,
+      "activeTime": 9600,
+      "numClients": 1
+    },
+    {
+      "application": "Apple Location Services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 4145,
+      "sent": 237,
+      "flows": 19,
+      "activeTime": 840,
+      "numClients": 1
+    },
+    {
+      "application": "Google Drive",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 9176,
+      "sent": 249,
+      "flows": 8,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Instagram",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 147169,
+      "sent": 1981,
+      "flows": 32,
+      "activeTime": 1920,
+      "numClients": 1
+    },
+    {
+      "application": "Microsoft OneDrive",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 309,
+      "sent": 9,
+      "flows": 1,
+      "activeTime": 240,
+      "numClients": 1
+    },
+    {
+      "application": "Ubuntu",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 33624,
+      "sent": 319,
+      "flows": 93,
+      "activeTime": 4860,
+      "numClients": 2
+    },
+    {
+      "application": "iCloud",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 6425,
+      "sent": 2840,
+      "flows": 173,
+      "activeTime": 3300,
+      "numClients": 2
+    },
+    {
+      "application": "Office 365",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 5854,
+      "sent": 15371,
+      "flows": 90,
+      "activeTime": 10440,
+      "numClients": 2
+    },
+    {
+      "application": "BBC iPlayer",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 10612,
+      "sent": 136,
+      "flows": 3,
+      "activeTime": 840,
+      "numClients": 1
+    },
+    {
+      "application": "YouTube",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 38446,
+      "sent": 3971,
+      "flows": 156,
+      "activeTime": 2460,
+      "numClients": 1
+    },
+    {
+      "application": "Google advertising",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 4286,
+      "sent": 2190,
+      "flows": 322,
+      "activeTime": 900,
+      "numClients": 1
+    },
+    {
+      "application": "DoubleVerify",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 495,
+      "sent": 62,
+      "flows": 12,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Apple Updates",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 288,
+      "sent": 11,
+      "flows": 5,
+      "activeTime": 240,
+      "numClients": 2
+    },
+    {
+      "application": "Brightroll",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 803,
+      "sent": 319,
+      "flows": 29,
+      "activeTime": 840,
+      "numClients": 2
+    },
+    {
+      "application": "Apple Pay",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 180,
+      "sent": 6,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Apple Push Notification Service",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 234,
+      "sent": 285,
+      "flows": 9,
+      "activeTime": 1920,
+      "numClients": 1
+    },
+    {
+      "application": "Akamai",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 10866,
+      "sent": 222,
+      "flows": 17,
+      "activeTime": 660,
+      "numClients": 3
+    },
+    {
+      "application": "Yahoo",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 5984,
+      "sent": 1248,
+      "flows": 63,
+      "activeTime": 420,
+      "numClients": 1
+    },
+    {
+      "application": "Microsoft Teams",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 9899,
+      "sent": 775,
+      "flows": 45,
+      "activeTime": 9240,
+      "numClients": 3
+    },
+    {
+      "application": "MS Teams Audio",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 27588,
+      "sent": 19455,
+      "flows": 13,
+      "activeTime": 3780,
+      "numClients": 1
+    },
+    {
+      "application": "MS Teams App Sharing",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 48762,
+      "sent": 1331,
+      "flows": 13,
+      "activeTime": 3000,
+      "numClients": 1
+    },
+    {
+      "application": "Google Photos",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 2681,
+      "sent": 47,
+      "flows": 5,
+      "activeTime": 120,
+      "numClients": 1
+    },
+    {
+      "application": "Google Chat",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 2591,
+      "sent": 3001,
+      "flows": 34,
+      "activeTime": 4320,
+      "numClients": 1
+    },
+    {
+      "application": "iTunes",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 1120452,
+      "sent": 8882,
+      "flows": 51,
+      "activeTime": 3420,
+      "numClients": 2
+    },
+    {
+      "application": "Microsoft Windows Update Service",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 30226,
+      "sent": 1296,
+      "flows": 18,
+      "activeTime": 2040,
+      "numClients": 1
+    },
+    {
+      "application": "Microsoft Windows Live Services Authentication",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 509,
+      "sent": 184,
+      "flows": 6,
+      "activeTime": 1980,
+      "numClients": 1
+    },
+    {
+      "application": "Google Services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 523389,
+      "sent": 77614,
+      "flows": 9339,
+      "activeTime": 30960,
+      "numClients": 2
+    },
+    {
+      "application": "Facetime",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 58870,
+      "sent": 72025,
+      "flows": 3,
+      "activeTime": 480,
+      "numClients": 1
+    },
+    {
+      "application": "WhatsApp",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 27050,
+      "sent": 660,
+      "flows": 81,
+      "activeTime": 5160,
+      "numClients": 2
+    },
+    {
+      "application": "Microsoft Office Web Applications",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 52441,
+      "sent": 7815,
+      "flows": 241,
+      "activeTime": 3780,
+      "numClients": 2
+    },
+    {
+      "application": "Apple services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 37440,
+      "sent": 1464,
+      "flows": 123,
+      "activeTime": 5040,
+      "numClients": 2
+    },
+    {
+      "application": "Google Play",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 692,
+      "sent": 1774,
+      "flows": 145,
+      "activeTime": 3120,
+      "numClients": 1
+    },
+    {
+      "application": "Slack",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 20,
+      "sent": 13,
+      "flows": 7,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Amazon Web Services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 67844,
+      "sent": 4618,
+      "flows": 381,
+      "activeTime": 17520,
+      "numClients": 3
+    },
+    {
+      "application": "GitHub",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 1038250,
+      "sent": 5724,
+      "flows": 29,
+      "activeTime": 3000,
+      "numClients": 1
+    },
+    {
+      "application": "Indiatimes",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 1663,
+      "sent": 38,
+      "flows": 2,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "AT&T Web Services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 43,
+      "sent": 10,
+      "flows": 8,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Microsoft Services",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 143347,
+      "sent": 4416,
+      "flows": 466,
+      "activeTime": 39180,
+      "numClients": 4
+    },
+    {
+      "application": "QUIC",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 59858,
+      "sent": 6722,
+      "flows": 165,
+      "activeTime": 7320,
+      "numClients": 1
+    },
+    {
+      "application": "IMDB",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 73909,
+      "sent": 722,
+      "flows": 6,
+      "activeTime": 180,
+      "numClients": 1
+    },
+    {
+      "application": "Skype",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 796,
+      "sent": 530,
+      "flows": 23,
+      "activeTime": 29760,
+      "numClients": 2
+    },
+    {
+      "application": "Azure",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 174,
+      "sent": 5413,
+      "flows": 8,
+      "activeTime": 240,
+      "numClients": 2
+    },
+    {
+      "application": "Gmail",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 14439,
+      "sent": 1179,
+      "flows": 190,
+      "activeTime": 3960,
+      "numClients": 1
+    },
+    {
+      "application": "fastly",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 476459,
+      "sent": 2369,
+      "flows": 143,
+      "activeTime": 3180,
+      "numClients": 2
+    },
+    {
+      "application": "CNN",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 26470,
+      "sent": 1423,
+      "flows": 82,
+      "activeTime": 1200,
+      "numClients": 1
+    },
+    {
+      "application": "Twitter",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 5164,
+      "sent": 277,
+      "flows": 18,
+      "activeTime": 360,
+      "numClients": 1
+    },
+    {
+      "application": "Xbox LIVE",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 470,
+      "sent": 14,
+      "flows": 1,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Bing",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 1545,
+      "sent": 127,
+      "flows": 17,
+      "activeTime": 1200,
+      "numClients": 1
+    },
+    {
+      "application": "Windows Live Hotmail and Outlook",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 21892,
+      "sent": 37138,
+      "flows": 80,
+      "activeTime": 6780,
+      "numClients": 2
+    },
+    {
+      "application": "MSN",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 38258,
+      "sent": 1556,
+      "flows": 121,
+      "activeTime": 13560,
+      "numClients": 3
+    },
+    {
+      "application": "LinkedIn",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 5958,
+      "sent": 225,
+      "flows": 9,
+      "activeTime": 60,
+      "numClients": 1
+    },
+    {
+      "application": "Fox News",
+      "destination": null,
+      "protocol": "-",
+      "port": "-",
+      "recv": 12999,
+      "sent": 239,
+      "flows": 10,
+      "activeTime": 60,
+      "numClients": 1
+    }
+  ],
+  "bandwidth_usage": [
+    {
+      "ts": "2025-09-11T05:40:00.000Z",
+      "total": 0.3905078125,
+      "upstream": 0.35707682291666665,
+      "downstream": 0.033430989583333334
+    },
+    {
+      "ts": "2025-09-11T06:00:00.000Z",
+      "total": 0.06254557291666667,
+      "upstream": 0.04079427083333333,
+      "downstream": 0.021751302083333333
+    },
+    {
+      "ts": "2025-09-11T06:20:00.000Z",
+      "total": 0.029270833333333333,
+      "upstream": 0.0010546875,
+      "downstream": 0.028216145833333334
+    },
+    {
+      "ts": "2025-09-11T06:40:00.000Z",
+      "total": 0.002018229166666667,
+      "upstream": 0.0006119791666666667,
+      "downstream": 0.00140625
+    },
+    {
+      "ts": "2025-09-11T07:00:00.000Z",
+      "total": 0.0012174479166666666,
+      "upstream": 0.00042317708333333335,
+      "downstream": 0.0007942708333333334
+    },
+    {
+      "ts": "2025-09-11T07:20:00.000Z",
+      "total": 0.35253255208333334,
+      "upstream": 0.007584635416666667,
+      "downstream": 0.3449479166666667
+    },
+    {
+      "ts": "2025-09-11T07:40:00.000Z",
+      "total": 0.00302734375,
+      "upstream": 0.0009375,
+      "downstream": 0.00208984375
+    },
+    {
+      "ts": "2025-09-11T08:00:00.000Z",
+      "total": 0.21384114583333333,
+      "upstream": 0.19981770833333334,
+      "downstream": 0.0140234375
+    },
+    {
+      "ts": "2025-09-11T08:20:00.000Z",
+      "total": 0.13452473958333333,
+      "upstream": 0.12082682291666667,
+      "downstream": 0.013697916666666667
+    },
+    {
+      "ts": "2025-09-11T08:40:00.000Z",
+      "total": 0.0022526041666666666,
+      "upstream": 0.0006380208333333333,
+      "downstream": 0.0016145833333333333
+    },
+    {
+      "ts": "2025-09-11T09:00:00.000Z",
+      "total": 0.005690104166666667,
+      "upstream": 0.0009700520833333333,
+      "downstream": 0.004720052083333333
+    },
+    {
+      "ts": "2025-09-11T09:20:00.000Z",
+      "total": 0.0014778645833333334,
+      "upstream": 0.0005403645833333333,
+      "downstream": 0.0009375
+    },
+    {
+      "ts": "2025-09-11T09:40:00.000Z",
+      "total": 0.0015559895833333333,
+      "upstream": 0.00056640625,
+      "downstream": 0.0009895833333333334
+    },
+    {
+      "ts": "2025-09-11T10:00:00.000Z",
+      "total": 0.003958333333333334,
+      "upstream": 0.0006640625,
+      "downstream": 0.0032942708333333335
+    },
+    {
+      "ts": "2025-09-11T10:20:00.000Z",
+      "total": 0.0013802083333333333,
+      "upstream": 0.0005143229166666666,
+      "downstream": 0.0008658854166666667
+    },
+    {
+      "ts": "2025-09-11T10:40:00.000Z",
+      "total": 0.00134765625,
+      "upstream": 0.00044921875,
+      "downstream": 0.0008984375
+    },
+    {
+      "ts": "2025-09-11T11:00:00.000Z",
+      "total": 0.00162109375,
+      "upstream": 0.000546875,
+      "downstream": 0.00107421875
+    },
+    {
+      "ts": "2025-09-11T11:20:00.000Z",
+      "total": 0.015091145833333333,
+      "upstream": 0.005462239583333334,
+      "downstream": 0.00962890625
+    },
+    {
+      "ts": "2025-09-11T11:40:00.000Z",
+      "total": 1.5836197916666668,
+      "upstream": 0.52958984375,
+      "downstream": 1.0540299479166666
+    },
+    {
+      "ts": "2025-09-11T12:00:00.000Z",
+      "total": 1.7081119791666666,
+      "upstream": 0.07138671875,
+      "downstream": 1.6367252604166667
+    },
+    {
+      "ts": "2025-09-11T12:20:00.000Z",
+      "total": 0.45172526041666666,
+      "upstream": 0.08435546875,
+      "downstream": 0.36736979166666667
+    },
+    {
+      "ts": "2025-09-11T12:40:00.000Z",
+      "total": 0.74974609375,
+      "upstream": 0.12275390625,
+      "downstream": 0.6269921875
+    },
+    {
+      "ts": "2025-09-11T13:00:00.000Z",
+      "total": 0.6159049479166666,
+      "upstream": 0.08251953125,
+      "downstream": 0.5333854166666666
+    },
+    {
+      "ts": "2025-09-11T13:20:00.000Z",
+      "total": 9.993899739583334,
+      "upstream": 0.22508463541666668,
+      "downstream": 9.768815104166666
+    },
+    {
+      "ts": "2025-09-11T13:40:00.000Z",
+      "total": 0.5585026041666666,
+      "upstream": 0.11594401041666667,
+      "downstream": 0.44255859375
+    },
+    {
+      "ts": "2025-09-11T14:00:00.000Z",
+      "total": 0.5272721354166666,
+      "upstream": 0.08591145833333333,
+      "downstream": 0.4413606770833333
+    },
+    {
+      "ts": "2025-09-11T14:20:00.000Z",
+      "total": 3.74931640625,
+      "upstream": 0.12214192708333334,
+      "downstream": 3.6271744791666665
+    },
+    {
+      "ts": "2025-09-11T14:40:00.000Z",
+      "total": 11.03349609375,
+      "upstream": 0.16957682291666668,
+      "downstream": 10.863919270833334
+    },
+    {
+      "ts": "2025-09-11T15:00:00.000Z",
+      "total": 2.879075520833333,
+      "upstream": 0.07315104166666667,
+      "downstream": 2.805924479166667
+    },
+    {
+      "ts": "2025-09-11T15:20:00.000Z",
+      "total": 0.34564453125,
+      "upstream": 0.11317708333333333,
+      "downstream": 0.23246744791666665
+    },
+    {
+      "ts": "2025-09-11T15:40:00.000Z",
+      "total": 0.2885611979166667,
+      "upstream": 0.1125390625,
+      "downstream": 0.17602213541666667
+    },
+    {
+      "ts": "2025-09-11T16:00:00.000Z",
+      "total": 0.14442057291666666,
+      "upstream": 0.06806640625,
+      "downstream": 0.07635416666666667
+    },
+    {
+      "ts": "2025-09-11T16:20:00.000Z",
+      "total": 0.14077473958333334,
+      "upstream": 0.08071614583333334,
+      "downstream": 0.06005859375
+    },
+    {
+      "ts": "2025-09-11T16:40:00.000Z",
+      "total": 0.23088541666666668,
+      "upstream": 0.054296875,
+      "downstream": 0.17658854166666665
+    },
+    {
+      "ts": "2025-09-11T17:00:00.000Z",
+      "total": 0.12530598958333333,
+      "upstream": 0.06076822916666667,
+      "downstream": 0.06453776041666667
+    },
+    {
+      "ts": "2025-09-11T17:20:00.000Z",
+      "total": 1.8199348958333332,
+      "upstream": 0.0896875,
+      "downstream": 1.7302473958333333
+    },
+    {
+      "ts": "2025-09-11T17:40:00.000Z",
+      "total": 0.9672981770833333,
+      "upstream": 0.037682291666666666,
+      "downstream": 0.9296158854166666
+    },
+    {
+      "ts": "2025-09-11T18:00:00.000Z",
+      "total": 0.5455794270833333,
+      "upstream": 0.12944661458333334,
+      "downstream": 0.4161328125
+    },
+    {
+      "ts": "2025-09-11T18:20:00.000Z",
+      "total": 0.69205078125,
+      "upstream": 0.1497265625,
+      "downstream": 0.54232421875
+    },
+    {
+      "ts": "2025-09-11T18:40:00.000Z",
+      "total": 0.23567057291666665,
+      "upstream": 0.14039713541666668,
+      "downstream": 0.0952734375
+    },
+    {
+      "ts": "2025-09-11T19:00:00.000Z",
+      "total": 0.21039713541666666,
+      "upstream": 0.16553385416666666,
+      "downstream": 0.04486328125
+    },
+    {
+      "ts": "2025-09-11T19:20:00.000Z",
+      "total": 0.18631510416666666,
+      "upstream": 0.06236979166666667,
+      "downstream": 0.1239453125
+    },
+    {
+      "ts": "2025-09-11T19:40:00.000Z",
+      "total": 0.010963541666666667,
+      "upstream": 0.0006966145833333334,
+      "downstream": 0.010266927083333334
+    },
+    {
+      "ts": "2025-09-11T20:00:00.000Z",
+      "total": 0.0022786458333333335,
+      "upstream": 0.0007291666666666667,
+      "downstream": 0.0015494791666666667
+    },
+    {
+      "ts": "2025-09-11T20:20:00.000Z",
+      "total": 0.0016341145833333333,
+      "upstream": 0.0006380208333333333,
+      "downstream": 0.00099609375
+    },
+    {
+      "ts": "2025-09-11T20:40:00.000Z",
+      "total": 0.0119140625,
+      "upstream": 0.0008723958333333333,
+      "downstream": 0.011041666666666667
+    },
+    {
+      "ts": "2025-09-11T21:00:00.000Z",
+      "total": 0.08096354166666667,
+      "upstream": 0.020944010416666665,
+      "downstream": 0.06001953125
+    },
+    {
+      "ts": "2025-09-11T21:20:00.000Z",
+      "total": 0.0044596354166666664,
+      "upstream": 0.0017447916666666666,
+      "downstream": 0.00271484375
+    },
+    {
+      "ts": "2025-09-11T21:40:00.000Z",
+      "total": 0.03017578125,
+      "upstream": 0.024036458333333333,
+      "downstream": 0.006139322916666667
+    },
+    {
+      "ts": "2025-09-11T22:00:00.000Z",
+      "total": 0.0097265625,
+      "upstream": 0.00560546875,
+      "downstream": 0.00412109375
+    },
+    {
+      "ts": "2025-09-11T22:20:00.000Z",
+      "total": 0.00541015625,
+      "upstream": 0.002395833333333333,
+      "downstream": 0.0030143229166666665
+    }
+  ],
+  "device_performance": {
+    "Q2MN-Q3J9-YJHW": {
+      "device_info": {
+        "name": "San Jose 2",
+        "serial": "Q2MN-Q3J9-YJHW",
+        "model": "MX64W"
+      },
+      "performance": {
+        "perfScore": 10.0
+      }
+    }
+  }
+}

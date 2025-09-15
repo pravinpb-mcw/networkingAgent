@@ -85,6 +85,27 @@
       "lossPercent": 0.2,
       "latencyMs": 18.2,
       "goodput": 92.0
+    },
+    {
+      "startTime": "2024-01-15T10:10:00Z",
+      "endTime": "2024-01-15T10:15:00Z",
+      "lossPercent": 1.5,
+      "latencyMs": 75.8,
+      "goodput": 85.3
+    },
+    {
+      "startTime": "2024-01-15T10:15:00Z",
+      "endTime": "2024-01-15T10:20:00Z",
+      "lossPercent": 2.1,
+      "latencyMs": 95.4,
+      "goodput": 78.9
+    },
+    {
+      "startTime": "2024-01-15T10:20:00Z",
+      "endTime": "2024-01-15T10:25:00Z",
+      "lossPercent": 3.2,
+      "latencyMs": 120.5,
+      "goodput": 72.1
     }
   ],
   "uplinks_statuses": [

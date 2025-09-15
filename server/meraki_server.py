@@ -489,37 +489,37 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
         elif name == "get_network_settings":
             return await get_network_settings()
         elif name == "update_network_settings":
-            settings_data = arguments.get("settings_data", {})
+            settings_data = arguments.get("settings_data", "")
             return await update_network_settings(settings_data, use_mock=USE_MOCK)
         elif name == "update_appliance_settings":
-            settings_data = arguments.get("settings_data", {})
+            settings_data = arguments.get("settings_data", "")
             return await update_appliance_settings(settings_data, use_mock=USE_MOCK)
         elif name == "get_organization_uplinks_statuses":
             return await get_organization_uplinks_statuses()
         elif name == "update_uplink":
-            uplink_data = arguments.get("uplink_data", {})
+            uplink_data = arguments.get("uplink_data", "")
             return await update_uplink(uplink_data, use_mock=USE_MOCK)
         elif name == "get_network_group_policies":
             return await get_network_group_policies()
         elif name == "create_network_appliance_settings":
-            settings_data = arguments.get("settings_data", {})
+            settings_data = arguments.get("settings_data", "")
             from create_network_appliance_settings import create_network_appliance_settings
             return await create_network_appliance_settings(settings_data, use_mock=USE_MOCK)
         elif name == "create_network_wireless_settings":
-            settings_data = arguments.get("settings_data", {})
+            settings_data = arguments.get("settings_data", "")
             return await create_network_wireless_settings(settings_data, use_mock=USE_MOCK)
 
 
 
         elif name == "update_network_group_policy":
             policy_id = arguments.get("policy_id", "")
-            policy_data = arguments.get("policy_data", {})
+            policy_data = arguments.get("policy_data", "")
             return await update_network_group_policy(policy_id, policy_data, use_mock=USE_MOCK)
         elif name == "get_organization_networks":
             organization_id = arguments.get("organization_id", None)
             return await get_organization_networks(organization_id, use_mock=USE_MOCK)
         elif name == "create_organization_network":
-            network_data = arguments.get("network_data", {})
+            network_data = arguments.get("network_data", "")
             organization_id = arguments.get("organization_id", None)
             return await create_organization_network(network_data, organization_id, use_mock=USE_MOCK)
         elif name == "get_connectivity_monitoring_destinations":
@@ -535,19 +535,19 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             network_id = arguments.get("network_id", None)
             return await get_network_security_intrusion(network_id, use_mock=USE_MOCK)
         elif name == "update_connectivity_monitoring_destinations":
-            monitoring_data = arguments.get("monitoring_data", {})
+            monitoring_data = arguments.get("monitoring_data", "")
             network_id = arguments.get("network_id", None)
             return await update_connectivity_monitoring_destinations(monitoring_data, network_id, use_mock=USE_MOCK)
         elif name == "update_network_access_control_lists":
-            acl_data = arguments.get("acl_data", {})
+            acl_data = arguments.get("acl_data", "")
             network_id = arguments.get("network_id", None)
             return await update_network_access_control_lists(acl_data, network_id, use_mock=USE_MOCK)
         elif name == "update_organization_login_security":
-            security_data = arguments.get("security_data", {})
+            security_data = arguments.get("security_data", "")
             organization_id = arguments.get("organization_id", None)
             return await update_organization_login_security(security_data, organization_id, use_mock=USE_MOCK)
         elif name == "update_network_security_intrusion":
-            intrusion_data = arguments.get("intrusion_data", {})
+            intrusion_data = arguments.get("intrusion_data", "")
             network_id = arguments.get("network_id", None)
             return await update_network_security_intrusion(intrusion_data, network_id, use_mock=USE_MOCK)
 

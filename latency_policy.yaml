@@ -1,0 +1,115 @@
+policy:
+  name: "Latency-Based WAN Rerouting Policy"
+  description: "Automated WAN rerouting based on network latency thresholds"
+  version: "1.0"
+
+  thresholds:
+    critical:
+      latency_ms: 100
+      description: "Critical latency - create new WAN and split equally across ALL WANs"
+      action: "create_wan_and_split_equally"
+
+    medium:
+      latency_ms: 70
+      description: "Medium latency - split equally across available WANs (WAN1, WAN2)"
+      action: "split_available_wans"
+
+    low:
+      latency_ms: 0
+      description: "Low latency - no action required"
+      action: "no_action"
+
+  rerouting_rules:
+    critical_latency:
+      condition: "latency > 100"
+      wans_required: 3
+      distribution: "equal"
+      description: "Create WAN3 if needed, distribute devices equally across WAN1, WAN2, WAN3"
+
+    medium_latency:
+      condition: "latency > 70 and latency <= 100"
+      wans_required: 2
+      distribution: "equal"
+      description: "Distribute devices equally across existing WAN1 and WAN2"
+
+    low_latency:
+      condition: "latency <= 70"
+      wans_required: 0
+      distribution: "none"
+      description: "No rerouting required"
+
+  post_rerouting:
+    update_latency:
+      enabled: true
+      target_latency: "low"
+      description: "Always update appliance settings to set latency to LOW level after successful rerouting"
+
+    verification:
+      enabled: true
+      check_interval: "30s"
+      max_retries: 3
+      description: "Verify latency improvements after rerouting"
+
+    reporting:
+      enabled: true
+      include_metrics:
+        - "before_latency"
+        - "after_latency"
+        - "device_distribution"
+        - "improvement_percentage"
+      description: "Report before/after latency improvements and device distribution"
+
+  device_management:
+    priority_devices:
+      - "voip_devices"
+      - "critical_applications"
+      - "video_conferencing"
+
+    rerouting_algorithm: "round_robin"
+    failover_timeout: "30s"
+    health_check_interval: "60s"
+
+  monitoring:
+    data_source: "appliance_settings"
+    metrics:
+      - "latency_ms"
+      - "jitter_ms"
+      - "packet_loss_percent"
+      - "goodput_percent"
+
+    alerting:
+      enabled: true
+      thresholds:
+        latency_alert: 100
+        jitter_alert: 10
+        packet_loss_alert: 5
+
+  execution:
+    steps:
+      - "Get latency from appliance settings"
+      - "Get device list from uplink statuses"
+      - "Check latency against policy thresholds"
+      - "Execute rerouting based on policy rules"
+      - "Report final rerouting results"
+    timeout: "300s"
+    retry_attempts: 3
+    retry_delay: "10s"
+
+  reporting example:
+    format: "json"
+    include_metrics: true
+    include_device_list: true
+    include_rerouting_summary: true
+    output_template: |
+      {
+        "status": "completed",
+        "latency_detected": "{{latency}}ms",
+        "threshold_category": "{{category}}",
+        "devices_rerouted": {{count}},
+        "wan_distribution": {
+          "wan1": {{wan1_count}},
+          "wan2": {{wan2_count}},
+          "wan3": {{wan3_count}}
+        },
+        "timestamp": "{{timestamp}}"
+      }

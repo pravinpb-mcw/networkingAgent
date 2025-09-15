@@ -3,7 +3,11 @@
 MCP Client using Gemini LLM for Meraki Network Tools
 Uses mcp_use library to connect Gemini to Meraki MCP tools
 """
-
+import json
+import re
+import sys
+import os
+from typing import Optional
 import asyncio
 import logging
 import os
@@ -11,13 +15,31 @@ import sys
 import time
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from mcp_use import MCPAgent, MCPClient
+import sys
+import os
 
-# Configure basic logging
+
+# Configure basic logging with Unicode error handling
+class UnicodeSafeFormatter(logging.Formatter):
+    def format(self, record):
+        try:
+            return super().format(record)
+        except UnicodeEncodeError:
+            # Replace Unicode characters with ASCII equivalents
+            safe_msg = str(record.getMessage()).encode('ascii', 'replace').decode('ascii')
+            record.msg = safe_msg
+            return super().format(record)
+
 logging.basicConfig(
     level=logging.WARNING,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+
+# Apply Unicode-safe formatter to all handlers
+for handler in logging.root.handlers:
+    handler.setFormatter(UnicodeSafeFormatter())
 
 # Disable verbose MCP logging
 logging.getLogger("mcp_use").setLevel(logging.ERROR)
@@ -30,30 +52,9 @@ os.environ["MCP_USE_ANONYMIZED_TELEMETRY"] = "false"
 # Load environment variables
 load_dotenv()
 
-async def run_meraki_chat():
-    """Run a chat using MCPAgent with Gemini LLM for Meraki tools."""
-    
-    # Set up Gemini API key
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
-    if not gemini_api_key:
-        print("GEMINI_API_KEY not found in .env file")
-        return
-    
-    os.environ["GEMINI_API_KEY"] = gemini_api_key
-    
-    # MCP server config file
-    config_file = "mcp-inspector-config.json"
-
-    print("Initializing Meraki MCP Chat with Gemini...")
-    print("="*30)
-    
-    try:
-        # Create MCP client
-        print("Connecting to MCP server...")
-        client = MCPClient.from_config_file(config_file)
-        
-        # Set up the model as the best automated network orchestration and monitoring agent
-        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
+def get_common_system_prompt():
+    """Get the common system prompt used across all MCP client functions."""
+    return """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
 
             CRITICAL BEHAVIOR RULES:
             1. NEVER ask "Would you like me to proceed" or "Should I continue"
@@ -130,10 +131,111 @@ async def run_meraki_chat():
 
             REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
 
+def generate_dynamic_latency_prompt():
+        return f"""EXECUTE NETWORK LATENCY OPTIMIZATION:
+
+        IMPORTANT: You MUST execute actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
+
+        STEP 1: GET CURRENT DATA
+        - Call get_device_loss_and_latency_history() to get latency measurements
+        - Call get_organization_uplinks_statuses() to get current device distribution
+        - Analyze the data to identify latency issues
+
+        STEP 2: ANALYZE LATENCY THRESHOLDS
+        - If latency > 100ms: CRITICAL - Redistribute devices across ALL 3 WANs
+        - If latency 70-100ms: MEDIUM - Balance between wan1 and wan2
+        - If latency < 70ms: LOW - No action needed
+
+        STEP 3: EXECUTE DEVICE REDISTRIBUTION
+        For CRITICAL latency (>100ms):
+        - Count total devices from uplink statuses
+        - Calculate equal distribution: total_devices ÷ 3
+        - Move devices to achieve: wan1=X, wan2=X, wan3=X (or X+1 for remainder)
+        - Use update_uplink("Move device SERIAL_NUMBER to wan1/wan2/wan3")
+        - Example: 29 devices = wan1:10, wan2:10, wan3:9
+
+        SPECIFIC DEVICE EXAMPLES (use actual serial numbers from your data):
+        - update_uplink("Move device Q2MN-Q3J9-YJHW to wan1")
+        - update_uplink("Move device Q2GY-X25G-0BZX to wan2") 
+        - update_uplink("Move device Q3GZ-A50C-AJ7X to wan3")
+        - Continue for all devices to achieve equal distribution
+        
+        YOU MUST ACTUALLY CALL THESE TOOLS - DO NOT JUST LIST THEM!
+
+        STEP 4: UPDATE NETWORK SETTINGS
+        - Call update_appliance_settings("Set degradedLinks for wan1, wan2, wan3 to ok")
+        - This confirms all WAN links are healthy
+
+        REQUIRED OUTPUT FORMAT:
+        **Analysis:** 
+        - **Network Performance:** [Current latency, packet loss, and performance metrics]
+        - **Device Distribution:** [Current network device status and configuration]
+
+        **Decision:** 
+        - **Action:** [What you will do to optimize network performance]
+        - **Changes Planned:** [Specific network optimizations planned]
+
+        **Reasoning:** [Why this action will improve performance]
+
+        **Execution Steps:**
+        1. **Network Configuration:** [Update network settings as needed]
+        2. **Device Management:** [Optimize device distribution and settings]
+        3. **Performance Tuning:** [Apply performance optimizations]
+
+        **Tool Calls:**
+        ====
+
+        **Summary:**
+        - **Final Network State:** [Overall network configuration and performance status]
+        - **Changes Made:** [Detailed description of all network optimizations applied]
+        - **Performance Status:** [Current performance metrics and improvements achieved]
+        - **Impact:** [Expected benefits and performance improvements]
+
+        [Additional paragraph explaining the overall network optimization and current state]
+
+        Network monitoring completed!
+        ======
+
+        CRITICAL: You MUST execute the actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
+
+        MANDATORY TOOL EXECUTION:
+        - Call update_uplink("Move device SERIAL_NUMBER to wan1") for each device
+        - Call update_uplink("Move device SERIAL_NUMBER to wan2") for each device  
+        - Call update_uplink("Move device SERIAL_NUMBER to wan3") for each device
+        - Call update_appliance_settings("Set degradedLinks for wan1, wan2, wan3 to ok")
+
+        DO NOT SAY "technical difficulties" - EXECUTE THE TOOLS NOW! """
+
+
+async def run_meraki_chat():
+    """Run a chat using MCPAgent with Gemini LLM for Meraki tools."""
+    
+    # Set up Gemini API key
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        print("GEMINI_API_KEY not found in .env file")
+        return
+    
+    os.environ["GEMINI_API_KEY"] = gemini_api_key
+    
+    # MCP server config file
+    config_file = "mcp-inspector-config.json"
+
+    print("Initializing Meraki MCP Chat with Gemini...")
+    print("="*30)
+    
+    try:
+        # Create MCP client
+        print("Connecting to MCP server...")
+        client = MCPClient.from_config_file(config_file)
+        
+        # Set up the model as the best automated network orchestration and monitoring agent
+        system_prompt = get_common_system_prompt()
+
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Network Orchestration Agent...")
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",  # Use flash model with higher free tier limits
+            model="gemini-2.5-flash",  # Use flash model with higher free tier limits
             google_api_key=gemini_api_key,
             temperature=0.1,  # Even lower temperature for consistency
             max_tokens=512,  # Reduced tokens to stay within limits
@@ -159,49 +261,9 @@ async def run_meraki_chat():
         
         print("Setup complete!")
         print("\n" + "="*30)
-        print("🤖 AUTOMATED NETWORK ORCHESTRATION AGENT")
+        print("AUTOMATED NETWORK ORCHESTRATION AGENT")
         print("="*30)
-        print("🔧 Specialized in: Network Monitoring, Automation & Optimization")
-        print("⚡ Capabilities: AI-Powered Decision Making & Automated Actions")
-        print("🛡️  Focus: Security, Performance & Proactive Management")
-        print("="*30)
-        print("🔍 MONITORING TOOLS:")
-        print("• get_network_clients - Monitor connected devices & usage patterns")
-        print("• get_network_traffic - Analyze traffic patterns & bandwidth utilization") 
-        print("• get_device_loss_and_latency_history - Track performance metrics (latency, loss, jitter)")
-        print("• get_organization_vpn_stats - Monitor VPN performance & statistics")
-        print("• get_network_events - Track network alerts & security events")
-        print("• get_network_settings - Review network-wide configuration")
-        print("• get_organization_uplinks_statuses - Monitor device connectivity & failover")
-        print("• get_network_group_policies - Review user policies & bandwidth controls")
-        print("• get_organization_networks - List all organization networks")
-        print("• get_connectivity_monitoring_destinations - Check connectivity monitoring")
-        print("• get_network_access_control_lists - Review access control rules")
-        print("• get_organization_login_security - Check authentication security")
-        print("• get_network_security_intrusion - Monitor intrusion detection settings")
-        
-        print("\n⚙️ ORCHESTRATION COMMANDS:")
-        print("• update_network_settings - Optimize network-wide configuration")
-        print("• create_network_appliance_settings - Configure network infrastructure")
-        print("• create_network_wireless_settings - Optimize WiFi/SSID configuration")
-        print("• update_network_group_policy - Automate policy management")
-        print("• create_organization_network - Automate network creation")
-        print("• update_connectivity_monitoring_destinations - Optimize monitoring")
-        print("• update_network_access_control_lists - Automate access control")
-        print("• update_organization_login_security - Enhance authentication security")
-        print("• update_network_security_intrusion - Automate security policies")
-        print("\n🎯 AUTOMATION TOOLS " )
-        print("• Type 'monitor' - Start comprehensive network monitoring")
-        print("• Type 'analyze' - Perform AI-powered network analysis")
-        print("• Type 'optimize' - Get automated optimization recommendations")
-        print("• Type 'security' - Review and enhance security posture")
-        print("• Type 'performance' - Analyze and improve network performance")
-        print("• Type 'automate' - Get automation suggestions for current issues")
-        print("• Type 'fix' - Automatically fix identified issues")
-        print("• Type 'tools' - See available orchestration tools")
-        print("• Type 'clear' - Clear conversation history")
-        print("• Type 'exit' or 'quit' - End orchestration session")
-        print("="*30)
+
         
                  # Welcome message for the orchestration agent)
         
@@ -224,28 +286,18 @@ async def run_meraki_chat():
                 
                 # Check for orchestration commands
                 if user_input.lower() == "monitor":
-                    print("\n🔍 Starting comprehensive network monitoring and AUTOMATIC FIXING...")
+                    print("\nStarting comprehensive network monitoring and AUTOMATIC FIXING...")
                     enhanced_input = f"""{system_prompt}
 
                      COMPREHENSIVE NETWORK MONITORING TASK - CHECK ALL ENDPOINTS:
                      
-                     REQUIRED TOOLS TO USE (in this order):
-                     1. get_organizations - Get organization information
-                     2. get_organization_networks - List all networks in organization
-                     3. get_organization_uplinks_statuses - Check uplink connectivity
-                     4. get_network_settings - Review configuration
-                     5. get_network_traffic - Check bandwidth usage
-                     6. get_network_vpn_stats - Check VPN performance
-                     7. get_network_events - Check for security issues
-                     8. get_network_clients - Check connected devices
-                     9. get_device_loss_and_latency_history - Check device performance
-                                           10. get_connectivity_monitoring_destinations - Monitor connectivity
-                     11. get_network_group_policies - Review group policies
-                    12. get_network_access_control_lists - Check access controls
-                      13. get_organization_login_security - Review login security settings
-                      14. get_network_security_intrusion - Check intrusion detection
-                     
-                     TASK: Use ALL the tools listed above systematically to perform comprehensive network monitoring. Check all connected devices, traffic patterns, performance metrics, security events, and network health. For each issue identified, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute fixes immediately. Report what was fixed and the results. BE EFFICIENT and complete the task in minimal steps. PRINT THE TOOL NAMES USED as you use them.
+                     REQUIRED TOOLS TO USE:
+                     - Get all available tools and use them systematically
+                     - Check all connected devices, traffic patterns, performance metrics, security events, and network health
+                     - For each issue identified, IMMEDIATELY use the appropriate tools to fix the problems automatically
+                     - DO NOT ask for permission - just execute fixes immediately
+                     - Report what was fixed and the results
+                     - BE EFFICIENT and complete the task in minimal steps
                      
                      CRITICAL: Fix ALL detected problems - do not stop until every issue is addressed!
                      
@@ -261,18 +313,10 @@ async def run_meraki_chat():
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "analyze":
-                    print("\n🤖 Performing AI-powered network analysis and AUTOMATIC FIXING...")
-                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
+                    print("\nPerforming AI-powered network analysis and AUTOMATIC FIXING...")
+                    enhanced_input = f"""{get_common_system_prompt()}
 
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
-
-                                         TASK: Conduct AI-powered analysis of the network. Evaluate performance metrics, security posture, traffic patterns, and identify optimization opportunities. For each issue found, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute fixes immediately. Report what was fixed and the results.
+                     TASK: Conduct AI-powered analysis of the network. Get all available tools and use them systematically to evaluate performance metrics, security posture, traffic patterns, and identify optimization opportunities. For each issue found, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute fixes immediately. Report what was fixed and the results.
                      
                      CRITICAL: Fix ALL detected problems - do not stop until every issue is addressed!
                      
@@ -288,88 +332,48 @@ async def run_meraki_chat():
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "optimize":
-                    print("\n⚡ Getting automated optimization and EXECUTING fixes...")
-                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
-
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
+                    print("\n Getting automated optimization and EXECUTING fixes...")
+                    enhanced_input = f"""{get_common_system_prompt()}
 
                     TASK: Analyze the current network state and provide automated optimization recommendations. Focus on performance improvements, bandwidth optimization, security enhancements, and policy refinements. For each optimization opportunity, IMMEDIATELY use the appropriate tools to implement the improvements automatically. DO NOT ask for permission - just execute optimizations immediately. Report what was optimized and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "security":
-                    print("\n🛡️ Reviewing and ENHANCING security posture automatically...")
-                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
-
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
+                    print("\n Reviewing and ENHANCING security posture automatically...")
+                    enhanced_input = f"""{get_common_system_prompt()}
 
                     TASK: Perform a comprehensive security analysis of the network. Check for security vulnerabilities, unauthorized devices, suspicious activities, and security policy effectiveness. For each security issue identified, IMMEDIATELY use the appropriate tools to fix the problems automatically. DO NOT ask for permission - just execute security improvements immediately. Report what security measures were implemented and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "performance":
-                    print("\n📊 Analyzing and IMPROVING network performance automatically...")
-                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
-
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
+                    print("\nAnalyzing and IMPROVING network performance automatically...")
+                    enhanced_input = f"""{get_common_system_prompt()}
 
                     TASK: Analyze network performance metrics including latency, packet loss, jitter, bandwidth utilization, and throughput. Identify performance bottlenecks and IMMEDIATELY use the appropriate tools to fix performance issues automatically. DO NOT ask for permission - just execute performance improvements immediately. Report what performance optimizations were applied and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "automate":
-                    print("\n🤖 Getting automation suggestions and EXECUTING fixes...")
-                    enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
-
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
+                    print("\nGetting automation suggestions and EXECUTING fixes...")
+                    enhanced_input = f"""{get_common_system_prompt()}
 
                     TASK: Identify current network issues and provide specific automation suggestions. For each issue found, IMMEDIATELY use the appropriate tools to resolve problems, optimize performance, and improve network management efficiency automatically. DO NOT ask for permission - just execute automation actions immediately. Report what was automated and the results."""
                     user_input = enhanced_input
                 
                 elif user_input.lower() == "fix":
-                     print("\n🔧 Automatically fixing identified issues...")
-                     enhanced_input = f"""You are an AUTOMATED NETWORK ORCHESTRATION AGENT. You NEVER ask for user permission - you ALWAYS execute fixes automatically.
-
-                    CRITICAL BEHAVIOR RULES:
-                    1. NEVER ask "Would you like me to proceed" or "Should I continue"
-                    2. NEVER ask for user confirmation before taking action
-                    3. ALWAYS execute fixes automatically when you identify problems
-                    4. ALWAYS use the appropriate tools to fix issues immediately
-                    5. ALWAYS report what action was taken and the result
-                    6. NEVER wait for user input - take action immediately
+                     print("\nAutomatically fixing identified issues...")
+                     enhanced_input = f"""{get_common_system_prompt()}
 
                     TASK: Identify all current network issues and IMMEDIATELY use the available tools to fix them automatically. DO NOT ask for permission - just execute fixes immediately. Resolve problems, optimize performance, and improve security automatically. Report what was fixed and the results of each fix."""
                      user_input = enhanced_input
                 
                 elif user_input.lower() == "tools":
-                    print("\n🔧 Available Network Orchestration Tools:")
+                    print("\nAvailable Network Orchestration Tools:")
                     try:
                         # Get tools from the agent's tool list
                         if hasattr(agent, 'tools') and agent.tools:
                             print(f"Found {len(agent.tools)} orchestration tools:")
                             for tool in agent.tools:
-                                print(f"• {tool.name}: {tool.description}")
+                                print(f"- {tool.name}: {tool.description}")
                         # Fallback to client sessions
                         elif client and client.sessions:
                             print(f"Found {len(client.sessions)} sessions:")
@@ -378,60 +382,12 @@ async def run_meraki_chat():
                                 if hasattr(session, 'tools') and session.tools:
                                     print(f"    Found {len(session.tools)} tools:")
                                     for tool in session.tools:
-                                        print(f"    • {tool.name}: {tool.description}")
+                                        print(f"    - {tool.name}: {tool.description}")
                                 else:
                                     print(f"    No tools found in session {session_name}")
-                        # Hardcoded fallback
-                        else:
-                            print("Using hardcoded orchestration tool list:")
-                            print("🔍 MONITORING TOOLS:")
-                            print("• get_network_clients - Monitor connected devices & usage patterns")
-                            print("• get_network_traffic - Analyze traffic patterns & bandwidth utilization")
-                            print("• get_device_loss_and_latency_history - Track performance metrics")
-                            print("• get_organization_vpn_stats - Monitor VPN performance")
-                            print("• get_network_events - Track network alerts & security events")
-                            print("• get_network_settings - Review network configuration")
-                            print("• get_organization_uplinks_statuses - Monitor connectivity & failover")
-                            print("• get_network_group_policies - Review user policies")
-                            print("• get_organization_networks - List all networks")
-                            print("• get_connectivity_monitoring_destinations - Check monitoring")
-                            print("• get_network_access_control_lists - Review access control")
-                            print("• get_organization_login_security - Check authentication")
-                            print("• get_network_security_intrusion - Monitor intrusion detection")
-                            print("\n⚙️ AUTOMATION TOOLS:")
-                            print("• update_network_settings - Optimize network configuration")
-                            print("• create_network_appliance_settings - Configure infrastructure")
-                            print("• create_network_wireless_settings - Optimize WiFi")
-                            print("• update_network_group_policy - Automate policy management")
-                            print("• create_organization_network - Automate network creation")
-                            print("• update_connectivity_monitoring_destinations - Optimize monitoring")
-                            print("• update_network_access_control_lists - Automate access control")
-                            print("• update_organization_login_security - Enhance authentication")
-                            print("• update_network_security_intrusion - Automate security")
                     except Exception as e:
                         print(f"Error getting tools: {e}")
-                        print("Using fallback tool list...")
-                        print("• get_network_traffic - Analyze network traffic patterns and bandwidth usage")
-                        print("• get_device_loss_and_latency_history - Get device performance metrics")
-                        print("• get_organization_vpn_stats - Get VPN statistics for the organization")
-                        print("• get_network_events - Get network events and alerts")
-                        print("• get_network_settings - Get network-wide configuration settings")
-                        print("• update_network_settings - Update network-wide configuration settings")
-                        print("• create_network_appliance_settings - Create appliance settings")
-                        print("• create_network_wireless_settings - Create wireless settings")
-                        print("• delete_network_group_policy - Delete group policies")
-                        print("• get_organization_networks - Get all networks in an organization")
-                        print("• create_organization_network - Create a new network in an organization")
-                        print("• get_connectivity_monitoring_destinations - Get connectivity monitoring destinations")
-                        print("• get_network_access_control_lists - Get network access control lists")
-                        print("• get_organization_login_security - Get organization login security settings")
-                        print("• get_network_security_intrusion - Get network security intrusion settings")
-                        print("• update_connectivity_monitoring_destinations - Update connectivity monitoring destinations")
-                        print("• update_network_access_control_lists - Update network access control lists")
-                        print("• update_organization_login_security - Update organization login security settings")
-                        print("• update_network_security_intrusion - Update network security intrusion settings")
-                    continue
-                
+                        print("Available tools: get_network_clients, get_network_traffic, get_device_loss_and_latency_history, get_network_vpn_stats, get_network_events")
                 # Skip empty input
                 if not user_input:
                     continue
@@ -470,29 +426,30 @@ async def run_automated_analysis(phase=None):
     # Define phase-specific prompts
     phase_prompts = {
         1: """PHASE 1: ORGANIZATION OVERVIEW
-        Use these tools only:
-        - get_organizations - Get organization information
+        
+        REQUIRED TOOLS:
         - get_organization_networks - List all networks in organization
         
-                 Check for:
+        ANALYSIS TARGETS:
          - Organization structure and network count
          - Network types and configurations
          - Any obvious organizational issues
          
-          IMPORTANT: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
+        EXECUTION RULE: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
         
                  2: """PHASE 2: NETWORK INFRASTRUCTURE
-         Use these tools only:
+        
+        REQUIRED TOOLS:
          - get_organization_uplinks_statuses - Check uplink connectivity
          - get_network_settings - Review configuration
          - get_network_traffic - Check bandwidth usage
          - get_network_vpn_stats - Check VPN performance
          - get_device_loss_and_latency_history - Check device performance
          - get_connectivity_monitoring_destinations - Check connectivity monitoring
-         - update_network_settings - Fix performance/VPN issues
+        - update_network_settings - Fix performance/VPN issues if needed
          - create_network_appliance_settings - Fix connectivity issues
          
-         Check for:
+        ANALYSIS TARGETS:
          - Uplink connectivity issues
          - Network configuration problems
          - Traffic bottlenecks
@@ -500,36 +457,33 @@ async def run_automated_analysis(phase=None):
          - Device performance problems (latency, packet loss)
          - Connectivity monitoring failures
          
-                   IMPORTANT: Use ALL tools and fix EVERY problem detected!
-          CRITICAL: For performance/VPN issues, use update_network_settings to actually fix them!
-          CRITICAL: For connectivity issues, use create_network_appliance_settings to fix them!
-          CRITICAL: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
+        EXECUTION RULES:
+        - Use ALL tools and fix EVERY problem detected!
+        - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
         
                  3: """PHASE 3: SECURITY & MONITORING
-         Use these tools only:
+        
+        REQUIRED TOOLS:
          - get_network_events - Check for security issues
-                   - get_organization_login_security - Review login security settings
           - get_network_security_intrusion - Check intrusion detection
           - get_network_access_control_lists - Check access controls
          - get_network_clients - Check for unauthorized devices
-         - update_network_access_control_lists - Block unauthorized devices
-         - update_organization_login_security - Fix security settings
          - update_network_security_intrusion - Fix intrusion detection
          
-         Check for:
+        ANALYSIS TARGETS:
          - Security vulnerabilities
          - Unauthorized access attempts
          - Intrusion detection status
          - Access control issues
          - Unauthorized devices connected
          
-                   IMPORTANT: Use ALL tools and fix EVERY problem detected!
-          CRITICAL: For unauthorized devices, use update_network_access_control_lists to block them!
-          CRITICAL: For security issues, use update_organization_login_security and update_network_security_intrusion!
-          CRITICAL: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
+        EXECUTION RULES:
+        - Use ALL tools and fix EVERY problem detected!
+        - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
         
                  4: """PHASE 4: DEVICES & PERFORMANCE
-         Use these tools only:
+        
+        REQUIRED TOOLS:
          - get_network_clients - Check connected devices
          - get_device_loss_and_latency_history - Check device performance
          - get_connectivity_monitoring_destinations - Monitor connectivity
@@ -538,38 +492,37 @@ async def run_automated_analysis(phase=None):
          - update_network_group_policy - Fix policy issues
          - update_connectivity_monitoring_destinations - Fix connectivity issues
          
-         Check for:
+        ANALYSIS TARGETS:
          - Connected device issues
          - Performance problems (latency, loss)
          - Connectivity monitoring issues
          - Policy configuration problems
          
-                   IMPORTANT: Use ALL tools and fix EVERY problem detected!
-          CRITICAL: For performance issues, use update_network_settings to actually fix them!
-          CRITICAL: For connectivity issues, use update_connectivity_monitoring_destinations to fix them!
-          CRITICAL: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
+        EXECUTION RULES:
+        - Use ALL tools and fix EVERY problem detected!
+        - For performance issues, use update_network_settings to actually fix them!
+        - For connectivity issues, use update_connectivity_monitoring_destinations to fix them!
+        - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!""",
          
          5: """PHASE 5: VPN & ADVANCED PERFORMANCE
-         Use these tools only:
+        
+        REQUIRED TOOLS:
          - get_organization_vpn_stats - Check VPN performance metrics
          - get_network_vpn_stats - Check network-specific VPN issues
          - get_device_loss_and_latency_history - Check detailed performance
          - update_network_settings - Fix VPN/performance configuration
          - create_network_appliance_settings - Fix advanced connectivity
-         - update_network_group_policy - Apply QoS policies
          
-         Check for:
+        ANALYSIS TARGETS:
          - VPN latency issues (high ping times)
          - VPN packet loss problems
          - Tunnel connectivity issues
          - QoS and bandwidth optimization
          - Advanced performance tuning
          
-                   IMPORTANT: Use ALL tools and fix EVERY problem detected!
-          CRITICAL: For VPN performance issues, use update_network_settings to fix latency/packet loss!
-          CRITICAL: For QoS issues, use update_network_group_policy to apply bandwidth policies!
-          CRITICAL: For advanced connectivity, use create_network_appliance_settings!
-          CRITICAL: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!"""
+        EXECUTION RULES:
+        - Use ALL tools and fix EVERY problem detected!
+        - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!"""
     }
     
     async def run_single_phase(phase_num, client, llm):
@@ -579,47 +532,55 @@ async def run_automated_analysis(phase=None):
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=25,  # Increased steps to allow comprehensive problem solving
-            memory_enabled=False,
-            verbose=False,
+            max_steps=75,  # Increased steps for reliability
+            memory_enabled=False,  # Enable memory for context retention
+            verbose=False,  # Clean output for presentations
         )
         
                 # Create phase-specific prompt
-        automated_prompt = f"""{system_prompt}
+        automated_prompt = f"""{get_common_system_prompt()}
 
         AUTOMATED NETWORK ANALYSIS - PHASE {phase_num}:
         
         {phase_prompts[phase_num]}
         
                                    EXECUTION RULES:
-            CRITICAL: FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!
-            CRITICAL: When you detect a problem, immediately use fixing tools to resolve it!
-            CRITICAL: DO NOT just monitor - ACTUALLY FIX the problems you find!
-            CRITICAL: Use update_network_settings, create_network_appliance_settings, and other fixing tools!
-
+        
+        CRITICAL REQUIREMENTS:
+        - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues!
+        - When you detect a problem, immediately use fixing tools to resolve it!
+        - DO NOT just monitor - ACTUALLY FIX the problems you find!
+        - Use update_network_settings, create_network_appliance_settings, and other fixing tools!
+        
+        PHASE EXECUTION:
           - Use ONLY the tools specified for this phase
           - ANALYZE network data thoroughly before making any decisions
           - ONLY make changes when you identify ACTUAL network problems or issues
-          - FIX ALL DETECTED PROBLEMS - Use appropriate tools to resolve issues
-          - When you detect a problem, immediately use fixing tools to resolve it
-          - DO NOT just monitor - ACTUALLY FIX the problems you find
           - ALWAYS explain your reasoning for any decisions made
           - Report what was checked, what decisions were made, and the reasoning
-          - Do NOT say "NO CHANGES NEEDED." at any time
           - If you made changes, summarize what was changed
+        
+        EFFICIENCY RULES:
           - Be concise and efficient - Complete in 3-5 tool calls maximum
           - DO NOT over-analyze - Make quick decisions based on clear data
           - COMPLETE THE PHASE QUICKLY - Do not get stuck in analysis loops
           - STOP after making your decision - Do not continue analyzing
+        - Do NOT say "NO CHANGES NEEDED." at any time
+        
+        DATA HANDLING:
           - ALWAYS use the exact output format specified in the system prompt
           - EMPTY RESPONSES ARE VALID: If a tool returns empty data, report as "no data found" not "tool failed"
           - HANDLE EMPTY DATA: Empty responses mean "no issues detected" not "tool failure"
-          - COMPREHENSIVE PROBLEM SOLVING: For EVERY problem detected, use appropriate tools to fix it
           - RETRY EMPTY TOOLS: If a tool returns empty data, try it again or use alternative tools
+        
+        PROBLEM RESOLUTION:
+        - COMPREHENSIVE PROBLEM SOLVING: For EVERY problem detected, use appropriate tools to fix it
           - FIX ALL ISSUES: Do not stop until ALL detected problems are addressed with fixes
           - USE ALL AVAILABLE TOOLS: In each phase, use ALL tools that could help identify/fix problems
           - ACTUALLY FIX PROBLEMS: Use configuration tools to fix issues, not just monitoring tools
           - PRIORITIZE FIXES OVER MONITORING: When you detect a problem, fix it first, then add monitoring
+        
+        TOOL USAGE:
           - USE NETWORK SETTINGS TOOLS: For performance/VPN issues, use update_network_settings
           - USE APPLIANCE SETTINGS: For connectivity issues, use create_network_appliance_settings
         
@@ -629,7 +590,7 @@ async def run_automated_analysis(phase=None):
             response = await agent.run(automated_prompt)
             return response
         except Exception as e:
-            return f"❌ Error in Phase {phase_num}: {e}"
+            return f" Error in Phase {phase_num}: {e}"
     
     # Set up Gemini API key
     gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -642,9 +603,9 @@ async def run_automated_analysis(phase=None):
     # MCP server config file
     config_file = "mcp-inspector-config.json"
 
-    print("🤖 AUTOMATED NETWORK ANALYSIS MODE")
+    print("AUTOMATED NETWORK ANALYSIS MODE")
     print("="*30)
-    print("🔍 Gathering comprehensive network information...")
+    print("Gathering comprehensive network information...")
     print("="*30)
     
     try:
@@ -653,91 +614,12 @@ async def run_automated_analysis(phase=None):
         client = MCPClient.from_config_file(config_file)
         
         # Set up the model as the best automated network orchestration and monitoring agent
-        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
-
-            CRITICAL BEHAVIOR RULES:
-            1. NEVER ask "Would you like me to proceed" or "Should I continue"
-            2. NEVER ask for user confirmation before taking action
-            3. ONLY make changes when you identify ACTUAL network problems or issues
-            4. ALWAYS provide clear reasoning for your decisions
-            5. ALWAYS explain why you made changes or why you didn't make changes
-            6. ONLY modify settings if you believe it will improve network performance/security
-            7. Do NOT say "NO CHANGES NEEDED." at any time
-            8. If you made changes, summarize what was changed
-            9. BE EFFICIENT - Use minimal steps to complete tasks
-            10. FOCUS ON INTELLIGENT ANALYSIS - Don't make unnecessary changes
-
-            OUTPUT FORMAT REQUIREMENTS:
-            - ALWAYS use this exact format for all responses:
-            **Analysis:**
-            [Your analysis of the network data]
-            
-            **Decision:**
-            [Your decision - what you will do or not do]
-            
-            **Reasoning:**
-            [Your reasoning for the decision]
-            
-            - Do NOT say "NO CHANGES NEEDED." at any time
-            - If you made changes, end with a summary of what was changed
-            - If no problems detected, say "No issues detected" and do nothing
-            - NEVER make suggestions or recommendations - ONLY fix actual problems
-            - Keep responses concise and focused on the analysis
-
-            DECISION-MAKING FRAMEWORK:
-            - ANALYZE: Thoroughly examine network data and metrics
-            - EVALUATE: Determine if there are actual problems or issues
-            - DECIDE: Only make changes if problems exist - NEVER make suggestions or improvements
-            - EXPLAIN: Always provide clear reasoning for your decisions
-            - EXECUTE: If changes are needed, use appropriate tools immediately
-            - REPORT: Document what was checked, what decisions were made, and why
-
-            NETWORK ORCHESTRATION EXPERTISE:
-            - Cisco Meraki network management and optimization
-            - Intelligent network decision-making and action execution
-            - Real-time network performance monitoring and analysis
-            - Proactive network issue detection and resolution
-            - Intelligent bandwidth management and traffic shaping
-            - Security policy automation and threat response
-            - Network policy optimization and user management
-
-            MONITORING CAPABILITIES:
-            - Continuous network performance tracking (latency, loss, jitter, throughput)
-            - Traffic pattern analysis and bandwidth utilization monitoring
-            - Security event detection and unauthorized device identification
-            - Client behavior analysis and usage pattern recognition
-            - Network health assessment and predictive maintenance
-            - Real-time alert generation and automated response
-
-            AUTOMATION FRAMEWORK:
-            - AI-powered decision making with confidence scoring
-            - Intelligent action execution based on network conditions
-            - Threshold-based monitoring with configurable alerts
-            - Trend analysis and predictive network optimization
-            - Emergency response protocols for critical situations
-            - Comprehensive logging and audit trail maintenance
-
-            EXECUTION REQUIREMENTS:
-            - ONLY execute fixes when you identify ACTUAL problems
-            - ALWAYS explain your reasoning before making any changes
-            - ALWAYS report what was checked, what decisions were made, and the reasoning
-            - Do NOT say "NO CHANGES NEEDED." at any time
-            - If you made changes, summarize what was changed
-            - NEVER make changes just for the sake of making changes
-
-            RESPONSE STYLE:
-            - Always think as a network orchestration expert
-            - Provide clear analysis of network conditions
-            - Explain your decision-making process
-            - Only execute actions when problems are identified
-            - Report what was checked, what decisions were made, and why
-
-            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+        system_prompt = get_common_system_prompt()
 
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Network Orchestration Agent...")
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",  # Use the original model
+            model="gemini-2.5-flash",  # Use the original model
             google_api_key=gemini_api_key,
             temperature=0.1,  # Even lower temperature for consistency
             max_tokens=512,  # Further reduced tokens to avoid overload
@@ -751,7 +633,7 @@ async def run_automated_analysis(phase=None):
             llm=llm,
             client=client,
             max_steps=25,  # Further reduced steps to avoid quota issues
-            memory_enabled=False,  # Disable memory to reduce complexity
+            memory_enabled=True,  # Disable memory to reduce complexity
             verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
         )
         
@@ -761,25 +643,25 @@ async def run_automated_analysis(phase=None):
                 # Run analysis based on phase parameter
         if phase and phase in phase_prompts:
             # Run specific phase only
-            print(f"\n🚀 RUNNING PHASE {phase} ONLY")
+            print(f"\nRUNNING PHASE {phase} ONLY")
             print("="*30)
             
             try:
                 response = await run_single_phase(phase, client, llm)
                 print("\n" + "="*30)
-                print(f"✅ PHASE {phase} COMPLETE")
+                print(f"PHASE {phase} COMPLETE")
                 print("="*30)
                 print(response)
                 print("\n" + "="*30)
-                print(f"🎯 Phase {phase} analysis completed!")
+                print(f"Phase {phase} analysis completed!")
                 
             except Exception as e:
-                print(f"\n❌ Error in Phase {phase}: {e}")
+                print(f"\n Error in Phase {phase}: {e}")
                 
         else:
             # Run all phases sequentially
-            print("🤖 STARTING SEQUENTIAL PHASE ANALYSIS")
-            print("🔄 Will run all 5 phases with 30-second delays")
+            print("STARTING SEQUENTIAL PHASE ANALYSIS")
+            print("Will run all 5 phases with 30-second delays")
             print("="*30)
             
             all_results = []
@@ -791,31 +673,31 @@ async def run_automated_analysis(phase=None):
                     all_results.append(f"PHASE {phase_num} RESULT:\n{result}")
                     
                     print("\n" + "="*30)
-                    print(f"✅ PHASE {phase_num} COMPLETE")
+                    print(f"PHASE {phase_num} COMPLETE")
                     print("="*30)
                     print(result)
                     
                     # Wait 30 seconds before next phase to avoid model overload
                     if phase_num < 5:
-                        print(f"\n⏳ Waiting 30 seconds before Phase {phase_num + 1}...")
-                        await asyncio.sleep(30)
+                        print(f"\nWaiting 15 seconds before Phase {phase_num + 1}...")
+                        await asyncio.sleep(15)
                         
                 except Exception as e:
-                    error_msg = f"❌ Error in Phase {phase_num}: {e}"
+                    error_msg = f" Error in Phase {phase_num}: {e}"
                     all_results.append(error_msg)
                     print(f"\n{error_msg}")
                     
                     # Wait 30 seconds before next phase to avoid model overload
                     if phase_num < 5:
-                        print(f"\n⏳ Waiting 30 seconds before Phase {phase_num + 1}...")
-                        await asyncio.sleep(30)
+                        print(f"\nWaiting 15 seconds before Phase {phase_num + 1}...")
+                        await asyncio.sleep(15)
             
             # Final summary
             print("\n" + "="*30)
-            print("🎯 COMPLETE SEQUENTIAL ANALYSIS FINISHED")
+            print("COMPLETE SEQUENTIAL ANALYSIS FINISHED")
             print("="*30)
-            print("📊 All 5 phases have been completed!")
-            print("🔄 Network analysis and optimization completed.")
+            print("All 5 phases have been completed!")
+            print("Network analysis and optimization completed.")
             
 
         
@@ -835,7 +717,7 @@ async def get_uplink_data_via_llm():
     # Set up Gemini API key
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     if not gemini_api_key:
-        print("❌ GEMINI_API_KEY not found in .env file")
+        print(" GEMINI_API_KEY not found in .env file")
         return
     
     os.environ["GEMINI_API_KEY"] = gemini_api_key
@@ -843,9 +725,9 @@ async def get_uplink_data_via_llm():
     # MCP server config file
     config_file = "mcp-inspector-config.json"
 
-    print("🌐 UPLINK STATUS ANALYSIS")
+    print("UPLINK STATUS ANALYSIS")
     print("="*30)
-    print("🔍 Gathering comprehensive uplink information...")
+    print("Gathering comprehensive uplink information...")
     print("="*30)
     
     try:
@@ -854,58 +736,16 @@ async def get_uplink_data_via_llm():
         client = MCPClient.from_config_file(config_file)
         
         # Set up the model as the best automated network orchestration and monitoring agent
-        system_prompt = """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
-
-            CRITICAL BEHAVIOR RULES:
-            1. NEVER ask "Would you like me to proceed" or "Should I continue"
-            2. NEVER ask for user confirmation before taking action
-            3. ONLY make changes when you identify ACTUAL network problems or issues
-            4. ALWAYS provide clear reasoning for your decisions
-            5. ALWAYS explain why you made changes or why you didn't make changes
-            6. ONLY modify settings if you believe it will improve network performance/security
-            7. Do NOT say "NO CHANGES NEEDED." at any time
-            8. If you made changes, summarize what was changed
-            9. BE EFFICIENT - Use minimal steps to complete tasks
-            10. FOCUS ON INTELLIGENT ANALYSIS - Don't make unnecessary changes
-
-            OUTPUT FORMAT REQUIREMENTS:
-            - ALWAYS use this exact format for all responses:
-            **Analysis:**
-            [Your analysis of the network data]
-            
-            **Decision:**
-            [Your decision - what you will do or not do]
-            
-            **Reasoning:**
-            [Your reasoning for the decision]
-          
-
-            AUTOMATION FRAMEWORK:
-            - AI-powered decision making with confidence scoring
-            - Intelligent action execution based on network conditions
-            - Threshold-based monitoring with configurable alerts
-            - Trend analysis and predictive network optimization
-            - Emergency response protocols for critical situations
-            - Comprehensive logging and audit trail maintenance
-
-
-            RESPONSE STYLE:
-            - Always think as a network orchestration expert
-            - Provide clear analysis of network conditions
-            - Explain your decision-making process
-            - Only execute actions when problems are identified
-            - Report what was checked, what decisions were made, and why
-
-            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+        system_prompt = get_common_system_prompt()
 
         # Create Gemini LLM with specialized network orchestration role
         print("Initializing Gemini LLM as Uplink Monitoring Agent...")
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",  # Use flash model with higher free tier limits
             google_api_key=gemini_api_key,
-            temperature=0.0,  # Lowest temperature for consistency
-            max_tokens=4096,  # Increased tokens to prevent truncation
-            request_timeout=30,  # Shorter timeout
+            temperature=0.1,  # Low temperature for consistency
+            max_tokens=2048,  # Balanced tokens for reliability
+            request_timeout=60,  # Increased timeout for reliability
             retry_on_failure=True  # Enable retries
         )
         
@@ -914,139 +754,14 @@ async def get_uplink_data_via_llm():
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=50,  # Increased steps to allow tool execution
-            memory_enabled=True,  # Disable memory to reduce complexity
-            verbose=True,  # Enable verbose to see what's happening
+            max_steps=75,  # Increased steps for reliability
+            memory_enabled=False,  # Enable memory for context retention
+            verbose=False,  # Clean output for presentations
         )
         
         print("Setup complete!")
         print("\n" + "="*30)
 
-
-        # uplink_prompt = f"""{system_prompt}
-        #     UPLINK STATUS ANALYSIS & WAN LOAD BALANCING
-
-        #      TOOLS TO USE (in order):
-        #      1. get_network_settings → Check appliance WAN status (ok/down from degradedLinks)
-        #      2. get_organization_uplinks_statuses → Get device uplink connectivity and counts
-        #      3. update_uplink → Move devices between WANs (MANDATORY if imbalance or failures are found)
-             
-        #      **MANDATORY: You MUST call both get_network_settings AND get_organization_uplinks_statuses before making any decisions!**
-             
-        #      **STEP 1: Call get_network_settings NOW**
-        #      **STEP 2: Call get_organization_uplinks_statuses NOW**
-        #      **STEP 3: Count devices and make decisions**
-
-        #      CRITICAL RULES:
-        #      1. Appliance settings are the **source of truth** (use degradedLinks to check WAN status).
-        #      2. WAN CAPACITY LIMIT: Each WAN can handle maximum 20 devices.
-        #      3. OVERLOAD DETECTION: If WAN1 has >20 devices, move ONLY the excess devices (beyond 20) to WAN2.
-        #      4. KEEP FIRST 20: Always keep the first 20 devices on the original WAN.
-        #      5. MOVE EXCESS ONLY: Move only devices beyond the 20-device limit to available WANs.
-        #      6. ALL device moves must be executed with `update_uplink`, not just reported.
-        #      7. IMPORTANT: Process the COMPLETE response from get_organization_uplinks_statuses.
-        #      8. EXAMPLE: If WAN1 has 23 devices, keep 20 on WAN1, move only 3 to WAN2.
-        #      9. **DATA STRUCTURE**: The uplink data is under organization_uplinks_statuses['999781'] - it's a list of devices.
-        #      10. **COUNTING**: Check device['uplinks'][0]['interface'] for "wan1" or "wan2" values.
-        #      11. **VERIFICATION**: Before making decisions, show sample device data to verify you're reading interfaces correctly.
-
-        #     ---
-
-        #     ### REQUIRED OUTPUT STRUCTURE
-
-        #      **1. Analysis**  
-        #      - **FIRST: Call get_network_settings to get appliance WAN status**
-        #      - **SECOND: Call get_organization_uplinks_statuses to get device data**
-        #      - Interpret appliance settings (ok/down).  
-        #      - Count devices per WAN.  
-        #      - Identify overload or failures.
-
-        #     **2. Decision**  
-        #     - Specify which WANs/devices need changes.  
-        #     - State how devices will be redistributed.  
-
-        #     **3. Reasoning**  
-        #     - Justify why devices are moved.  
-        #     - Show capacity logic (20-device rule, WAN failures).  
-
-        #     **4. Appliance WAN Status Analysis**  
-        #     - WAN1 status (ok/down)  
-        #     - WAN2 status (ok/down)  
-        #     - Emergency action if any WAN is down  
-
-        #      **5. Device Count Per WAN**  
-        #      - IMPORTANT: Process ALL devices from the uplink statuses response
-        #      - **COUNTING INSTRUCTIONS:**
-        #      - 1. Go through EACH device in organization_uplinks_statuses['999781'] - DO NOT SKIP ANY!
-        #      - 2. Check device['uplinks'][0]['interface'] for each device
-        #      - 3. Count devices where interface == "wan1" for WAN1
-        #      - 4. Count devices where interface == "wan2" for WAN2
-        #      - 5. **MANDATORY: Show the actual counts like this:**
-        #      - WAN1: [ACTUAL COUNT] devices (list first 3 device serials)
-        #      - WAN2: [ACTUAL COUNT] devices (list first 3 device serials)
-        #      - WAN3: N devices (if any)  
-        #      - Mark WANs ≥20 devices as "down/overloaded"
-        #      - **DEBUG: Show the actual interface values you find: "wan1" or "wan2"**
-        #      - **CRITICAL: List the first 5 devices and their interface values to verify counting**
-             
-        #      **COUNTING VERIFICATION:**
-        #      - Show: "I counted X devices with interface='wan1' and Y devices with interface='wan2'"
-        #      - Show: "Total devices processed: X+Y"
-             
-        #      **CRITICAL: After this section, you MUST show the actual device counts you found!**
-
-        #      **6. WAN Load Balancing Actions**  
-        #      - WAN CAPACITY: Each WAN can handle maximum 20 devices
-        #      - **EXCESS DEVICE RULE: Only move devices beyond the 20-device limit, not all devices**
-        #      - If WAN1 has >20 devices: Keep first 20 on WAN1, move ONLY excess to WAN2 (if WAN2 has space)
-        #      - If WAN2 has >20 devices: Keep first 20 on WAN2, move ONLY excess to WAN1 (if WAN1 has space)
-        #      - **DOWN WAN RULE: If a WAN is "down", move ONLY excess devices (beyond 20) to available WANs**
-        #      - **AVAILABLE WAN CHECK: Only move to WANs that have space (< 20 devices)**
-        #      - **WAN STATUS UPDATE: After moving excess devices, update down WAN status to "ok" if under 20 devices**
-        #      - **EXAMPLE: If WAN2 has 22 devices and is down, move only 2 excess devices to WAN1, then WAN2 becomes ok**
-        #      - Show device redistribution plan
-        #      - CRITICAL: Use interface="wan2" when moving TO WAN2, interface="wan1" when moving TO WAN1
-        #      - **IMMEDIATELY AFTER THIS SECTION, YOU MUST CALL update_uplink FOR EACH DEVICE TO MOVE!**
-
-        #     **7. Uplink Status Summary**  
-        #     - Total active vs inactive uplinks  
-        #     - Device counts before/after balancing  
-
-        #     **8. WAN Availability Status**  
-        #     - Group devices by WAN (WAN1, WAN2, etc.)  
-        #     - For each WAN:  
-        #     Format → `WAN1 (15 devices): Serial: [serial], IP: [ip], Status: [status]`  
-
-        #     **9. Device Movement Log**  
-        #     - List moved devices with: Serial, Source WAN → Destination WAN  
-        #     - Confirm `update_uplink` calls
-        #     - EXAMPLE: If WAN1 has 23 devices, move 3 to WAN2: update_uplink with serial and interface parameters  
-
-        #      **10. Before and After Comparison**  
-        #      - **MANDATORY: You MUST show actual counts before and after:**
-        #      - **BEFORE LOAD BALANCING:**
-        #      -   WAN1: [COUNT] devices - Status: [ok/down]
-        #      -   WAN2: [COUNT] devices - Status: [ok/down]
-        #      - **AFTER LOAD BALANCING:**
-        #      -   WAN1: [COUNT] devices - Status: [ok/down]
-        #      -   WAN2: [COUNT] devices - Status: [ok/down]
-        #      - **DEVICES MOVED: [COUNT] devices moved from WAN1 to WAN2 (or "None" if no movement)**
-
-        #     ---
-
-        #     ### EXECUTION RULES
-        #     - Always call `get_network_settings` first.  
-        #     - Always call `get_organization_uplinks_statuses` second.  
-        #     - If WAN is down or overloaded → IMMEDIATELY call `update_uplink` for all impacted devices.  
-        #     - Report AND execute changes in real time.  
-
-        #      🚨 FINAL REMINDER: You MUST call `update_uplink` to actually move devices. Do not just analyze — **execute the fix.**
-             
-        #      **CRITICAL: If you don't call update_uplink, the task is FAILED. You must execute the tool calls NOW!**
-        #     """
-
-
-        
         # Read policy file
         try:
             with open('policy.txt', 'r') as f:
@@ -1079,7 +794,7 @@ async def get_uplink_data_via_llm():
 
 
 
-        print("🚀 Running uplink analysis...")
+        print("Running uplink analysis...")
         
         # Retry logic for Gemini API overload
         max_retries = 3
@@ -1093,7 +808,7 @@ async def get_uplink_data_via_llm():
                 error_str = str(e)
                 if "503" in error_str or "overloaded" in error_str.lower():
                     if attempt < max_retries - 1:
-                        print(f"⚠️ Gemini model overloaded (attempt {attempt + 1}/{max_retries}). Retrying in {retry_delay} seconds...")
+                        print(f"Gemini model overloaded (attempt {attempt + 1}/{max_retries}). Retrying in {retry_delay} seconds...")
                         await asyncio.sleep(retry_delay)
                         retry_delay *= 2  # Exponential backoff
                         continue
@@ -1102,12 +817,12 @@ async def get_uplink_data_via_llm():
                         response = "Error: Gemini model is overloaded. Please try again in a few minutes."
                         break
                 elif "finish_reason" in error_str or "int' object has no attribute 'name'" in error_str:
-                    print(f"⚠️ Gemini API compatibility issue detected. This is a known issue with certain Gemini models.")
+                    print(f"Gemini API compatibility issue detected. This is a known issue with certain Gemini models.")
                     print("The analysis may have completed successfully despite this error.")
                     response = " UPLINK ANALYSIS COMPLETE - Analysis completed despite API compatibility warning."
                     break
                 elif "429" in error_str or "quota" in error_str.lower() or "exceeded" in error_str.lower():
-                    print(f"⚠️ Gemini API quota exceeded. You've hit the free tier limits.")
+                    print(f"Gemini API quota exceeded. You've hit the free tier limits.")
                     print("Please wait 55 seconds before trying again, or consider upgrading your API plan.")
                     response = " UPLINK ANALYSIS FAILED - API quota exceeded. Please wait 55 seconds and try again."
                     break
@@ -1115,18 +830,117 @@ async def get_uplink_data_via_llm():
                     raise e
         
         print("\n" + "="*30)
-        print("✅ UPLINK ANALYSIS COMPLETE")
+        print("UPLINK ANALYSIS COMPLETE")
         print("="*30)
         print(response)
         print("\n" + "="*30)
-        print("🎯 Uplink analysis completed!")
+        print("Uplink analysis completed!")
         
     except Exception as e:
-        print(f"❌ Error in uplink analysis: {e}")
+        print(f" Error in uplink analysis: {e}")
     
     finally:
         if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
             await client.close_all_sessions()
+
+async def get_uplink_latency_monitoring():
+    """Monitor uplinks based on latency thresholds and create policy files."""
+    
+    import os
+    
+
+    use_gemini = False  # Set to True for Gemini, False for DeepSeek
+    
+    # MCP server config file
+    config_file = "mcp-inspector-config.json"
+
+    print("UPLINK LATENCY MONITORING")
+    print("="*40)
+    print("Monitoring uplink performance based on latency...")
+    print("="*40)
+    
+    try:
+        # Create MCP client
+        print("Connecting to MCP server...")
+        client = MCPClient.from_config_file(config_file)
+        
+        # Set up the model as the best automated network orchestration and monitoring agent
+        system_prompt = get_common_system_prompt()
+
+            
+        if use_gemini:
+            # OPTION 1: Gemini LLM - COMMENTED OUT
+            print("Initializing Gemini LLM as Latency Monitoring Agent...")
+            gemini_api_key = os.getenv("GEMINI_API_KEY")
+            if not gemini_api_key:
+                print(" GEMINI_API_KEY not found in .env file")
+                return
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",  # Use flash model with higher free tier limits
+                google_api_key=gemini_api_key,
+                temperature=0.1,  # Slightly higher for better responses
+                max_tokens=512,  # Reduced tokens to avoid limits
+                request_timeout=60,  # Increased timeout for reliability
+                retry_on_failure=True  # Enable retries
+            )
+        else:
+            # # OPTION 2: DeepSeek v3 LLM via OpenRouter - COMMENTED OUT
+            print("Initializing DeepSeek v3 LLM as Latency Monitoring Agent...")
+            deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
+            if not deepseek_api_key:
+                print(" DEEPSEEK_API_KEY not found in .env file")
+                return
+            llm = ChatOpenAI(
+                model="deepseek/deepseek-chat-v3.1:free",  # DeepSeek v3 model via OpenRouter
+                api_key=deepseek_api_key,
+                base_url="https://openrouter.ai/api/v1",  # OpenRouter endpoint
+                temperature=0.1,  # Low temperature for consistent responses
+                max_tokens=1024,  # Increased token limit for better responses
+                request_timeout=60,  # Timeout for reliability
+                max_retries=3  # Retry on failure
+            )
+
+        # Create MCP agent with specialized network orchestration role
+        print("Creating Latency Monitoring Agent...")
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=50,  # Increased steps to allow full execution
+            memory_enabled=True,  # Enable memory for context
+            verbose=False,  # Enable verbose to see analysis and execution
+        )
+        
+        # Add delay between tool calls to respect rate limits
+        
+        print("Setup complete!")
+        print("\n" + "="*40)
+
+        # Simple latency monitoring
+        print("Running latency monitoring...")
+        
+        try:
+            # Send the complete prompt to the agent
+            full_prompt = f"{system_prompt}\n\n{generate_dynamic_latency_prompt()}"
+            print("Sending prompt to agent...")
+            response = await agent.run(full_prompt)
+
+            print("\n" + "="*30)
+            print("UPLINK ANALYSIS COMPLETE")
+            print("="*30)
+            print(response)
+            print("\n" + "="*30)
+            print("Uplink analysis completed!")
+
+            
+        except Exception as e:
+            print(f"Error in latency monitoring: {e}")
+            return
+        
+    except Exception as e:
+        print(f"Error in latency monitoring: {e}")
+        return
+
+# Note: Tool execution requires MCPAgent mode
 
 async def test_connection():
     """Test the MCP connection and available tools."""
@@ -1148,7 +962,7 @@ async def test_connection():
         
         # Test LLM
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             google_api_key=gemini_api_key,
             temperature=0.1,
             max_tokens=512,
@@ -1163,7 +977,7 @@ async def test_connection():
             llm=llm,
             client=client,
             max_steps=5,
-            memory_enabled=True,
+            memory_enabled=False,
             verbose=False  # Disable verbose output
         )
         
@@ -1193,6 +1007,7 @@ async def main():
         print("  python mcp_client.py test               - Test MCP connection")
         print("  python mcp_client.py --automate         - Run full automated analysis (all phases)")
         print("  python mcp_client.py --uplink          - Get uplink status and WAN details via LLM")
+        print("  python mcp_client.py --uplink-through-latency - Monitor uplinks based on latency thresholds")
 
         print("  python mcp_client.py --automate --phase=1 - Run Phase 1: Organization Overview")
         print("  python mcp_client.py --automate --phase=2 - Run Phase 2: Network Infrastructure")
@@ -1240,6 +1055,11 @@ async def main():
     # Check for --uplink flag
     if "--uplink" in sys.argv:
         await get_uplink_data_via_llm()
+        return
+    
+    # Check for --uplink-through-latency flag
+    if "--uplink-through-latency" in sys.argv:
+        await get_uplink_latency_monitoring()
         return
     
     # Run the chat

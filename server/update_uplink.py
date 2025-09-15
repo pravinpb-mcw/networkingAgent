@@ -99,18 +99,22 @@ def convert_natural_language_to_uplink_data(natural_language: str) -> Dict[str, 
         if serial_match:
             uplink_data["serial"] = serial_match.group(1).upper()
     
-    # Parse interface type - look for direction (to wan1, to wan2, etc.)
+    # Parse interface type - look for direction (to wan1, to wan2, to wan3, etc.)
     if "to wan1" in natural_language_lower or "move to wan1" in natural_language_lower:
         uplink_data["interface"] = "wan1"
     elif "to wan2" in natural_language_lower or "move to wan2" in natural_language_lower:
         uplink_data["interface"] = "wan2"
+    elif "to wan3" in natural_language_lower or "move to wan3" in natural_language_lower:
+        uplink_data["interface"] = "wan3"
     elif "to cellular" in natural_language_lower or "move to cellular" in natural_language_lower:
         uplink_data["interface"] = "cellular"
-    # Fallback to simple wan1/wan2 detection if no direction specified
-    elif "wan1" in natural_language_lower and "wan2" not in natural_language_lower:
+    # Fallback to simple wan1/wan2/wan3 detection if no direction specified
+    elif "wan1" in natural_language_lower and "wan2" not in natural_language_lower and "wan3" not in natural_language_lower:
         uplink_data["interface"] = "wan1"
-    elif "wan2" in natural_language_lower and "wan1" not in natural_language_lower:
+    elif "wan2" in natural_language_lower and "wan1" not in natural_language_lower and "wan3" not in natural_language_lower:
         uplink_data["interface"] = "wan2"
+    elif "wan3" in natural_language_lower and "wan1" not in natural_language_lower and "wan2" not in natural_language_lower:
+        uplink_data["interface"] = "wan3"
     elif "cellular" in natural_language_lower:
         uplink_data["interface"] = "cellular"
     
@@ -186,9 +190,26 @@ async def update_mock_uplink_data(uplink_data: Dict[str, Any]) -> Dict[str, Any]
             if device.get('serial') == device_serial:
                 # Update the interface
                 if 'uplinks' in device and len(device['uplinks']) > 0:
-                    device['uplinks'][0]['interface'] = new_interface
+                    # If moving to wan3, add a new uplink entry
+                    if new_interface == 'wan3':
+                        # Add wan3 uplink entry
+                        device['uplinks'].append({
+                            "interface": "wan3",
+                            "status": "active",
+                            "ip": "192.168.3.100",
+                            "gateway": "192.168.3.1",
+                            "publicIp": "203.0.113.100",
+                            "primaryDns": "8.8.8.8",
+                            "secondaryDns": "8.8.4.4",
+                            "ipAssignedBy": "dhcp",
+                            "serial": device_serial
+                        })
+                        logger.info(f"Created WAN3 for device {device_serial}")
+                    else:
+                        # Update existing uplink
+                        device['uplinks'][0]['interface'] = new_interface
+                        logger.info(f"Updated device {device_serial} to interface {new_interface}")
                     device_found = True
-                    logger.info(f"Updated device {device_serial} to interface {new_interface}")
                     break
         
         if not device_found:

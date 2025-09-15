@@ -124,18 +124,36 @@ st.markdown("""
         font-size: 0.8rem;
     }
     
-    /* Make dropdowns more obvious */
+    /* Make dropdowns more obvious and colorful with blue gradient */
     .stSelectbox > div > div {
-        border: 2px solid #1f77b4 !important;
-        border-radius: 8px !important;
-        background: #f8f9fa !important;
+        border: 2px solid #1E3A8A !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #DBEAFE, #E0F2FE) !important;
         cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 4px rgba(30, 58, 138, 0.2) !important;
     }
     
     .stSelectbox > div > div:hover {
-        border-color: #ff7f0e !important;
-        background: #e3f2fd !important;
-        box-shadow: 0 2px 8px rgba(31, 119, 180, 0.3) !important;
+        border-color: #3B82F6 !important;
+        background: linear-gradient(135deg, #BFDBFE, #93C5FD) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    .stSelectbox > div > div:focus {
+        border-color: #2563EB !important;
+        background: linear-gradient(135deg, #93C5FD, #60A5FA) !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3) !important;
+    }
+    
+    /* Style the dropdown arrow */
+    .stSelectbox > div > div > div[data-testid="stSelectboxArrow"] {
+        color: #1E3A8A !important;
+    }
+    
+    .stSelectbox > div > div:hover > div[data-testid="stSelectboxArrow"] {
+        color: #3B82F6 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -611,7 +629,7 @@ def main():
         
     
     # Main content area
-    tab1, tab2, tab3, tab4 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics", "Network Configuration"])
+    tab1, tab2, tab3, tab4 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics", "Network Orchestration"])
     
     with tab1:
         st.header("MCP Client Chatbot")
@@ -657,21 +675,24 @@ def main():
             key=f"chat_input_{st.session_state.chat_input_counter}"
         )
         
-        # JavaScript to handle Enter key
+        # JavaScript to handle Enter key - only for chat input
         st.markdown("""
         <script>
-        const input = document.querySelector('input[data-testid="stTextInput"]');
-        if (input) {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    // Find and click the Send button
-                    const sendButton = document.querySelector('button[kind="primary"]');
-                    if (sendButton) {
-                        sendButton.click();
+        // Wait for page to load
+        setTimeout(function() {
+            const chatInput = document.querySelector('input[data-testid="stTextInput"]');
+            if (chatInput && chatInput.placeholder && chatInput.placeholder.includes('Ask about your network')) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        // Find and click the Send button
+                        const sendButton = document.querySelector('div[data-testid="stChatInputContainer"] button[kind="primary"]');
+                        if (sendButton) {
+                            sendButton.click();
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
+        }, 1000);
         </script>
         """, unsafe_allow_html=True)
         
@@ -679,7 +700,7 @@ def main():
         col1, col2 = st.columns([4, 1])
         
         with col1:
-            if st.button("Send", type="primary"):
+            if st.button("Send", type="primary", key="chat_send_btn"):
                 if user_input.strip():
                     with st.spinner("Getting response..."):
                         response = dashboard.chat_with_mcp(user_input.strip())
@@ -922,434 +943,446 @@ def main():
     
     with tab4:
          st.header("🔧 Network Configuration")
-         st.info("Configure your network settings directly from the dashboard")
+         st.info("Run network management functions directly from the dashboard")
          
          # Configuration tool selection
-         st.subheader("🔧 Select Configuration Tool")
-         st.info("💡 **Click the dropdown below to select what you want to configure**")
+         st.subheader("🔧 Select Function to Run")
+         st.info("💡 **Click the dropdown below to select what you want to run**")
          
          config_tool = st.selectbox(
-             "Choose what you want to configure:",
+             "Choose what you want to run:",
              [
-                 ("create_network_wireless_settings", "📶 Wireless Network Settings"),
-                 ("create_network_appliance_settings", "⚙️ Network Appliance Settings"), 
-                 ("create_network_group_policy", "📋 Create Group Policy")
+                 ("uplink_through_latency", "🔄 --uplink-through-latency"),
+                 ("automate", "🤖 --automate"),
+                 ("available", "📋 Available Functions")
              ],
              format_func=lambda x: x[1],  # Show the friendly name
-             help="Click to select which network configuration you want to update",
-             key="config_tool_selector"
+             help="Click to select which network function you want to run",
+             key="config_tool_selector",
+             index=0  # Set default selection
          )
          
          # Extract the actual tool name from the tuple
          if config_tool:
              config_tool = config_tool[0]
          
+         # Debug: Show what was selected (hidden for clean interface)
+         # st.write(f"Selected tool: {config_tool}")
          
-         
-         # Initialize session state for form data
-         if 'wireless_settings' not in st.session_state:
-             st.session_state.wireless_settings = {
-                 "enabled": True,
-                 "ssid": "My_SSID",
-                 "limit_up": 1000,
-                 "limit_down": 1000
-             }
-         
-         if 'appliance_settings' not in st.session_state:
-             st.session_state.appliance_settings = {
-                 "dhcp_enabled": True,
-                 "dhcp_lease_time": 86400,
-                 "vlan_enabled": False,
-                 "vlan_id": 100
-             }
-         
-         if 'group_policy' not in st.session_state:
-             st.session_state.group_policy = {
-                 "policy_name": "Guest Policy",
-                 "bandwidth_enabled": True,
-                 "limit_up": 500,
-                 "limit_down": 1000,
-                 "scheduling_enabled": False,
-                 "traffic_shaping": True,
-                 "content_filtering": False,
-                 "splash_page": False
-             }
-         
-         if config_tool == "create_network_wireless_settings":
-             st.subheader("📶 Wireless Network Settings")
+         if config_tool == "uplink_through_latency":
+             st.subheader("🔄 --uplink-through-latency")
+             st.info("Run latency-based WAN rerouting to optimize network performance")
              
              col1, col2 = st.columns(2)
              with col1:
-                 enabled = st.checkbox("Enable Wireless Network", value=st.session_state.wireless_settings["enabled"], key="wireless_enabled")
-                 ssid = st.text_input("SSID Name", value=st.session_state.wireless_settings["ssid"], key="wireless_ssid")
+                 st.write("**Function:** `--uplink-through-latency`")
+                 st.write("**Purpose:** Automatically reroute devices across WANs based on latency thresholds")
+                #  st.write("**Policy:** Uses `latency_policy.yaml` for decision making")
              
              with col2:
-                limit_up = st.number_input("Upload Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_up"], key="wireless_limit_up")
-                limit_down = st.number_input("Download Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_down"], key="wireless_limit_down")
+                 st.write("**Features:**")
+                 st.write("• Real-time latency monitoring")
+                 st.write("• Automatic device redistribution")
+                #  st.write("• Before/after performance reporting")
+                 st.write("• Dynamic WAN creation")
              
-             # Reset button
-             if st.button("🔄 Reset to Defaults", help="Reset wireless settings to default values"):
-                 st.session_state.wireless_settings = {
-                     "enabled": True,
-                     "ssid": "My_SSID",
-                     "limit_up": 1000,
-                     "limit_down": 1000
-                 }
-                 st.success("Wireless settings reset to defaults!")
-                 st.rerun()
-             
-             if st.button("Create Wireless Settings", type="primary"):
-                 # Save current form values to session state
-                 st.session_state.wireless_settings = {
-                     "enabled": enabled,
-                     "ssid": ssid,
-                     "limit_up": limit_up,
-                     "limit_down": limit_down
-                 }
-                 
-                 with st.spinner("Updating wireless settings..."):
+             if st.button("🚀 Run Uplink Through Latency", type="primary", key="uplink_latency_btn"):
+                 with st.spinner("Running latency-based WAN rerouting..."):
                      try:
-                                                   # Import the function
-                          from server.create_network_wireless_settings import create_network_wireless_settings
-                          
-                          # Prepare settings data
-                          settings_data = {
-                              "enabled": enabled,
-                              "ssid": ssid,
-                              "bandwidth": {
-                                  "limitUp": limit_up,
-                                  "limitDown": limit_down
-                              }
-                          }
-                          
-                          # Call the function
-                          result = asyncio.run(create_network_wireless_settings(settings_data, use_mock=True))
-                          
-                          if result and len(result) > 0:
-                              st.success("✅ Wireless settings created successfully!")
-                              st.json(settings_data)
+                         # Run the MCP client with uplink-through-latency option
+                         import subprocess
+                         import os
+                         
+                         # Use the virtual environment Python if available
+                         python_cmd = "python"
+                         if os.path.exists("../myenv/Scripts/python.exe"):
+                             python_cmd = "../myenv/Scripts/python.exe"
+                         elif os.path.exists("myenv/Scripts/python.exe"):
+                             python_cmd = "myenv/Scripts/python.exe"
+                         
+                        #  st.info("🔄 Starting latency-based WAN rerouting...")
+                         st.info("📊 Analyzing current network performance...")
+                        #  st.info(f"🐍 Using Python: {python_cmd}")
+                        #  st.info(f"📁 Working directory: {os.getcwd()}")
+                         
+                         # Show command being executed
+                         cmd = [python_cmd, "client/mcp_client.py", "--uplink-through-latency"]
+                        #  st.info(f"🔧 Executing: {' '.join(cmd)}")
+                         
+                         # Create a placeholder for real-time output
+                         output_placeholder = st.empty()
+                         
+                         # Run the command and capture output in real-time
+                         process = subprocess.Popen(
+                             cmd, 
+                             stdout=subprocess.PIPE, 
+                             stderr=subprocess.STDOUT, 
+                             text=True, 
+                             cwd=".", 
+                             shell=False,
+                             bufsize=1,
+                             universal_newlines=True
+                         )
+                         
+                         # Display output in real-time
+                         output_lines = []
+                         while True:
+                             output = process.stdout.readline()
+                             if output == '' and process.poll() is not None:
+                                 break
+                             if output:
+                                 output_lines.append(output.strip())
+                                 # Show all output so far
+                                 output_placeholder.code('\n'.join(output_lines))  # Show all lines
+                                 
+                         # Wait for process to complete
+                         return_code = process.wait()
+                         
+                         # Add a small delay to ensure all output is captured
+                         import time
+                         time.sleep(0.5)
+                         
+                         if return_code == 0:
+                             st.success("✅ Uplink through latency completed successfully!")
                              
-                                                           # Show the result
-                              with st.expander("View Create Result"):
-                                 st.json(result[0]['text'])
-                          else:
-                              st.error("Failed to create wireless settings")
-                              
-                     except Exception as e:
-                          st.error(f"Error creating wireless settings: {e}")
-                          st.exception(e)
-         
-         elif config_tool == "create_network_appliance_settings":
-             st.subheader("⚙️ Network Appliance Settings")
-             
-             col1, col2 = st.columns(2)
-             with col1:
-                 dhcp_enabled = st.checkbox("Enable DHCP", value=st.session_state.appliance_settings["dhcp_enabled"], key="appliance_dhcp_enabled")
-                 dhcp_lease_time = st.number_input("DHCP Lease Time (seconds)", min_value=300, max_value=864000, value=st.session_state.appliance_settings["dhcp_lease_time"], key="appliance_dhcp_lease")
-             
-             with col2:
-                vlan_enabled = st.checkbox("Enable VLAN", value=st.session_state.appliance_settings["vlan_enabled"], key="appliance_vlan_enabled")
-                vlan_id = st.number_input("VLAN ID", min_value=1, max_value=4094, value=st.session_state.appliance_settings["vlan_id"], disabled=not vlan_enabled, key="appliance_vlan_id")
-             
-             # Reset button
-             if st.button("🔄 Reset to Defaults", help="Reset appliance settings to default values"):
-                 st.session_state.appliance_settings = {
-                     "dhcp_enabled": True,
-                     "dhcp_lease_time": 86400,
-                     "vlan_enabled": False,
-                     "vlan_id": 100
-                 }
-                 st.success("Appliance settings reset to defaults!")
-                 st.rerun()
-             
-             if st.button("Create Appliance Settings", type="primary"):
-                 # Save current form values to session state
-                 st.session_state.appliance_settings = {
-                     "dhcp_enabled": dhcp_enabled,
-                     "dhcp_lease_time": dhcp_lease_time,
-                     "vlan_enabled": vlan_enabled,
-                     "vlan_id": vlan_id
-                 }
-                 
-                 with st.spinner("Updating appliance settings..."):
-                     try:
-                         # Import the function
-                         from server.create_network_appliance_settings import create_network_appliance_settings
-                         
-                         # Prepare settings data
-                         settings_data = {
-                             "dhcp": {
-                                 "enabled": dhcp_enabled,
-                                 "leaseTime": dhcp_lease_time
-                             },
-                             "vlan": {
-                                 "enabled": vlan_enabled,
-                                 "id": vlan_id if vlan_enabled else None
-                             }
-                         }
-                         
-                         # Call the function
-                         result = asyncio.run(create_network_appliance_settings(settings_data, use_mock=True))
-                         
-                         if result and len(result) > 0:
-                             st.success("✅ Appliance settings created successfully!")
-                             st.json(settings_data)
+                             # Show what was accomplished
+                             st.subheader("📊 Analysis Results:")
+                             st.info("✅ Network latency analysis completed")
+                            #  st.info("✅ WAN rerouting recommendations generated")
+                             st.info("✅ Device distribution optimized")
                              
-                             # Show the result
-                             with st.expander("View Create Result"):
-                                 st.json(result[0]['text'])
+                             # Show the complete output
+                             st.subheader("📋 Complete Terminal Output:")
+                             
+                             st.code('\n'.join(output_lines))
+                             
+                             # Show the result in expandable section
+                             with st.expander("🔍 View Full Technical Output"):
+                                 st.text('\n'.join(output_lines))
                          else:
-                             st.error("Failed to create appliance settings")
+                             st.error("❌ Uplink through latency failed!")
+                             st.error(f"Return code: {return_code}")
+                             st.error("Please check the error details below:")
+                             st.code('\n'.join(output_lines))
                              
+                     except subprocess.TimeoutExpired:
+                         st.error("⏰ Operation timed out after 2 minutes")
+                         st.info("The operation is taking longer than expected. Please try again.")
                      except Exception as e:
-                         st.error(f"Error creating appliance settings: {e}")
+                         st.error(f"Error running uplink through latency: {e}")
                          st.exception(e)
           
-             elif config_tool == "create_network_group_policy":
-              st.subheader("📋 Create Network Group Policy")
-              
-              col1, col2 = st.columns(2)
-              with col1:
-                  policy_name = st.text_input("Policy Name", value=st.session_state.group_policy["policy_name"], key="create_policy_name")
-                  bandwidth_enabled = st.checkbox("Enable Bandwidth Limits", value=st.session_state.group_policy["bandwidth_enabled"], key="create_policy_bandwidth_enabled")
-              
-              with col2:
-                  limit_up = st.number_input("Upload Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_up"], disabled=not bandwidth_enabled, key="create_policy_limit_up")
-                  limit_down = st.number_input("Download Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_down"], disabled=not bandwidth_enabled, key="create_policy_limit_down")
-              
-              # Advanced settings
-              with st.expander("Advanced Settings"):
-                  col1, col2 = st.columns(2)
-                  with col1:
-                      scheduling_enabled = st.checkbox("Enable Scheduling Restrictions", value=st.session_state.group_policy["scheduling_enabled"], key="create_policy_scheduling")
-                      traffic_shaping = st.checkbox("Enable Firewall & Traffic Shaping", value=st.session_state.group_policy["traffic_shaping"], key="create_policy_traffic_shaping")
-                  
-                  with col2:
-                      content_filtering = st.checkbox("Enable Content Filtering", value=st.session_state.group_policy["content_filtering"], key="create_policy_content_filtering")
-                      splash_page = st.checkbox("Enable Splash Page Authentication", value=st.session_state.group_policy["splash_page"], key="create_policy_splash_page")
-              
-              # Reset button
-              if st.button("🔄 Reset to Defaults", help="Reset group policy to default values", key="create_policy_reset"):
-                  st.session_state.group_policy = {
-                      "policy_name": "Guest Policy",
-                      "bandwidth_enabled": True,
-                      "limit_up": 500,
-                      "limit_down": 1000,
-                      "scheduling_enabled": False,
-                      "traffic_shaping": True,
-                      "content_filtering": False,
-                      "splash_page": False
-                  }
-                  st.success("Group policy reset to defaults!")
-                  st.rerun()
-              
-              if st.button("Create Group Policy", type="primary", key="create_policy_button"):
-                  # Save current form values to session state
-                  st.session_state.group_policy = {
-                      "policy_name": policy_name,
-                      "bandwidth_enabled": bandwidth_enabled,
-                      "limit_up": limit_up,
-                      "limit_down": limit_down,
-                      "scheduling_enabled": scheduling_enabled,
-                      "traffic_shaping": traffic_shaping,
-                      "content_filtering": content_filtering,
-                      "splash_page": splash_page
-                  }
-                  
-                  with st.spinner("Creating group policy..."):
-                      try:
-                          # Import the function
-                          from server.create_network_group_policy import create_network_group_policy
-                          
-                          # Prepare policy data matching comprehensive Cisco Meraki API structure
-                          policy_data = {
-                              "name": policy_name,
-                              "scheduling": {
-                                  "enabled": scheduling_enabled,
-                                  "monday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "tuesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "wednesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "thursday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "friday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "saturday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                  "sunday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {}
-                              },
-                              "bandwidth": {
-                                  "settings": "custom" if bandwidth_enabled else "network default",
-                                  "bandwidthLimits": {
-                                      "limitUp": limit_up if bandwidth_enabled else None,
-                                      "limitDown": limit_down if bandwidth_enabled else None
-                                  } if bandwidth_enabled else {}
-                              },
-                              "firewallAndTrafficShaping": {
-                                  "settings": "custom" if traffic_shaping else "network default",
-                                  "trafficShapingRules": [] if traffic_shaping else [],
-                                  "l3FirewallRules": [],
-                                  "l7FirewallRules": []
-                              },
-                              "contentFiltering": {
-                                  "allowedUrlPatterns": {"settings": "network default", "patterns": []},
-                                  "blockedUrlPatterns": {"settings": "append" if content_filtering else "network default", "patterns": []},
-                                  "blockedUrlCategories": {"settings": "network default", "categories": []}
-                              },
-                              "splashAuthSettings": "custom" if splash_page else "bypass",
-                              "vlanTagging": {"settings": "network default"},
-                              "bonjourForwarding": {"settings": "network default", "rules": []}
-                          }
-                          
-                          # Call the function
-                          result = asyncio.run(create_network_group_policy(policy_data, use_mock=True))
-                          
-                          if result and len(result) > 0:
-                              st.success("✅ Group policy created successfully!")
-                              st.json(policy_data)
-                              
-                              # Show the result
-                              with st.expander("View Creation Result"):
-                                  st.json(result[0]['text'])
-                          else:
-                              st.error("Failed to create group policy")
-                              
-                      except Exception as e:
-                          st.error(f"Error creating group policy: {e}")
-                          st.exception(e)
-          
-         elif config_tool == "delete_network_group_policy":
-             st.subheader("📋 Create Network Group Policy")
+         elif config_tool == "automate":
+             st.subheader("🤖 --automate")
+             st.info("Run automated network management and optimization")
              
              col1, col2 = st.columns(2)
              with col1:
-                 policy_name = st.text_input("Policy Name", value=st.session_state.group_policy["policy_name"], key="policy_name")
-                 bandwidth_enabled = st.checkbox("Enable Bandwidth Limits", value=st.session_state.group_policy["bandwidth_enabled"], key="policy_bandwidth_enabled")
+                 st.write("**Function:** `--automate`")
+                 st.write("**Purpose:** Automated network management and optimization")
+                 st.write("**Features:** Continuous monitoring and adjustment")
              
              with col2:
-                 limit_up = st.number_input("Upload Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_up"], disabled=not bandwidth_enabled, key="policy_limit_up")
-                 limit_down = st.number_input("Download Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_down"], disabled=not bandwidth_enabled, key="policy_limit_down")
+                 st.write("**Capabilities:**")
+                 st.write("• Continuous monitoring")
+                 st.write("• Automatic optimization")
+                 st.write("• Performance tuning")
+                 st.write("• Proactive maintenance")
              
-             # Advanced settings
-             with st.expander("Advanced Settings"):
-                 col1, col2 = st.columns(2)
-                 with col1:
-                     scheduling_enabled = st.checkbox("Enable Scheduling Restrictions", value=st.session_state.group_policy["scheduling_enabled"], key="policy_scheduling")
-                     traffic_shaping = st.checkbox("Enable Firewall & Traffic Shaping", value=st.session_state.group_policy["traffic_shaping"], key="policy_traffic_shaping")
-                 
-                 with col2:
-                     content_filtering = st.checkbox("Enable Content Filtering", value=st.session_state.group_policy["content_filtering"], key="policy_content_filtering")
-                     splash_page = st.checkbox("Enable Splash Page Authentication", value=st.session_state.group_policy["splash_page"], key="policy_splash_page")
-             
-             # Reset button
-             if st.button("🔄 Reset to Defaults", help="Reset group policy to default values"):
-                 st.session_state.group_policy = {
-                     "policy_name": "Guest Policy",
-                     "bandwidth_enabled": True,
-                     "limit_up": 500,
-                     "limit_down": 1000,
-                     "scheduling_enabled": False,
-                     "traffic_shaping": True,
-                     "content_filtering": False,
-                     "splash_page": False
-                 }
-                 st.success("Group policy reset to defaults!")
-                 st.rerun()
-             
-             if st.button("Update Group Policy", type="primary"):
-                 # Save current form values to session state
-                 st.session_state.group_policy = {
-                     "policy_name": policy_name,
-                     "bandwidth_enabled": bandwidth_enabled,
-                     "limit_up": limit_up,
-                     "limit_down": limit_down,
-                     "scheduling_enabled": scheduling_enabled,
-                     "traffic_shaping": traffic_shaping,
-                     "content_filtering": content_filtering,
-                     "splash_page": splash_page
-                 }
-                 
-                 with st.spinner("Creating group policy..."):
+             if st.button("🚀 Run Automate", type="primary", key="automate_btn"):
+                 with st.spinner("Running automated network management..."):
                      try:
-                                                   # Note: create_network_group_policy tool has been removed
-                          # Use update_network_group_policy instead
+                         # Run the MCP client with automate option
+                         import subprocess
+                         import os
                          
-                         # Prepare policy data matching comprehensive Cisco Meraki API structure
-                         policy_data = {
-                             "name": policy_name,
-                             "scheduling": {
-                                 "enabled": scheduling_enabled,
-                                 "monday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "tuesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "wednesday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "thursday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "friday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "saturday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {},
-                                 "sunday": {"active": scheduling_enabled, "from": "9:00", "to": "17:00"} if scheduling_enabled else {}
-                             },
-                             "bandwidth": {
-                                 "settings": "custom" if bandwidth_enabled else "network default",
-                                 "bandwidthLimits": {
-                                     "limitUp": limit_up if bandwidth_enabled else None,
-                                     "limitDown": limit_down if bandwidth_enabled else None
-                                 } if bandwidth_enabled else {}
-                             },
-                             "firewallAndTrafficShaping": {
-                                 "settings": "custom" if traffic_shaping else "network default",
-                                 "trafficShapingRules": [] if traffic_shaping else [],
-                                 "l3FirewallRules": [],
-                                 "l7FirewallRules": []
-                             },
-                             "contentFiltering": {
-                                 "allowedUrlPatterns": {"settings": "network default", "patterns": []},
-                                 "blockedUrlPatterns": {"settings": "append" if content_filtering else "network default", "patterns": []},
-                                 "blockedUrlCategories": {"settings": "network default", "categories": []}
-                             },
-                             "splashAuthSettings": "custom" if splash_page else "bypass",
-                             "vlanTagging": {"settings": "network default"},
-                             "bonjourForwarding": {"settings": "network default", "rules": []}
-                         }
+                         # Use the virtual environment Python if available
+                         python_cmd = "python"
+                         if os.path.exists("../myenv/Scripts/python.exe"):
+                             python_cmd = "../myenv/Scripts/python.exe"
+                         elif os.path.exists("myenv/Scripts/python.exe"):
+                             python_cmd = "myenv/Scripts/python.exe"
                          
-                         # Call the function
-                         result = asyncio.run(create_network_group_policy(policy_data, use_mock=True))
+                        #  st.info("🤖 Starting automated network management...")
+                         st.info("📈 Monitoring network performance and making optimizations...")
+                        #  st.info(f"🐍 Using Python: {python_cmd}")
+                        #  st.info(f"📁 Working directory: {os.getcwd()}")
                          
-                         if result and len(result) > 0:
-                             st.success("✅ Group policy created successfully!")
-                             st.json(policy_data)
+                         # Show command being executed
+                         cmd = [python_cmd, "client/mcp_client.py", "--automate"]
+                         st.info(f"🔧 Executing: {' '.join(cmd)}")
+                         
+                         # Create a placeholder for real-time output
+                         output_placeholder = st.empty()
+                         
+                         # Run the command and capture output in real-time
+                         process = subprocess.Popen(
+                             cmd, 
+                             stdout=subprocess.PIPE, 
+                             stderr=subprocess.STDOUT, 
+                             text=True, 
+                             cwd=".", 
+                             shell=False,
+                             bufsize=1,
+                             universal_newlines=True
+                         )
+                         
+                         # Display output in real-time
+                         output_lines = []
+                         while True:
+                             output = process.stdout.readline()
+                             if output == '' and process.poll() is not None:
+                                 break
+                             if output:
+                                 output_lines.append(output.strip())
+                                 # Show all output so far
+                                 output_placeholder.code('\n'.join(output_lines))  # Show all lines
+                                 
+                         # Wait for process to complete
+                         return_code = process.wait()
+                         
+                         # Add a small delay to ensure all output is captured
+                         import time
+                         time.sleep(0.5)
+                         
+                         if return_code == 0:
+                             st.success("✅ Automate completed successfully!")
                              
-                             # Show the result
-                             with st.expander("View Creation Result"):
-                                 st.json(result[0]['text'])
+                             # Show what was accomplished
+                             st.subheader("🤖 Automation Results:")
+                             st.info("✅ Network monitoring completed")
+                             st.info("✅ Performance optimizations applied")
+                             st.info("✅ Configuration changes implemented")
+                             st.info("✅ System health checks performed")
+                             
+                             # Show the complete output
+                             st.subheader("📋 Complete Terminal Output:")
+                             
+                             # Filter for clean, important output only
+                             clean_output = []
+                             seen_analysis = set()  # Track seen analysis to avoid duplicates
+                             for line in output_lines:
+                                 # Skip technical/verbose lines
+                                 if any(skip in line.lower() for skip in [
+                                     'base_url:', 'use_mock:', 'using real meraki api mode',
+                                     'testing api connectivity', 'successfully connected to api',
+                                     'processing request of type', 'i am working on',
+                                     'get api call:', 'http request:', 'retrieved data for device',
+                                     'retrieved uplink statuses for', 'converted natural language',
+                                     'successfully converted', 'updating uplink status data',
+                                     'successfully updated uplink status', 'meraki mcp client with gemini',
+                                     'connecting to mcp server', 'initializing gemini llm',
+                                     'creating latency monitoring agent', 'setup complete',
+                                     'running latency monitoring analysis', 'starting latency-based wan rerouting',
+                                     'analyzing current network performance', 'using python:',
+                                     'working directory:', 'executing:', 'policy: uses latency_policy.yaml',
+                                     'policy: uses', 'for decision making', 'latency monitoring complete',
+                                     'uplink analysis complete', 'monitoring uplink performance',
+                                     'gathering comprehensive', 'running latency monitoring analysis'
+                                 ]):
+                                     continue
+                                 
+                                 # Skip lines with only equals signs
+                                 if line.strip() == '=' * len(line.strip()) and len(line.strip()) > 10:
+                                     continue
+                                 
+                                 # Keep important lines - be more inclusive
+                                 if any(keep in line.lower() for keep in [
+                                     'analysis:', 'reasoning:', 'decision:', 'summary of changes:',
+                                     'moved device', 'phase', 'automation', 'optimization', 
+                                     'reroute', 'wan', 'no changes required', 'no issues detected',
+                                     'equal distribution', 'devices connected', 'latency of',
+                                     'threshold', 'network performance', 'devices on wan',
+                                     'prior to any actions', 'detected latency', 'policy for',
+                                     'requires devices', 'rerouted equally', 'across 2 wans',
+                                     'high latency', 'medium latency', 'critical latency',
+                                     'observed latency', 'acceptable threshold', 'optimal performance',
+                                     'classified as', 'load balancing', 'distribute traffic',
+                                     'reduce the latency', 'improving network performance',
+                                     'balance the load', 'mitigate high latency'
+                                 ]) or line.strip().startswith('**') or (line.strip() and not line.strip().startswith('=') and len(line.strip()) > 10):
+                                     # Avoid duplicates
+                                     line_key = line.strip().lower()
+                                     if line_key not in seen_analysis:
+                                         seen_analysis.add(line_key)
+                                         clean_output.append(line)
+                             
+                             if clean_output:
+                                 # Use text_area for better wrapping and scrolling
+                                 st.text_area(
+                                     "Analysis Results", 
+                                     '\n'.join(clean_output), 
+                                     height=400, 
+                                     key="results_summary_automate",
+                                     help="Scroll to view complete analysis"
+                                 )
+                             else:
+                                 st.info("Analysis completed successfully - no detailed output to display")
+                             
+                             # Show technical details in expandable section for debugging
+                             with st.expander("🔧 View Technical Details (for debugging)"):
+                                 st.text('\n'.join(output_lines))
                          else:
-                             st.error("Failed update group policy")
+                             st.error("❌ Automate failed!")
+                             st.error(f"Return code: {return_code}")
+                             st.error("Please check the error details below:")
+                             st.code('\n'.join(output_lines))
                              
+                     except subprocess.TimeoutExpired:
+                         st.error("⏰ Operation timed out after 2 minutes")
+                         st.info("The operation is taking longer than expected. Please try again.")
                      except Exception as e:
-                         st.error(f"Error creating group policy: {e}")
+                         st.error(f"Error running automate: {e}")
                          st.exception(e)
-         
-         # Configuration History
-         st.subheader("📚 Configuration History")
-         st.info("Recent configuration changes will appear here")
-         
-         # Add a placeholder for configuration history
-         if 'config_history' not in st.session_state:
-             st.session_state.config_history = []
-         
-         if st.session_state.config_history:
-             for i, config in enumerate(st.session_state.config_history):
-                 with st.expander(f"Configuration {i+1} - {config.get('timestamp', 'Unknown')}"):
-                     st.json(config.get('data', {}))
-         else:
-             st.info("No configuration history yet. Make changes to see them here.")
-     
-     # Footer
-    st.markdown("---")
-    st.markdown("**Network Agent Dashboard** - Powered by MCP, Gemini LLM, and Streamlit")
-    
-    # Auto-refresh for real-time updates
-    if dashboard.monitoring_active:
-        time.sleep(5)
-        st.rerun()
+          
+         elif config_tool == "available":
+             st.subheader("📋 Available Functions")
+             st.info("List of all available network management functions")
+             
+             # Function categories
+             col1, col2 = st.columns(2)
+             
+             with col1:
+                 st.write("**🔧 Core Functions:**")
+                 st.write("• `--uplink-through-latency` - Latency-based WAN rerouting")
+                 st.write("• `--automate` - Automated network management")
+                 st.write("• `--monitor` - Real-time network monitoring")
+                 st.write("• `--analyze` - Network analysis and reporting")
+                 
+                 st.write("**📊 Monitoring Functions:**")
+                 st.write("• `--get-clients` - Get network clients")
+                 st.write("• `--get-traffic` - Get traffic data")
+                 st.write("• `--get-events` - Get network events")
+                 st.write("• `--get-latency` - Get latency metrics")
+             
+             with col2:
+                 st.write("**⚙️ Configuration Functions:**")
+                 st.write("• `--update-uplink` - Update uplink settings")
+                 st.write("• `--update-appliance` - Update appliance settings")
+                 st.write("• `--create-policy` - Create group policies")
+                 st.write("• `--update-network` - Update network settings")
+                 
+                 st.write("**🔍 Analysis Functions:**")
+                 st.write("• `--get-vpn-stats` - Get VPN statistics")
+                 st.write("• `--get-connectivity` - Get connectivity data")
+                 st.write("• `--get-security` - Get security settings")
+                 st.write("• `--get-acl` - Get access control lists")
+             
+             # Usage examples
+             st.subheader("💡 Usage Examples")
+             st.code("""
+                # Run latency-based WAN rerouting
+                python client/mcp_client.py --uplink-through-latency
 
-    # Cleanup on exit
-    import atexit
-    atexit.register(dashboard.cleanup)
+                # Run automated management
+                python client/mcp_client.py --automate
+
+                # Get network clients
+                python client/mcp_client.py --get-clients
+
+                # Monitor network traffic
+                python client/mcp_client.py --get-traffic
+                            """)
+                
+             # Help button
+             if st.button("📖 Show Help", type="secondary"):
+                 st.info("Use the command line or this dashboard to run network management functions. Each function has specific parameters and options.")
+    
+    # with tab5:
+    #     st.header("⚡ Latency Monitoring & Uplink Management")
+    #     st.info("Monitor network latency and automatically manage uplinks based on performance thresholds")
+        
+    #     # Latency monitoring controls
+    #     col1, col2, col3 = st.columns(3)
+    #     with col1:
+    #         if st.button("🚀 Start Latency Monitoring", type="primary"):
+    #             st.success("Latency monitoring started! This will monitor uplink performance and automatically manage device distribution.")
+    #             st.info("Use the MCP Chatbot tab with '--uplink-through-latency' command for manual latency-based uplink management.")
+        
+    #     with col2:
+    #         if st.button("📊 View Latency Policy"):
+    #             try:
+    #                 with open('latency_policy.yaml', 'r') as f:
+    #                     policy_content = f.read()
+    #                 st.text_area("Latency Policy", policy_content, height=400)
+    #             except FileNotFoundError:
+    #                 try:
+    #                     with open('latency_policy.txt', 'r') as f:
+    #                         policy_content = f.read()
+    #                     st.text_area("Latency Policy", policy_content, height=400)
+    #                 except FileNotFoundError:
+    #                     st.error("Latency policy file not found")
+        
+    #     with col3:
+    #         if st.button("🔄 Refresh Latency Data"):
+    #             st.rerun()
+        
+    #         # Latency thresholds display
+    #         st.subheader("📈 Latency Thresholds")
+    #         col1, col2, col3, col4 = st.columns(4)
+    #         with col1:
+    #             st.metric("EXCELLENT", "< 30ms", "latency + < 3ms jitter")
+    #         with col2:
+    #             st.metric("GOOD", "30-50ms", "latency + 3-5ms jitter")
+    #         with col3:
+    #             st.metric("WARNING", "50-100ms", "latency OR 5-10ms jitter")
+    #         with col4:
+    #             st.metric("CRITICAL", "> 100ms", "latency OR > 10ms jitter")
+            
+    #         # Uplink management actions
+    #         st.subheader("🔧 Uplink Management Actions")
+                
+    #         col1, col2 = st.columns(2)
+    #         with col1:
+    #             st.markdown("**When Latency Increases:**")
+    #             st.markdown("""
+    #             - Split devices across available WANs
+    #             - Move 50% of devices from high-latency WAN
+    #             - Prioritize high-bandwidth devices first
+    #             - Create WAN3 if needed for load distribution
+    #             """)
+                
+    #         with col2:
+    #             st.markdown("**When Latency Decreases:**")
+    #             st.markdown("""
+    #             - Consolidate devices to fewer WANs
+    #             - Reconnect devices to primary WAN
+    #             - Optimize for cost efficiency
+    #             - Maintain redundancy for critical devices
+    #             """)
+        
+    #     # Device priority management
+    #     st.subheader("📋 Device Priority Management")
+        
+    #     col1, col2 = st.columns(2)
+    #     with col1:
+    #         st.markdown("**High Priority Devices:**")
+    #         st.markdown("""
+    #         - MX84-HQ (Headquarters)
+    #         - Critical servers
+    #         - Executive devices
+    #         - VoIP systems
+    #         """)
+        
+    #     with col2:
+    #         st.markdown("**Standard Priority Devices:**")
+    #         st.markdown("""
+    #             - MX84-Branch (Branch offices)
+    #             - General workstations
+    #             - Mobile devices
+    #             - Guest networks
+    #             """)
+            
+    #         # Monitoring status
+    #         st.subheader("📊 Current Monitoring Status")
+            
+    #         col1, col2, col3 = st.columns(3)
+    #         with col1:
+    #             st.metric("Active Monitoring", "Enabled", "Real-time latency tracking")
+    #         with col2:
+    #             st.metric("Policy Version", "1.0", "YAML-based configuration")
+    #         with col3:
+    #             st.metric("Last Update", "Now", "Live data refresh")
 
 if __name__ == "__main__":
     main()
