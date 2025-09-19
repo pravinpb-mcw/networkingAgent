@@ -17,7 +17,7 @@ logger = logging.getLogger("get-organization-networks-tool")
 mcp = FastMCP("get-organization-networks")
 
 @mcp.tool()
-async def get_organization_networks(organization_id: str = None, use_mock: bool = False) -> List[TextContent]:
+async def get_organization_networks(organization_id: str = "", use_mock: bool = False) -> List[TextContent]:
     """
     Get all networks in an organization.
     Uses ORGANIZATION_ID from .env file if not specified.
@@ -37,19 +37,38 @@ async def get_organization_networks(organization_id: str = None, use_mock: bool 
         
         # Get organization networks
         logger.info("Retrieving organization networks...")
-        networks_result = await client.get_organization_networks(organization_id=organization_id)
-        
-        org_id = organization_id or client.organization_id
-        networks_count = len(networks_result) if isinstance(networks_result, list) else 0
-        
+        org_id = organization_id if organization_id else None
+        networks_result = await client.get_organization_networks(organization_id=org_id)
+
+        # Defensive handling if API returns non-list
+        full_list = networks_result if isinstance(networks_result, list) else []
+        total_count = len(full_list)
+
+        # Truncate and project fields to keep context small
+        MAX_ITEMS = 50
+        projected = []
+        for item in full_list[:MAX_ITEMS]:
+            if isinstance(item, dict):
+                projected.append({
+                    "id": item.get("id"),
+                    "name": item.get("name"),
+                    "productTypes": item.get("productTypes"),
+                    "timeZone": item.get("timeZone"),
+                    "tags": item.get("tags"),
+                })
+            else:
+                projected.append(item)
+
         result = {
             "tool": "get_organization_networks",
             "timestamp": datetime.now().isoformat(),
-            "organization_id": org_id,
-            "networks_count": networks_count,
-            "networks": networks_result,
+            "organization_id": org_id or client.organization_id,
+            "networks_total_count": total_count,
+            "networks_returned_count": len(projected),
+            "returned_is_truncated": total_count > len(projected),
+            "networks": projected,
             "status": "success",
-            "summary": f"Retrieved {networks_count} networks from organization {org_id}"
+            "summary": f"Retrieved {len(projected)} of {total_count} networks (truncated for brevity)"
         }
         
         json_output = json.dumps(result, indent=2, default=str)
@@ -61,7 +80,8 @@ async def get_organization_networks(organization_id: str = None, use_mock: bool 
         )]
         
     except Exception as e:
-        logger.error(f"❌ Error in get_organization_networks: {str(e)}")
+        # Avoid unicode symbols to prevent Windows console encoding issues
+        logger.error(f"Error in get_organization_networks: {str(e)}")
         return [TextContent(
             type="text",
             text=f"Error executing get_organization_networks: {str(e)}"

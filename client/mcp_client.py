@@ -54,15 +54,9 @@ load_dotenv()
 
 def get_common_system_prompt():
     """Get the common system prompt used across all MCP client functions."""
-    return """You are an AUTOMATED NETWORK ORCHESTRATION AGENT with INTELLIGENT DECISION-MAKING capabilities.
+    return """You are a NETWORK ORCHESTRATION AGENT. 
 
-            CRITICAL BEHAVIOR RULES:
-            1. NEVER ask "Would you like me to proceed" or "Should I continue"
-            2. NEVER ask for user confirmation before taking action
-            3. ONLY make changes when you identify ACTUAL network problems or issues
-            4. ALWAYS provide clear reasoning for your decisions
-            5. ALWAYS explain why you made changes or why you didn't make changes
-            6. ONLY modify settings if you believe it will improve network performance/security
+CRITICAL: You MUST use the available tools to get real data and make actual changes.
 
             OUTPUT FORMAT REQUIREMENTS:
             - ALWAYS use this exact format for all responses:
@@ -89,14 +83,7 @@ def get_common_system_prompt():
             - EXECUTE: If changes are needed, use appropriate tools immediately
             - REPORT: Document what was checked, what decisions were made, and why
 
-            NETWORK ORCHESTRATION EXPERTISE:
-            - Cisco Meraki network management and optimization
-            - Intelligent network decision-making and action execution
-            - Real-time network performance monitoring and analysis
-            - Proactive network issue detection and resolution
-            - Intelligent bandwidth management and traffic shaping
-            - Security policy automation and threat response
-            - Network policy optimization and user management
+        # IMPORTANT: You MUST execute actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
 
             MONITORING CAPABILITIES:
             - Continuous network performance tracking (latency, loss, jitter, throughput)
@@ -104,76 +91,58 @@ def get_common_system_prompt():
             - Security event detection and unauthorized device identification
             - Client behavior analysis and usage pattern recognition
             - Network health assessment and predictive maintenance
-            - Real-time alert generation and automated response
-
-            AUTOMATION FRAMEWORK:
-            - AI-powered decision making with confidence scoring
-            - Intelligent action execution based on network conditions
-            - Threshold-based monitoring with configurable alerts
-            - Trend analysis and predictive network optimization
-            - Emergency response protocols for critical situations
-            - Comprehensive logging and audit trail maintenance
-
-            EXECUTION REQUIREMENTS:
-            - ONLY execute fixes when you identify ACTUAL problems
-            - ALWAYS explain your reasoning before making any changes
-            - ALWAYS report what was checked, what decisions were made, and the reasoning
-            - Do NOT say "NO CHANGES NEEDED." at any time
-            - If you made changes, summarize what was changed
-            - NEVER make changes just for the sake of making changes
-
-            RESPONSE STYLE:
-            - Always think as a network orchestration expert
-            - Provide clear analysis of network conditions
-            - Explain your decision-making process
-            - Only execute actions when problems are identified
-            - Report what was checked, what decisions were made, and why
-
-            REMEMBER: You are INTELLIGENT and SELECTIVE. Only make changes when there are actual problems and you can clearly explain why the changes will improve the network."""
+            - Real-time alert generation and automated response """
 
 def generate_dynamic_latency_prompt():
-        return f"""EXECUTE NETWORK LATENCY OPTIMIZATION:
+    return """
 
-        IMPORTANT: You MUST execute actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
+        # STEP 2: ANALYZE LATENCY THRESHOLDS
+        # - If latency > 100ms: CRITICAL - Redistribute devices across ALL 3 WANs
+        # - If latency 70-100ms: MEDIUM - Balance between wan1 and wan2
+        # - If latency < 70ms: LOW - No action needed
 
-        STEP 1: GET CURRENT DATA
-        - Call get_device_loss_and_latency_history() to get latency measurements
-        - Call get_organization_uplinks_statuses() to get current device distribution
-        - Analyze the data to identify latency issues
+        # STEP 3: EXECUTE DEVICE REDISTRIBUTION
+        # For CRITICAL latency (>100ms):
+        # - Count total devices from uplink statuses
+        # - Calculate equal distribution: total_devices
+        # - Move devices to achieve: wan1=X, wan2=X, wan3=X (or X+1 for remainder)
+        # - Use update_uplink("Move device SERIAL_NUMBER to wan1")
 
-        STEP 2: ANALYZE LATENCY THRESHOLDS
-        - If latency > 100ms: CRITICAL - Redistribute devices across ALL 3 WANs
-        - If latency 70-100ms: MEDIUM - Balance between wan1 and wan2
-        - If latency < 70ms: LOW - No action needed
+    
+        # YOU MUST ACTUALLY CALL THESE TOOLS - DO NOT JUST LIST THEM!
 
-        STEP 3: EXECUTE DEVICE REDISTRIBUTION
-        For CRITICAL latency (>100ms):
-        - Count total devices from uplink statuses
-        - Calculate equal distribution: total_devices ÷ 3
-        - Move devices to achieve: wan1=X, wan2=X, wan3=X (or X+1 for remainder)
-        - Use update_uplink("Move device SERIAL_NUMBER to wan1/wan2/wan3")
-        - Example: 29 devices = wan1:10, wan2:10, wan3:9
 
-        SPECIFIC DEVICE EXAMPLES (use actual serial numbers from your data):
-        - update_uplink("Move device Q2MN-Q3J9-YJHW to wan1")
-        - update_uplink("Move device Q2GY-X25G-0BZX to wan2") 
-        - update_uplink("Move device Q3GZ-A50C-AJ7X to wan3")
-        - Continue for all devices to achieve equal distribution
-        
-        YOU MUST ACTUALLY CALL THESE TOOLS - DO NOT JUST LIST THEM!
+        # REQUIRED OUTPUT FORMAT:
+        # **Analysis:** 
+        # - **Network Performance:** [Current latency, packet loss, and performance metrics]
+        # - **Device Distribution:** [Current network device status and configuration]
 
-        STEP 4: UPDATE NETWORK SETTINGS
-        - Call update_appliance_settings("Set degradedLinks for wan1, wan2, wan3 to ok")
-        - This confirms all WAN links are healthy
+        # **Decision:** 
+        # - **Action:** [What you will do to optimize network performance]
+        # - **Changes Planned:** [Specific network optimizations planned]
 
-        REQUIRED OUTPUT FORMAT:
-        **Analysis:** 
-        - **Network Performance:** [Current latency, packet loss, and performance metrics]
-        - **Device Distribution:** [Current network device status and configuration]
+        # **Reasoning:** [Why this action will improve performance]
 
-        **Decision:** 
-        - **Action:** [What you will do to optimize network performance]
-        - **Changes Planned:** [Specific network optimizations planned]
+        # **Execution Steps:**
+        # 1. **Network Configuration:** [Update network settings as needed]
+        # 2. **Device Management:** [Optimize device distribution and settings]
+        # 3. **Performance Tuning:** [Apply performance optimizations]
+
+        # **Tool Calls:**
+        # ====
+
+        # **Summary:**
+        # - **Final Network State:** [Overall network configuration and performance status]
+        # - **Changes Made:** [Detailed description of all network optimizations applied]
+        # - **Performance Status:** [Current performance metrics and improvements achieved]
+        # - **Impact:** [Expected benefits and performance improvements]
+
+        # [Additional paragraph explaining the overall network optimization and current state]
+
+        # Network monitoring completed!
+        # ======
+
+        # CRITICAL: You MUST execute the actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
 
         **Reasoning:** [Why this action will improve performance]
 
@@ -193,18 +162,12 @@ def generate_dynamic_latency_prompt():
 
         [Additional paragraph explaining the overall network optimization and current state]
 
-        Network monitoring completed!
-        ======
+Task: Check network latency and fix if needed.
 
         CRITICAL: You MUST execute the actual tool calls! Do not just analyze - you must call update_uplink for each device movement!
 
-        MANDATORY TOOL EXECUTION:
-        - Call update_uplink("Move device SERIAL_NUMBER to wan1") for each device
-        - Call update_uplink("Move device SERIAL_NUMBER to wan2") for each device  
-        - Call update_uplink("Move device SERIAL_NUMBER to wan3") for each device
-        - Call update_appliance_settings("Set degradedLinks for wan1, wan2, wan3 to ok")
+IMPORTANT: Use the exact tool names listed above. Do not modify or add formatting to tool names."""
 
-        DO NOT SAY "technical difficulties" - EXECUTE THE TOOLS NOW! """
 
 
 async def run_meraki_chat():
@@ -251,7 +214,7 @@ async def run_meraki_chat():
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=10,  # Further reduced steps to avoid quota issues
+            max_steps=5,  # Reduced steps for faster execution
             memory_enabled=False,  # Disable memory to reduce complexity
             verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
         )
@@ -617,25 +580,44 @@ async def run_automated_analysis(phase=None):
         system_prompt = get_common_system_prompt()
 
         # Create Gemini LLM with specialized network orchestration role
-        print("Initializing Gemini LLM as Network Orchestration Agent...")
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",  # Use the original model
-            google_api_key=gemini_api_key,
-            temperature=0.1,  # Even lower temperature for consistency
-            max_tokens=512,  # Further reduced tokens to avoid overload
-            request_timeout=30,  # Add timeout
-            retry_on_failure=True  # Enable retries
+        # print("Initializing Gemini LLM as Network Orchestration Agent...")
+        # llm = ChatGoogleGenerativeAI(
+        #     model="gemini-2.5-flash",  # Use the original model
+        #     google_api_key=gemini_api_key,
+        #     temperature=0.1,  # Even lower temperature for consistency
+        #     max_tokens=512,  # Further reduced tokens to avoid overload
+        #     request_timeout=30,  # Add timeout
+        #     retry_on_failure=True  # Enable retries
+        # )
+
+        print("Initializing DeepSeek v3 LLM as Latency Monitoring Agent...")
+        deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
+        if not deepseek_api_key:
+            print(" DEEPSEEK_API_KEY not found in .env file")
+            return
+        llm = ChatOpenAI(
+            # model="anthropic/claude-sonnet-4",
+            model="deepseek/deepseek-chat-v3.1:free",
+            # model="google/gemini-2.5-flash",  # DeepSeek v3 model via OpenRouter
+            api_key=deepseek_api_key,
+            base_url="https://openrouter.ai/api/v1",  # OpenRouter endpoint
+            temperature=0.1,  # Low temperature for consistent responses
+            max_tokens=1024,  # Increased token limit for better responses
+            request_timeout=30,  # Timeout for reliability
+            max_retries=3  # Retry on failure
         )
-        
+
+        # groq_api_key=os.getenv("GROQ_API_KEY")
+
+        # llm = ChatOpenAI(
+        #     model="llama3.1:8b",   # must exactly match `ollama list`
+        #     api_key="ollama",             # dummy key, Ollama ignores it
+        #     base_url="http://192.168.13.162:11434/v1",  # MUST have /v1
+        # )
+
+
         # Create MCP agent with specialized network orchestration role
         print("Creating Network Orchestration Agent...")
-        agent = MCPAgent(
-            llm=llm,
-            client=client,
-            max_steps=25,  # Further reduced steps to avoid quota issues
-            memory_enabled=True,  # Disable memory to reduce complexity
-            verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
-        )
         
         print("Setup complete!")
         print("\n" + "="*30)
@@ -680,7 +662,7 @@ async def run_automated_analysis(phase=None):
                     # Wait 30 seconds before next phase to avoid model overload
                     if phase_num < 5:
                         print(f"\nWaiting 15 seconds before Phase {phase_num + 1}...")
-                        await asyncio.sleep(15)
+                        await asyncio.sleep(10)
                         
                 except Exception as e:
                     error_msg = f" Error in Phase {phase_num}: {e}"
@@ -690,7 +672,7 @@ async def run_automated_analysis(phase=None):
                     # Wait 30 seconds before next phase to avoid model overload
                     if phase_num < 5:
                         print(f"\nWaiting 15 seconds before Phase {phase_num + 1}...")
-                        await asyncio.sleep(15)
+                        await asyncio.sleep(10)
             
             # Final summary
             print("\n" + "="*30)
@@ -744,9 +726,9 @@ async def get_uplink_data_via_llm():
             model="gemini-2.5-flash",  # Use flash model with higher free tier limits
             google_api_key=gemini_api_key,
             temperature=0.1,  # Low temperature for consistency
-            max_tokens=2048,  # Balanced tokens for reliability
-            request_timeout=60,  # Increased timeout for reliability
-            retry_on_failure=True  # Enable retries
+            max_tokens=512,  # Reduced tokens for speed
+            request_timeout=20,  # Reduced timeout for faster responses
+            retry_on_failure=False  # Disable retries for speed
         )
         
         # Create MCP agent with specialized network orchestration role
@@ -754,8 +736,8 @@ async def get_uplink_data_via_llm():
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=75,  # Increased steps for reliability
-            memory_enabled=False,  # Enable memory for context retention
+            max_steps=10,  # Reduced steps for faster execution
+            memory_enabled=False,  # Disable memory for speed
             verbose=False,  # Clean output for presentations
         )
         
@@ -891,23 +873,31 @@ async def get_uplink_latency_monitoring():
                 print(" DEEPSEEK_API_KEY not found in .env file")
                 return
             llm = ChatOpenAI(
-                model="deepseek/deepseek-chat-v3.1:free",  # DeepSeek v3 model via OpenRouter
+                # model="anthropic/claude-sonnet-4",
+                model="deepseek/deepseek-chat-v3.1:free",
+                # model="google/gemini-2.5-flash",  # DeepSeek v3 model via OpenRouter
                 api_key=deepseek_api_key,
                 base_url="https://openrouter.ai/api/v1",  # OpenRouter endpoint
                 temperature=0.1,  # Low temperature for consistent responses
                 max_tokens=1024,  # Increased token limit for better responses
-                request_timeout=60,  # Timeout for reliability
+                request_timeout=30,  # Timeout for reliability
                 max_retries=3  # Retry on failure
             )
+
+            # llm = ChatOpenAI(
+            # model="llama3.1:8b",   # must exactly match `ollama list`
+            # api_key="ollama",             # dummy key, Ollama ignores it
+            # base_url="http://192.168.13.162:11434/v1",  # MUST have /v1
+            # )
 
         # Create MCP agent with specialized network orchestration role
         print("Creating Latency Monitoring Agent...")
         agent = MCPAgent(
             llm=llm,
             client=client,
-            max_steps=50,  # Increased steps to allow full execution
-            memory_enabled=True,  # Enable memory for context
-            verbose=False,  # Enable verbose to see analysis and execution
+            max_steps=30,  # Reduced steps for faster execution
+            memory_enabled=False,  # Disable memory for speed
+            verbose=False,  # Enable verbose to see tool execution
         )
         
         # Add delay between tool calls to respect rate limits

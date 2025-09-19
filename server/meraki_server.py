@@ -180,13 +180,13 @@ async def handle_list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_uplink",
-            description="Move devices between WAN interfaces (wan1/wan2) for load balancing. Use natural language. Example: 'Move device Q2GY-ECCL-A9TE from wan1 to wan2' or 'Change device Q2MN-Q3J9-YJHW to wan2'.",
+            description="CRITICAL TOOL: Move devices between WAN interfaces (wan1/wan2/wan3) for load balancing. MUST be called for each device movement. Use format: 'Move device SERIAL_NUMBER to wan1/wan2/wan3'. Example: 'Move device Q2GY-ECCL-A9TE to wan2' or 'Move device Q2MN-Q3J9-YJHW to wan3'. This tool ACTUALLY MOVES devices - call it for each device that needs to be moved!",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "uplink_data": {
                         "type": "string",
-                        "description": "Uplink change request in natural language (e.g., 'Move device SERIAL from wan1 to wan2')"
+                        "description": "Natural language description of uplink changes. MUST include device serial number and target WAN. Example: 'Move device Q2GY-ECCL-A9TE to wan2'"
                     }
                 },
                 "required": ["uplink_data"]

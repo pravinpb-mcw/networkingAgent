@@ -26,7 +26,7 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2025-09-15T15:06:13.169234",
+          "updated_at": "2025-09-18T11:30:20.176178",
           "latencyMs": 110,
           "packetLossPct": 3.2,
           "jitterMs": 12,
@@ -67,17 +67,17 @@
         }
       ],
       "network_settings": {
+        "localStatusPageEnabled": true,
         "securePort": {
           "enabled": true
         },
-        "localStatusPageEnabled": true,
-        "remoteStatusPageEnabled": false,
         "localStatusPage": {
           "authentication": {
             "enabled": true,
             "username": "admin"
           }
         },
+        "remoteStatusPageEnabled": false,
         "namedVlans": {
           "enabled": false
         }
@@ -101,6 +101,21 @@
       "isVirtual": false,
       "id": "L_04156e88aca94215",
       "organizationId": "999781"
+    },
+    "L_c052c2880ee14426": {
+      "name": "with wireless and appliance products",
+      "productTypes": [
+        "appliance",
+        "wireless"
+      ],
+      "timeZone": "America/Los_Angeles",
+      "tags": [],
+      "enrollmentString": null,
+      "notes": "",
+      "isBoundToConfigTemplate": false,
+      "isVirtual": false,
+      "id": "L_c052c2880ee14426",
+      "organizationId": "null"
     }
   },
   "network_clients": {
@@ -633,7 +648,7 @@
         "lastReportedAt": "2025-08-21T08:24:25Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "18.166.166.128",
             "gateway": "18.166.166.1",
@@ -656,7 +671,7 @@
         "lastReportedAt": "2025-08-18T02:27:44Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "84.6.141.119",
             "gateway": "84.6.141.1",
@@ -679,7 +694,7 @@
         "lastReportedAt": "2025-08-26T00:38:29Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "81.126.116.134",
             "gateway": "81.126.116.1",
@@ -725,7 +740,7 @@
         "lastReportedAt": "2025-08-18T21:44:34Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "237.134.128.87",
             "gateway": "237.134.128.1",
@@ -748,7 +763,7 @@
         "lastReportedAt": "2025-08-23T07:25:26Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "116.218.187.254",
             "gateway": "116.218.187.1",
@@ -771,7 +786,7 @@
         "lastReportedAt": "2025-08-20T01:13:22Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "123.230.254.81",
             "gateway": "123.230.254.1",
@@ -794,7 +809,7 @@
         "lastReportedAt": "2025-08-15T14:10:06Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "131.32.39.221",
             "gateway": "131.32.39.1",
@@ -863,7 +878,7 @@
         "lastReportedAt": "2025-08-27T18:32:21Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "241.20.95.87",
             "gateway": "241.20.95.1",
@@ -978,7 +993,7 @@
         "lastReportedAt": "2025-09-11T12:00:00Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "192.168.1.100",
             "gateway": "192.168.1.1",
@@ -1001,7 +1016,7 @@
         "lastReportedAt": "2025-09-11T12:00:00Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "192.168.1.101",
             "gateway": "192.168.1.1",
@@ -1024,7 +1039,7 @@
         "lastReportedAt": "2025-09-11T12:00:00Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "192.168.2.100",
             "gateway": "192.168.2.1",
@@ -1047,7 +1062,7 @@
         "lastReportedAt": "2025-08-14T14:01:55Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "32.234.241.87",
             "gateway": "32.234.241.1",
@@ -1070,7 +1085,7 @@
         "lastReportedAt": "2025-09-05T06:20:15Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "254.163.166.242",
             "gateway": "254.163.166.1",
@@ -1162,7 +1177,7 @@
         "lastReportedAt": "2025-08-10T05:43:47Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "101.162.159.235",
             "gateway": "101.162.159.1",
