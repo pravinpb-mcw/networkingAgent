@@ -622,10 +622,11 @@
           "enabled": false,
           "role": "primary"
         },
+        "latency": "125.8ms",
         "lastReportedAt": "2025-09-03T05:58:20Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "192.168.1.69",
             "gateway": "192.168.1.254",
@@ -645,6 +646,7 @@
           "enabled": true,
           "role": "secondary"
         },
+        "latency": "95.3ms",
         "lastReportedAt": "2025-08-21T08:24:25Z",
         "uplinks": [
           {
@@ -668,6 +670,7 @@
           "enabled": true,
           "role": "primary"
         },
+        "latency": "67.4ms",
         "lastReportedAt": "2025-08-18T02:27:44Z",
         "uplinks": [
           {
@@ -691,10 +694,11 @@
           "enabled": false,
           "role": "primary"
         },
+        "latency": "112.7ms",
         "lastReportedAt": "2025-08-26T00:38:29Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "81.126.116.134",
             "gateway": "81.126.116.1",
@@ -714,10 +718,11 @@
           "enabled": false,
           "role": "secondary"
         },
+        "latency": "100.9ms",
         "lastReportedAt": "2025-08-07T22:13:18Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "149.106.171.147",
             "gateway": "149.106.171.1",
@@ -737,10 +742,11 @@
           "enabled": false,
           "role": "primary"
         },
+        "latency": "89.2ms",
         "lastReportedAt": "2025-08-18T21:44:34Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan3",
             "status": "active",
             "ip": "237.134.128.87",
             "gateway": "237.134.128.1",
@@ -773,7 +779,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2GY-DR1J-QMN4"
           }
-        ]
+        ],
+        "latency": "74.3ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -796,7 +803,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2YN-BXQC-FWBB"
           }
-        ]
+        ],
+        "latency": "36.4ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -819,7 +827,8 @@
             "ipAssignedBy": "static",
             "serial": "Q3FA-92C4-T9HL"
           }
-        ]
+        ],
+        "latency": "37.5ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -842,7 +851,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2MN-7T4G-F4JO"
           }
-        ]
+        ],
+        "latency": "23.1ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -865,7 +875,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2FX-CVBT-JYUR"
           }
-        ]
+        ],
+        "latency": "118.4ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -878,7 +889,7 @@
         "lastReportedAt": "2025-08-27T18:32:21Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "241.20.95.87",
             "gateway": "241.20.95.1",
@@ -888,7 +899,8 @@
             "ipAssignedBy": "static",
             "serial": "Q3GX-MQIH-9HTN"
           }
-        ]
+        ],
+        "latency": "90.6ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -911,7 +923,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2GY-1UWA-AC8Z"
           }
-        ]
+        ],
+        "latency": "70.4ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -934,7 +947,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2YN-LRWX-4BN0"
           }
-        ]
+        ],
+        "latency": "69.7ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -947,7 +961,7 @@
         "lastReportedAt": "2025-08-17T04:26:33Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "45.109.171.101",
             "gateway": "45.109.171.1",
@@ -957,7 +971,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q3GX-1SG7-NZ81"
           }
-        ]
+        ],
+        "latency": "48.9ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -970,7 +985,7 @@
         "lastReportedAt": "2025-08-18T06:36:53Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "186.128.130.124",
             "gateway": "186.128.130.1",
@@ -980,7 +995,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2MN-OKFB-GSTG"
           }
-        ]
+        ],
+        "latency": "27.1ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1003,7 +1019,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2FX-DEVICE-001"
           }
-        ]
+        ],
+        "latency": "76.1ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1026,7 +1043,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2FX-DEVICE-002"
           }
-        ]
+        ],
+        "latency": "142.8ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1049,7 +1067,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2FX-DEVICE-003"
           }
-        ]
+        ],
+        "latency": "96.3ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1062,7 +1081,7 @@
         "lastReportedAt": "2025-08-14T14:01:55Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "32.234.241.87",
             "gateway": "32.234.241.1",
@@ -1072,7 +1091,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2GY-Z64H-2KBI"
           }
-        ]
+        ],
+        "latency": "98.7ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1095,7 +1115,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2FX-M2KW-LHI8"
           }
-        ]
+        ],
+        "latency": "27.5ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1108,7 +1129,7 @@
         "lastReportedAt": "2025-08-22T01:24:24Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "187.216.201.75",
             "gateway": "187.216.201.1",
@@ -1118,7 +1139,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2YN-KR15-10WC"
           }
-        ]
+        ],
+        "latency": "141.9ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1131,7 +1153,7 @@
         "lastReportedAt": "2025-08-18T10:55:33Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan1",
             "status": "active",
             "ip": "6.131.83.187",
             "gateway": "6.131.83.1",
@@ -1141,7 +1163,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2YN-GBVU-RDNZ"
           }
-        ]
+        ],
+        "latency": "108.2ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1164,7 +1187,8 @@
             "ipAssignedBy": "static",
             "serial": "Q3GX-ULRI-Z3UT"
           }
-        ]
+        ],
+        "latency": "77.3ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1177,7 +1201,7 @@
         "lastReportedAt": "2025-08-10T05:43:47Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "101.162.159.235",
             "gateway": "101.162.159.1",
@@ -1187,7 +1211,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2MN-CG9D-0R17"
           }
-        ]
+        ],
+        "latency": "125.1ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1200,7 +1225,7 @@
         "lastReportedAt": "2025-08-14T00:39:20Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan3",
             "status": "active",
             "ip": "85.60.163.2",
             "gateway": "85.60.163.1",
@@ -1210,7 +1235,8 @@
             "ipAssignedBy": "dhcp",
             "serial": "Q2MN-I473-BK3B"
           }
-        ]
+        ],
+        "latency": "134.2ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1223,7 +1249,7 @@
         "lastReportedAt": "2025-08-31T20:01:37Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "77.27.46.118",
             "gateway": "77.27.46.1",
@@ -1233,7 +1259,8 @@
             "ipAssignedBy": "static",
             "serial": "Q2GY-T0CH-GZYI"
           }
-        ]
+        ],
+        "latency": "75.4ms"
       },
       {
         "networkId": "L_3947405073390239794",
@@ -1243,6 +1270,7 @@
           "enabled": true,
           "role": "secondary"
         },
+        "latency": "45.2ms",
         "lastReportedAt": "2025-09-01T11:16:16Z",
         "uplinks": [
           {
@@ -1266,10 +1294,11 @@
           "enabled": true,
           "role": "secondary"
         },
+        "latency": "128.5ms",
         "lastReportedAt": "2025-09-07T16:37:03Z",
         "uplinks": [
           {
-            "interface": "wan3",
+            "interface": "wan2",
             "status": "active",
             "ip": "238.197.68.134",
             "gateway": "238.197.68.1",

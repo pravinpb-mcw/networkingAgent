@@ -13,19 +13,10 @@ import logging
 import os
 import sys
 import time
-# LangChain/LangGraph imports for the new agent system
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
-
-# LangChain imports - using the same approach as MCPAgent
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-# MCP imports - keep MCPClient, but use proper adapter instead of MCPAgent
-from mcp_use import MCPClient
-from mcp_use.adapters.langchain_adapter import LangChainAdapter
-
+from mcp_use import MCPAgent, MCPClient
 import sys
 import os
 
@@ -63,29 +54,6 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
-
-async def convert_mcp_tools_to_langchain(client):
-    """
-    Convert MCP tools to LangChain tools using the proper MCP adapter.
-    This uses the same approach as MCPAgent but returns tools for LangGraph.
-    
-    Args:
-        client: MCPClient instance with active sessions
-        
-    Returns:
-        list: LangChain-compatible tools for use with LangGraph
-    """
-    # Create the LangChain adapter (same as MCPAgent uses)
-    adapter = LangChainAdapter()
-    
-    try:
-        # Use the same method MCPAgent uses to convert tools
-        tools = await adapter.create_tools(client)
-        print(f"SUCCESS: Converted {len(tools)} MCP tools to LangChain format using official adapter")
-        return tools
-    except Exception as e:
-        print(f"ERROR: Failed to convert MCP tools: {e}")
-        return []
 
 
 def get_common_system_prompt():
@@ -133,70 +101,51 @@ def get_common_system_prompt():
         END OF PROMPT"""
 
 def generate_dynamic_latency_prompt():
-#     return """NETWORK LATENCY FIX TASK:
-#    dont assume anything, use data through tools. i need output related to real data analyze my data and answer
-
-#      STEP 1: Call get_organization_uplinks_statuses FIRST to get current WAN distribution
-#      STEP 2: Call get_device_loss_and_latency_history to check device latency
-#      STEP 3: If any device has latency > 100ms, call update_uplink to move it to the best available WAN
-#      STEP 4: Call get_organization_uplinks_statuses AGAIN to get updated distribution
-#      STEP 5: Report BEFORE and AFTER counts using the actual data from the tool responses
-
-#      CRITICAL: The get_organization_uplinks_statuses tool returns wan_distribution data showing actual device counts per WAN. USE THIS DATA for accurate before/after counts.
-#     **imporant move devices based on the catergory of highst latency not with the device count . the devioce reuorted baded on device latency . **
-#      Rules:
-#      - If latency > 100ms: Move device to WAN2 or WAN3 (whichever has fewer devices)
-#      - If latency < 100ms: No action needed
-
-#      Available tools:
-#      - get_organization_uplinks_statuses    → returns wan_distribution with actual counts
-#      - get_device_loss_and_latency_history  → to get device latency
-#      - update_uplink                        → to move device uplink
-
-#      IMPORTANT: 
-#      1. Call get_organization_uplinks_statuses at the BEGINNING to get BEFORE counts
-#      2. After making changes, call get_organization_uplinks_statuses AGAIN to get AFTER counts
-#      3. Use the wan_distribution field from BOTH responses to show accurate before/after
-     
-#  **Before vs After:**
-#  [Use the wan_distribution from the tool responses. Example:
-#  BEFORE (from first get_organization_uplinks_statuses): WAN1=10, WAN2=11, WAN3=8
-#  AFTER (from second get_organization_uplinks_statuses): WAN1=7, WAN2=14, WAN3=8]
-# """
     return """NETWORK LATENCY FIX TASK:
-            Do not assume. Always use real tool responses.
+   dont assume anything, use data through tools. i need output related to real data analyze my data and answer
 
-            Steps:
-            1. Call get_organization_uplinks_statuses FIRST → capture BEFORE wan_distribution
-            2. Call get_device_loss_and_latency_history → capture device latency & trends
+     STEP 1: Call get_organization_uplinks_statuses FIRST to get current WAN distribution
+     STEP 2: Call get_device_loss_and_latency_history to check device latency
+     STEP 3: If any device has latency > 100ms, call update_uplink to move it to the best available WAN
+     STEP 4: Call get_organization_uplinks_statuses AGAIN to get updated distribution
+     STEP 5: Report BEFORE and AFTER counts using the actual data from the tool responses
 
-            Rules:
-            - If single device >100ms → move it to other WANs availabel  (whichever has fewer devices connected )
-            - If multiple devices >100ms → sort by latency (highest first), move each to WAN with lowest latency (tie → fewer devices)
-            - If one WAN >50% devices and has many >100ms → move high-latency devices to other WANs until balanced
-            - If ALL WANs >100ms → create new WAN (wan), move worst-affected devices (>110ms)
-            - If PRIORITY devices (VoIP/video) >80ms → move them first to lowest-latency WAN
-            - If latency trend rising fast → reroute proactively before threshold breach
-            - If WAN down (0 devices) → move its devices to healthy WANs immediately
-            - If latency <100ms and stable → no action
+     CRITICAL: The get_organization_uplinks_statuses tool returns wan_distribution data showing actual device counts per WAN. USE THIS DATA for accurate before/after counts.
 
-            3. After updates, call get_organization_uplinks_statuses AGAIN → capture AFTER wan_distribution
-            4. Report BEFORE vs AFTER counts using actual wan_distribution values only
-            5. wan createion update_appliance_settings if needed
+     Rules:
+     - If latency > 100ms: Move device to WAN2 or WAN3 (whichever has fewer devices)
+     - If latency < 100ms: No action needed
 
-            - #  **Before vs After:**
-            #  [Use the wan_distribution from the tool responses. Example:
-            #  BEFORE (from first get_organization_uplinks_statuses): WAN1=10, WAN2=11, WAN3=8
-            #  AFTER (from second get_organization_uplinks_statuses): WAN1=7, WAN2=14, WAN3=8]
-            - Devices moved: [list device IDs and from→to WANs]
-            - Reasoning: [explain based on latency/load]
-            """
+     Available tools:
+     - get_organization_uplinks_statuses    → returns wan_distribution with actual counts
+     - get_device_loss_and_latency_history  → to get device latency
+     - update_uplink                        → to move device uplink
+
+     IMPORTANT: 
+     1. Call get_organization_uplinks_statuses at the BEGINNING to get BEFORE counts
+     2. After making changes, call get_organization_uplinks_statuses AGAIN to get AFTER counts
+     3. Use the wan_distribution field from BOTH responses to show accurate before/after
+     
+ **Before vs After:**
+ [Use the wan_distribution from the tool responses. Example:
+ BEFORE (from first get_organization_uplinks_statuses): WAN1=10, WAN2=11, WAN3=8
+ AFTER (from second get_organization_uplinks_statuses): WAN1=7, WAN2=14, WAN3=8]
+"""
+
+
+#     return """ **SIMPLE STEPS:**
+          
+#             • Call update_uplink  MOVE 5 DEVICE FROM WAN 1 TO WAN 2 ONLY 
+
+#         dont ask this- Shall I move any specific device(s) to a different WAN interface?
+#         move diorectly device based on latency highest order
+# """
 
 
 
 
 async def run_meraki_chat():
-    """Run a chat using LangGraph create_react_agent with LLM for Meraki tools."""
+    """Run a chat using MCPAgent with Gemini LLM for Meraki tools."""
     
     # Set up Gemini API key
     gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -234,44 +183,18 @@ async def run_meraki_chat():
                 # Note: ChatGoogleGenerativeAI doesn't have system_prompt attribute
         # The system prompt will be passed to the agent instead
         
-        # LANGGRAPH CONVERSION: Replace MCPAgent with create_react_agent
-        print("Creating Network Orchestration Agent (LangGraph)...")
-        
-        # Step 1: Convert MCP tools to LangChain tools using proper adapter
-        tools = await convert_mcp_tools_to_langchain(client)
-        if not tools:
-            print("ERROR: No tools available - cannot create agent")
-            return
-        
-        # Step 2: Create tool-calling agent (same approach as MCPAgent)
-        # This uses the exact same method as MCPAgent internally
-        system_prompt = get_common_system_prompt()
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ])
-        
-        agent = create_tool_calling_agent(
-            llm=llm,  # Same LLM as before
-            tools=tools,  # Converted MCP tools
-            prompt=prompt  # Same prompt structure as MCPAgent
+        # Create MCP agent with specialized network orchestration role
+        print("Creating Network Orchestration Agent...")
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=5,  # Reduced steps for faster execution
+            memory_enabled=False,  # Disable memory to reduce complexity
+            verbose=False,  # Disable verbose output to remove "Thought:" and "Final Answer:"
         )
         
-        # Step 3: Wrap in AgentExecutor for execution control
-        # This replaces the old MCPAgent execution model
-        agent_executor = AgentExecutor(
-            agent=agent,
-            tools=tools,
-            max_iterations=5,  # Equivalent to old max_steps
-            verbose=False,  # Same as before
-            handle_parsing_errors=True,  # Better error handling than MCPAgent
-            return_intermediate_steps=False  # Clean output
-        )
-        
-        # LangGraph agent is now ready with converted MCP tools
-        # System prompt is embedded in the agent via state_modifier
+        # Store the system prompt for use in enhanced inputs
+        # The MCPAgent will use the system prompt through the orchestration commands
         
         print("Setup complete!")
         print("\n" + "="*30)
@@ -945,7 +868,7 @@ async def get_uplink_latency_monitoring():
                 retry_on_failure=True  # Enable retries
             )
         else:
-            # OPTION 2: DeepSeek v3 LLM via OpenRouter - COMMENTED OUT
+            # # OPTION 2: DeepSeek v3 LLM via OpenRouter - COMMENTED OUT
             print("Initializing DeepSeek v3 LLM as Latency Monitoring Agent...")
             deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
             if not deepseek_api_key:
@@ -965,48 +888,22 @@ async def get_uplink_latency_monitoring():
             )
 
             # llm = ChatOpenAI(
-            # # model="llama3.1:8b",   # must exactly match `ollama list`
-            # model="gpt-oss:20b",
+            # model="llama3.1:8b",   # must exactly match `ollama list`
+            # # model="gpt-oss:20b",
             # # model="qwen3:14b",
             # api_key="ollama",             # dummy key, Ollama ignores it
             # base_url="http://192.168.13.162:11434/v1",  # MUST have /v1
             # )
     
 
-        # LANGGRAPH CONVERSION: Replace MCPAgent with create_react_agent
-        print("Creating Latency Monitoring Agent (LangGraph)...")
-        
-        # Step 1: Convert MCP tools to LangChain tools using proper adapter
-        tools = await convert_mcp_tools_to_langchain(client)
-        if not tools:
-            print("ERROR: No tools available - cannot create agent")
-            return
-        
-        # Step 2: Create tool-calling agent (same approach as MCPAgent)
-        # This uses the exact same method as MCPAgent internally for latency monitoring
-        system_prompt = get_common_system_prompt()
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ])
-        
-        agent = create_tool_calling_agent(
-            llm=llm,  # Same LLM as before (DeepSeek v3)
-            tools=tools,  # Converted MCP tools
-            prompt=prompt  # Same prompt structure as MCPAgent
-        )
-        
-        # Step 3: Wrap in AgentExecutor for execution control
-        # This replaces the old MCPAgent execution model
-        agent_executor = AgentExecutor(
-            agent=agent,
-            tools=tools,
-            max_iterations=30,  # Equivalent to old max_steps
-            verbose=False,  # Same as before
-            handle_parsing_errors=True,  # Better error handling than MCPAgent
-            return_intermediate_steps=False  # Clean output for latency monitoring
+        # Create MCP agent with specialized network orchestration role
+        print("Creating Latency Monitoring Agent...")
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=30,  # Reduced steps for faster execution
+            memory_enabled=False,  # Disable memory for speed
+            verbose=False,  # Enable verbose to see tool execution
         )
         
         # Add delay between tool calls to respect rate limits
@@ -1018,33 +915,20 @@ async def get_uplink_latency_monitoring():
         print("Running latency monitoring...")
         
         try:
-            # LANGGRAPH CONVERSION: Change from agent.run() to agent_executor.ainvoke()
-            # The system prompt is already embedded in the agent via state_modifier
-            # So we only need to send the specific task prompt
-            task_prompt = generate_dynamic_latency_prompt()
-            print("Sending prompt to LangGraph agent...")
-            
-            # AgentExecutor execution - same as MCPAgent uses internally
-            response = await agent_executor.ainvoke({
-                "input": task_prompt,  # Task-specific prompt only
-                "chat_history": []  # Empty chat history for this execution
-            })
+            # Send the complete prompt to the agent
+            full_prompt = f"{system_prompt}\n\n{generate_dynamic_latency_prompt()}"
+            print("Sending prompt to agent...")
+            response = await agent.run(full_prompt)
 
             print("\n" + "="*30)
             print("UPLINK ANALYSIS COMPLETE")
             print("="*30)
-            # LANGGRAPH CONVERSION: Handle response format change
-            # LangGraph returns a dictionary with 'output' key, not direct string
+            # Handle Unicode characters in response
             try:
-                if isinstance(response, dict) and 'output' in response:
-                    # LangGraph format - extract the output
-                    print(response['output'])
-                else:
-                    # Fallback for other formats
-                    print(response)
+                print(response)
             except UnicodeEncodeError:
-                # Replace problematic Unicode characters (same as before)
-                safe_response = str(response).encode('ascii', 'replace').decode('ascii')
+                # Replace problematic Unicode characters
+                safe_response = response.encode('ascii', 'replace').decode('ascii')
                 print(safe_response)
             print("\n" + "="*30)
             print("Uplink analysis completed!")
@@ -1062,7 +946,7 @@ async def get_uplink_latency_monitoring():
         traceback.print_exc()
         return
 
-# Note: Tool execution now uses LangGraph create_react_agent with proper MCP adapters
+# Note: Tool execution requires MCPAgent mode
 
 async def test_connection():
     """Test the MCP connection and available tools."""
@@ -1094,29 +978,14 @@ async def test_connection():
         
         print("Gemini LLM initialized successfully")
         
-        # LANGGRAPH CONVERSION: Test agent creation with LangGraph
-        tools = await convert_mcp_tools_to_langchain(client)
-        if tools:
-            system_prompt = get_common_system_prompt()
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", system_prompt),
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("human", "{input}"),
-                MessagesPlaceholder(variable_name="agent_scratchpad"),
-            ])
-            
-            agent = create_tool_calling_agent(
-                llm=llm,
-                tools=tools,
-                prompt=prompt
-            )
-            agent_executor = AgentExecutor(
-                agent=agent,
-                tools=tools,
-                max_iterations=5,
-                verbose=False,
-                handle_parsing_errors=True
-            )
+        # Test agent creation
+        agent = MCPAgent(
+            llm=llm,
+            client=client,
+            max_steps=5,
+            memory_enabled=False,
+            verbose=False  # Disable verbose output
+        )
         
         print("MCP Agent created successfully")
         
