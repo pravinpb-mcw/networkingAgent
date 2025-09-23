@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 from mcp.types import TextContent
 from meraki_client import MerakiAPIClient
 
@@ -17,7 +17,7 @@ logger = logging.getLogger("get-organization-uplinks-statuses-tool")
 
 mcp = FastMCP("get-organization-uplinks-statuses")
 
-@mcp.tool()
+@mcp.tool
 async def get_organization_uplinks_statuses() -> List[TextContent]:
     """
     Retrieve uplink statuses for all networks in your configured organization.
@@ -86,3 +86,5 @@ async def get_organization_uplinks_statuses() -> List[TextContent]:
             text=f"Error executing get_organization_uplinks_statuses: {str(e)}"
         )]
 
+if __name__ == "__main__":
+    mcp.run()

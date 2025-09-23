@@ -112,6 +112,10 @@ class MerakiAPIClient:
                 logger.error(f"Request failed: {str(e)}")
                 raise Exception(f"Request failed: {str(e)}")
 
+    async def get_organizations(self) -> List[Dict[str, Any]]:
+        """Get all organizations accessible by the API key"""
+        return await self._make_request("/organizations", tool_name="get_organizations")
+
     async def get_network_clients(self, network_id: str = None, timespan: int = None) -> List[Dict[str, Any]]:
         """Get clients connected to a network"""
         net_id = network_id or self.network_id

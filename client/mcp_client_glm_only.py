@@ -147,7 +147,7 @@ async def create_mcp_client():
     """Create and initialize MCP client using FastMCP."""
     try:
         # Server script path
-        server_script = os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")
+        server_script = os.path.join(os.path.dirname(__file__), "..", "server", "meraki_fastmcp_server.py")
         server_script = os.path.abspath(server_script)
         
         if not os.path.exists(server_script):
