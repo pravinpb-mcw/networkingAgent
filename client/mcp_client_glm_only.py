@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+@mcp_client_glm_only.py @meraki_server.py the anthropic sdk is not detecting tools from Server()
+
 """
 GLM-4.5 MCP Client for Meraki Network Tools
 Uses direct Anthropic SDK to connect GLM-4.5 to Meraki MCP tools
@@ -17,8 +18,10 @@ from dotenv import load_dotenv
 # Anthropic client
 from anthropic import Anthropic, AsyncAnthropic
 
-# MCP imports
-from mcp_use import MCPClient
+# MCP imports - use standard MCP client
+import asyncio
+from mcp import ClientSession, stdio_client
+from mcp.client.stdio import stdio_client
 
 
 # Configure basic logging with Unicode error handling
@@ -145,6 +148,66 @@ Show exact BEFORE vs AFTER device counts per WAN using real tool data.
 List every device moved with serial and reasoning.  
 
 **CRITICAL: You MUST execute actual device moves. Do not just analyze.**"""
+
+async def start_mcp_server():
+    """Start the MCP server as a subprocess."""
+    try:
+        import subprocess
+        import sys
+
+        # Start the MCP server in the background
+        server_path = os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")
+        print(f"Starting MCP server: {server_path}")
+
+        # Start the server process
+        process = subprocess.Popen(
+            [sys.executable, server_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=0
+        )
+
+        # Wait a bit for server to start
+        await asyncio.sleep(2)
+
+        if process.poll() is None:
+            print("✅ MCP server started successfully")
+            return process
+        else:
+            stdout, stderr = process.communicate()
+            print(f"❌ MCP server failed to start: {stderr}")
+            return None
+
+    except Exception as e:
+        print(f"❌ Failed to start MCP server: {e}")
+        return None
+
+async def create_mcp_client():
+    """Create and initialize MCP client."""
+    try:
+        # Create stdio client parameters
+        server_params = {
+            "command": sys.executable,
+            "args": [os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")]
+        }
+
+        # Create the MCP client session
+        async with stdio_client(server_params) as (read_stream, write_stream):
+            async with ClientSession(read_stream, write_stream) as session:
+                # Initialize the session
+                await session.initialize()
+
+                # List available tools
+                tools = await session.list_tools()
+                print(f"✅ Connected to MCP server with {len(tools)} tools")
+
+                return session
+
+    except Exception as e:
+        print(f"❌ Failed to create MCP client: {e}")
+        return None
 
 class GLMNetworkOrchestrator:
     """GLM-4.5 Network Orchestration Agent using direct Anthropic SDK."""
@@ -366,19 +429,24 @@ class GLMNetworkOrchestrator:
 
 async def get_uplink_latency_monitoring():
     """Monitor uplinks based on latency thresholds using GLM-4.5."""
-    
-    # MCP server config file
-    config_file = "mcp-inspector-config.json"
 
     print("GLM-4.5 UPLINK LATENCY MONITORING")
     print("="*40)
     print("Monitoring uplink performance based on latency...")
     print("="*40)
-    
+
     try:
-        # Create MCP client - properly initialize sessions
+        # Start the MCP server first
+        print("Starting MCP server...")
+        server_process = await start_mcp_server()
+
+        if not server_process:
+            print("❌ Failed to start MCP server")
+            return
+
+        # Create MCP client - connect to the running server
         print("Connecting to MCP server...")
-        client = MCPClient.from_config_file(config_file)
+        client = await create_mcp_client()
         
         # Explicitly create all sessions (this is the missing piece!)
         print("Creating MCP sessions...")
