@@ -26,7 +26,7 @@ class MerakiAPIClient:
 
         # Base URLs for real Meraki and local mock
         # Preserve original behavior if a single base_url was passed in
-        self.real_base_url = os.getenv("BASE_URL", "https://api.meraki.com/api/v1")
+        self.real_base_url = os.getenv("BASE_URL", "http://127.0.0.1:5000")
         self.mock_base_url = os.getenv("MOCK_BASE_URL", "http://127.0.0.1:5000")
         self.base_url = base_url or (self.mock_base_url if use_mock else self.real_base_url)
         self.use_mock = use_mock

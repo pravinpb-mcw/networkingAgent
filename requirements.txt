@@ -10,12 +10,10 @@ google-generativeai
 langchain
 langchain-core
 langchain-community
-transformers
-torch
-accelerate
+# accelerate
 schedule
 asyncio-mqtt
-mcp_use
+# mcp_use
 requests
 # langchain-huggingface
 

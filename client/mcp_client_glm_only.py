@@ -1,27 +1,21 @@
-@mcp_client_glm_only.py @meraki_server.py the anthropic sdk is not detecting tools from Server()
-
 """
 GLM-4.5 MCP Client for Meraki Network Tools
-Uses direct Anthropic SDK to connect GLM-4.5 to Meraki MCP tools
-Based on original mcp_client.py structure
+Uses proper MCP stdio client to connect GLM-4.5 to Meraki MCP tools
 """
 import json
-import re
 import sys
 import os
 from typing import Optional, Dict, Any, List
 import asyncio
 import logging
-import time
+import subprocess
 from dotenv import load_dotenv
 
 # Anthropic client
-from anthropic import Anthropic, AsyncAnthropic
+from anthropic import Anthropic
 
-# MCP imports - use standard MCP client
-import asyncio
-from mcp import ClientSession, stdio_client
-from mcp.client.stdio import stdio_client
+# FastMCP imports - modern MCP client
+from fastmcp import Client
 
 
 # Configure basic logging with Unicode error handling
@@ -149,68 +143,44 @@ List every device moved with serial and reasoning.
 
 **CRITICAL: You MUST execute actual device moves. Do not just analyze.**"""
 
-async def start_mcp_server():
-    """Start the MCP server as a subprocess."""
-    try:
-        import subprocess
-        import sys
-
-        # Start the MCP server in the background
-        server_path = os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")
-        print(f"Starting MCP server: {server_path}")
-
-        # Start the server process
-        process = subprocess.Popen(
-            [sys.executable, server_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=0
-        )
-
-        # Wait a bit for server to start
-        await asyncio.sleep(2)
-
-        if process.poll() is None:
-            print("✅ MCP server started successfully")
-            return process
-        else:
-            stdout, stderr = process.communicate()
-            print(f"❌ MCP server failed to start: {stderr}")
-            return None
-
-    except Exception as e:
-        print(f"❌ Failed to start MCP server: {e}")
-        return None
-
 async def create_mcp_client():
-    """Create and initialize MCP client."""
+    """Create and initialize MCP client using FastMCP."""
     try:
-        # Create stdio client parameters
-        server_params = {
-            "command": sys.executable,
-            "args": [os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")]
-        }
-
-        # Create the MCP client session
-        async with stdio_client(server_params) as (read_stream, write_stream):
-            async with ClientSession(read_stream, write_stream) as session:
-                # Initialize the session
-                await session.initialize()
-
-                # List available tools
-                tools = await session.list_tools()
-                print(f"✅ Connected to MCP server with {len(tools)} tools")
-
-                return session
-
+        # Server script path
+        server_script = os.path.join(os.path.dirname(__file__), "..", "server", "meraki_server.py")
+        server_script = os.path.abspath(server_script)
+        
+        if not os.path.exists(server_script):
+            raise FileNotFoundError(f"Server script not found: {server_script}")
+        
+        print(f"🔗 Connecting to MCP server: {server_script}")
+        
+        # Create FastMCP client - it auto-infers stdio transport
+        client = Client(server_script)
+        
+        # Initialize the client
+        await client.__aenter__()
+        
+        # List available tools to verify connection
+        tools = await client.list_tools()
+        
+        print(f"✅ Connected to MCP server with {len(tools)} tools")
+        for tool in tools[:5]:  # Show first 5 tools
+            print(f"   - {tool.name}")
+        if len(tools) > 5:
+            print(f"   ... and {len(tools) - 5} more tools")
+        
+        # Return client and tools
+        return client, tools
+            
     except Exception as e:
         print(f"❌ Failed to create MCP client: {e}")
-        return None
+        import traceback
+        traceback.print_exc()
+        return None, []
 
 class GLMNetworkOrchestrator:
-    """GLM-4.5 Network Orchestration Agent using direct Anthropic SDK."""
+    """GLM-4.5 Network Orchestration Agent using FastMCP client."""
     
     def __init__(self):
         # GLM-4.5 configuration
@@ -227,9 +197,9 @@ class GLMNetworkOrchestrator:
             base_url=self.glm_base_url
         )
         
-        # MCP client and tools
+        # FastMCP client and tools
         self.mcp_client = None
-        self.mcp_tools = {}
+        self.mcp_tools = []
         self.anthropic_tools = []
         self.conversation_history = []
     
@@ -237,64 +207,36 @@ class GLMNetworkOrchestrator:
         """Convert MCP tools to Anthropic tools format."""
         self.anthropic_tools = []
         
-        for tool_name, tool_info in self.mcp_tools.items():
+        for tool in self.mcp_tools:
             anthropic_tool = {
-                "name": tool_name,
-                "description": getattr(tool_info, 'description', f"Execute {tool_name}"),
-                "input_schema": {
+                "name": tool.name,
+                "description": tool.description or f"Execute {tool.name}",
+                "input_schema": tool.inputSchema or {
                     "type": "object",
                     "properties": {},
                     "required": []
                 }
             }
-            
-            # Convert input schema if available
-            if hasattr(tool_info, 'inputSchema') and tool_info.inputSchema:
-                schema = tool_info.inputSchema
-                if isinstance(schema, dict):
-                    anthropic_tool["input_schema"] = schema
-                elif hasattr(schema, 'properties'):
-                    anthropic_tool["input_schema"] = {
-                        "type": "object",
-                        "properties": getattr(schema, 'properties', {}),
-                        "required": getattr(schema, 'required', [])
-                    }
-            
             self.anthropic_tools.append(anthropic_tool)
     
     async def call_mcp_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
-        """Call an MCP tool using the MCP client."""
+        """Call an MCP tool using FastMCP client."""
         try:
             # Validate tool exists
-            if tool_name not in self.mcp_tools:
-                return f"❌ Tool '{tool_name}' not found. Available tools: {list(self.mcp_tools.keys())}"
+            tool_names = [tool.name for tool in self.mcp_tools]
+            if tool_name not in tool_names:
+                return f"❌ Tool '{tool_name}' not found. Available tools: {tool_names}"
             
             # Validate MCP client is available
             if not self.mcp_client:
                 return "❌ MCP client not initialized. Please reconnect to the server."
             
-            # Find the session that has this tool
-            tool_session = None
-            for session_name, session in self.mcp_client.sessions.items():
-                if hasattr(session, 'tools') and tool_name in session.tools:
-                    tool_session = session
-                    break
-            
-            if not tool_session:
-                return f"❌ Could not find session for tool '{tool_name}'"
-            
-            # Call the tool
-            result = await tool_session.call_tool(tool_name, arguments or {})
+            # Call the tool using FastMCP
+            result = await self.mcp_client.call_tool(tool_name, arguments or {})
             
             # Extract content from result
-            if hasattr(result, 'content') and result.content:
-                if isinstance(result.content, list) and len(result.content) > 0:
-                    content_item = result.content[0]
-                    if hasattr(content_item, 'text'):
-                        return content_item.text
-                    else:
-                        return str(content_item)
-                return str(result.content)
+            if hasattr(result, 'data'):
+                return str(result.data)
             
             return str(result)
             
@@ -435,101 +377,24 @@ async def get_uplink_latency_monitoring():
     print("Monitoring uplink performance based on latency...")
     print("="*40)
 
+    mcp_client = None
     try:
-        # Start the MCP server first
-        print("Starting MCP server...")
-        server_process = await start_mcp_server()
-
-        if not server_process:
-            print("❌ Failed to start MCP server")
+        # Create MCP client
+        print("Creating MCP client...")
+        mcp_client, tools = await create_mcp_client()
+        
+        if not mcp_client or not tools:
+            print("❌ Failed to connect to MCP server")
             return
 
-        # Create MCP client - connect to the running server
-        print("Connecting to MCP server...")
-        client = await create_mcp_client()
-        
-        # Explicitly create all sessions (this is the missing piece!)
-        print("Creating MCP sessions...")
-        try:
-            await client.create_all_sessions()
-            print("✅ Sessions created successfully")
-        except Exception as e:
-            print(f"Error creating sessions: {e}")
-        
-        # Wait for sessions to initialize
-        await asyncio.sleep(2)
-        
-        # Check if we have sessions
-        if not hasattr(client, 'sessions') or not client.sessions:
-            print("❌ No MCP sessions established. Attempting manual session creation...")
-            
-            # Try to create individual sessions
-            try:
-                server_names = client.get_server_names() if hasattr(client, 'get_server_names') else ["cisco-meraki-observability"]
-                print(f"Available servers: {server_names}")
-                
-                for server_name in server_names:
-                    print(f"Creating session for: {server_name}")
-                    session = await client.create_session(server_name)
-                    if session:
-                        print(f"✅ Created session: {server_name}")
-            except Exception as e:
-                print(f"Session creation error: {e}")
-            
-            # Wait again after manual creation
-            await asyncio.sleep(1)
-        
         # Set up GLM orchestrator
         orchestrator = GLMNetworkOrchestrator()
-        orchestrator.mcp_client = client
-        
-        # Get available tools from all sessions
-        all_tools = {}
-        session_count = 0
-        
-        if hasattr(client, 'sessions') and client.sessions:
-            for session_name, session in client.sessions.items():
-                session_count += 1
-                print(f"✅ Checking session: {session_name}")
-                
-                # Check if session is connected and has tools
-                if hasattr(session, 'tools') and session.tools:
-                    print(f"  Found {len(session.tools)} tools in {session_name}")
-                    for tool_name, tool_info in session.tools.items():
-                        all_tools[tool_name] = tool_info
-                        print(f"    - {tool_name}")
-                else:
-                    print(f"  No tools found in session {session_name}")
-                    # Try to trigger tool discovery
-                    try:
-                        if hasattr(session, 'list_tools'):
-                            tools_result = await session.list_tools()
-                            if tools_result:
-                                print(f"  ✅ Discovered tools via list_tools()")
-                                for tool in tools_result:
-                                    all_tools[tool.name] = tool
-                    except Exception as e:
-                        print(f"  Error discovering tools: {e}")
-        else:
-            print("❌ No sessions found in MCP client")
-            print("Available client attributes:", [attr for attr in dir(client) if not attr.startswith('_')])
-        
-        orchestrator.mcp_tools = all_tools
-        
-        if not orchestrator.mcp_tools:
-            print("❌ ERROR: No MCP tools discovered!")
-            print("Debug info:")
-            print(f"- Sessions found: {len(client.sessions) if hasattr(client, 'sessions') and client.sessions else 0}")
-            print("- Make sure your MCP server is running")
-            print("- Check mcp-inspector-config.json path is correct")
-            print("- Try running: python server/meraki_server.py directly to test")
-            return
-        
+        orchestrator.mcp_client = mcp_client
+        orchestrator.mcp_tools = tools
         orchestrator._convert_mcp_tools_to_anthropic_format()
         
         print(f"✅ Successfully discovered {len(orchestrator.mcp_tools)} MCP tools")
         print("Initializing GLM-4.5 LLM as Latency Monitoring Agent...")
-        print("Creating Latency Monitoring Agent...")
         print("Setup complete!")
         print("\n" + "="*40)
 
@@ -590,37 +455,34 @@ async def get_uplink_latency_monitoring():
         return
     
     finally:
-        # Clean up
-        if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
-            print("Cleaning up connections...")
-            await client.close_all_sessions()
+        # Clean up MCP client
+        if mcp_client:
+            print("Cleaning up MCP connection...")
+            try:
+                await mcp_client.__aexit__(None, None, None)
+            except:
+                pass
 
 async def run_meraki_chat():
     """Run a chat using GLM-4.5 for Meraki tools."""
     
-    # MCP server config file
-    config_file = "mcp-inspector-config.json"
-
     print("Initializing GLM-4.5 Meraki MCP Chat...")
     print("="*30)
     
+    mcp_client = None
     try:
         # Create MCP client
         print("Connecting to MCP server...")
-        client = MCPClient.from_config_file(config_file)
+        mcp_client, tools = await create_mcp_client()
+        
+        if not mcp_client or not tools:
+            print("❌ Failed to connect to MCP server")
+            return
         
         # Set up GLM orchestrator
         orchestrator = GLMNetworkOrchestrator()
-        orchestrator.mcp_client = client
-        
-        # Get available tools from all sessions
-        all_tools = {}
-        if client.sessions:
-            for session_name, session in client.sessions.items():
-                if hasattr(session, 'tools') and session.tools:
-                    all_tools.update(session.tools)
-        
-        orchestrator.mcp_tools = all_tools
+        orchestrator.mcp_client = mcp_client
+        orchestrator.mcp_tools = tools
         orchestrator._convert_mcp_tools_to_anthropic_format()
         
         # Create GLM network orchestration agent
@@ -681,9 +543,8 @@ async def run_meraki_chat():
                     try:
                         if orchestrator.mcp_tools:
                             print(f"Found {len(orchestrator.mcp_tools)} orchestration tools:")
-                            for tool_name, tool_info in orchestrator.mcp_tools.items():
-                                desc = getattr(tool_info, 'description', 'No description')
-                                print(f"- {tool_name}: {desc}")
+                            for tool in orchestrator.mcp_tools:
+                                print(f"- {tool.name}: {tool.description}")
                     except Exception as e:
                         print(f"Error getting tools: {e}")
                     continue
@@ -712,18 +573,22 @@ async def run_meraki_chat():
     
     except Exception as e:
         print(f"Failed to initialize: {e}")
-        print("Make sure your MCP server is running and config file is correct.")
+        print("Make sure your MCP server is running and properly configured.")
     
     finally:
-        # Clean up
-        if 'client' in locals() and client and hasattr(client, 'close_all_sessions'):
-            print("Cleaning up connections...")
-            await client.close_all_sessions()
+        # Clean up MCP client
+        if mcp_client:
+            print("Cleaning up MCP connection...")
+            try:
+                await mcp_client.__aexit__(None, None, None)
+            except:
+                pass
 
 async def test_connection():
     """Test the MCP connection and available tools."""
     print("Testing GLM-4.5 MCP Connection...")
     
+    mcp_client = None
     try:
         # Load environment
         load_dotenv()
@@ -736,41 +601,22 @@ async def test_connection():
         print("✅ GLM-4.5 API key configured")
         
         # Test MCP client
-        config_file = "mcp-inspector-config.json"
-        client = MCPClient.from_config_file(config_file)
+        print("Creating MCP client...")
+        mcp_client, tools = await create_mcp_client()
+        
+        if not mcp_client or not tools:
+            print("❌ Failed to create MCP client")
+            return False
+        
         print("✅ MCP Client created successfully")
-        
-        # Create sessions
-        print("Creating MCP sessions...")
-        try:
-            await client.create_all_sessions()
-            print("✅ Sessions created successfully")
-        except Exception as e:
-            print(f"⚠️ Session creation warning: {e}")
-        
-        await asyncio.sleep(1)
         
         # Test GLM orchestrator
         orchestrator = GLMNetworkOrchestrator()
-        orchestrator.mcp_client = client
-        
-        # Get available tools
-        all_tools = {}
-        if hasattr(client, 'sessions') and client.sessions:
-            for session_name, session in client.sessions.items():
-                print(f"Testing session: {session_name}")
-                if hasattr(session, 'tools') and session.tools:
-                    all_tools.update(session.tools)
-                    print(f"  Found {len(session.tools)} tools")
-        
-        orchestrator.mcp_tools = all_tools
-        if orchestrator.mcp_tools:
-            orchestrator._convert_mcp_tools_to_anthropic_format()
+        orchestrator.mcp_client = mcp_client
+        orchestrator.mcp_tools = tools
+        orchestrator._convert_mcp_tools_to_anthropic_format()
         
         print(f"✅ GLM Network Orchestrator created with {len(orchestrator.mcp_tools)} tools")
-        
-        # Clean up
-        await client.close_all_sessions()
         
         print("✅ All tests passed!")
         return True
@@ -778,6 +624,14 @@ async def test_connection():
     except Exception as e:
         print(f"❌ Test failed: {e}")
         return False
+    
+    finally:
+        # Clean up MCP client
+        if mcp_client:
+            try:
+                await mcp_client.__aexit__(None, None, None)
+            except:
+                pass
 
 async def main():
     """Main function."""
