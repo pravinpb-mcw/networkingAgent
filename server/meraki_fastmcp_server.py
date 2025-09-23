@@ -29,7 +29,7 @@ from get_network_events import get_network_events
 from get_network_settings import get_network_settings
 from update_network_settings import update_network_settings
 from update_appliance_settings import update_appliance_settings
-from get_organization_uplinks_statuses import get_organization_uplinks_statuses
+# from get_organization_uplinks_statuses import get_organization_uplinks_statuses
 from update_uplink import update_uplink
 from get_network_group_policies import get_network_group_policies
 from create_network_wireless_settings import create_network_wireless_settings
@@ -283,7 +283,7 @@ async def create_network_appliance_settings_tool(settings_data: str) -> List[Dic
 @mcp.tool
 async def get_connectivity_monitoring_destinations_tool(network_id: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get connectivity monitoring destinations and their status for network health monitoring."""
-    result = await get_connectivity_monitoring_destinations(network_id, use_mock=USE_MOCK)
+    result = await get_connectivity_monitoring_destinations(network_id=network_id, use_mock=USE_MOCK)
     return extract_data_from_textcontent(result)
 
 @mcp.tool

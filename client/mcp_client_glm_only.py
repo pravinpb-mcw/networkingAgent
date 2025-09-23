@@ -68,9 +68,7 @@ def get_common_system_prompt():
     """Get the common system prompt used across all MCP client functions."""
     return """You are a NETWORK ORCHESTRATION AGENT.
 
-        You are an expert network orchestration agent with 10 years of experience. You must use available tools to collect real data and make actual changes when required.
 
-        CRITICAL: You MUST use the available tools to collect real-time data and execute changes (for example: get_device_loss_and_latency_history, get_organization_uplinks_statuses, update_appliance_settings, update_uplink). Do not simulate data.
 
         OUTPUT FORMAT REQUIREMENTS — USE THIS EXACT FORMAT FOR ALL RESPONSES:
         **Analysis:**
@@ -108,40 +106,71 @@ def get_common_system_prompt():
 
         END OF PROMPT"""
 
+
 def generate_dynamic_latency_prompt():
-    return """NETWORK LATENCY FIX TASK:
+   return """NETWORK LATENCY BALANCING TASK:
 
-# ROLE:
-You are the NETWORK ORCHESTRATOR with 10+ years of experience.  
-Your job is NOT only to analyze but also to TAKE DECISIONS and MOVE DEVICES across WANs automatically.  
+           You are an expert network orchestration agent with 10 years of experience. You must use available tools to collect real data and make actual changes when required.
 
-# GOAL:
-Rebalance all WANs so that:
-1. Devices are distributed equally across WANs.  
-2. High-latency devices are moved to better WANs.  
-3. Provide detailed before/after WAN distribution.  
+        CRITICAL: You MUST use the available tools to collect real-time data and execute changes (for example: get_device_loss_and_latency_history, get_organization_uplinks_statuses, update_appliance_settings, update_uplink). Do not simulate data.
 
-# STEPS:
-1. Call get_organization_uplinks_statuses → capture BEFORE WAN distribution  
-2. Call get_device_loss_and_latency_history → get latency data for each device  
+        CORE RULE: All WANs must have an equal (or as close as possible) distribution of connected devices. 
+        - If there are 3 WANs, spread devices equally across all 3.
+        - If there are N WANs, ensure balance across all N.
+        - Never stop after balancing only 2 WANs; always check the complete set.
 
-# DECISION MATRIX:
-- Device >100ms latency: **MOVE to WAN with lowest device count**  
-- Multiple high-latency devices: **SORT by latency (worst first), MOVE systematically**  
-- WAN overloaded (>50% devices): **REDISTRIBUTE to balance load**  
-- All WANs >100ms: **CREATE new WAN and MOVE worst devices**  
-- Priority devices (VoIP/video): **MOVE immediately to best WAN**  
+        # ROLE:
+        You are the NETWORK ORCHESTRATOR with 10+ years of experience.  
+        You must ANALYZE, DECIDE, and EXECUTE device moves across **all available WANs**.
 
-# EXECUTION:
-- Use update_uplink tool to ACTUALLY MOVE devices  
-- Provide device serial, target WAN, and reasoning  
-- Call get_organization_uplinks_statuses AGAIN → capture AFTER distribution  
+        DECISION-MAKING FRAMEWORK:
+        - ANALYZE: Collect and examine relevant network metrics and state.
+        - EVALUATE: Determine whether there are real, actionable problems.
+        - DECIDE: Only make changes if problems exist.
+        - EXECUTE: You MUST always perform actual tool calls for any device movement.
+            - Use update_uplink (or the correct move tool) for each device that needs to be reassigned.
+            - Do not only describe the moves in text. The tool call must be executed.
+        - REPORT: Document what was checked, what tool calls were executed, and why.
 
-# OUTPUT:
-Show exact BEFORE vs AFTER device counts per WAN using real tool data.  
-List every device moved with serial and reasoning.  
+        IMPORTANT:
+        - If a move is required, do NOT only write the move in the Decision text.
+        - You must execute the move using update_uplink (or the exact move tool).
+        - A response that only lists moves without tool execution is invalid.
 
-**CRITICAL: You MUST execute actual device moves. Do not just analyze.**"""
+
+
+        # GOAL:
+        - Evenly distribute device counts across ALL detected WANs.  
+        - Balance latency by mixing HIGH, MEDIUM, and LOW latency devices across WANs.  
+        - Prevent clustering of high-latency devices on any single WAN.  
+
+        # STEPS:
+        1. Call get_organization_uplinks_statuses → identify ALL available WANs (WAN1, WAN2, WAN3, WAN4, etc.) and device counts.  
+        2. Call get_device_loss_and_latency_history → get per-device latency.  
+        3. Sort devices into latency tiers:  
+        - LOW <50ms  
+        - MEDIUM 50–100ms  
+        - HIGH >100ms  
+        4. Reassign devices so that:  
+        - Each WAN ends with roughly equal number of devices.  
+        - Each WAN contains a mix of LOW/MEDIUM/HIGH latency devices.  
+        - Priority devices (VoIP/Video) always go to the WAN with lowest avg latency.  
+
+        # EXECUTION:
+        - Use update_uplink tool to ACTUALLY MOVE devices.  
+        - For each move, provide: device serial, source WAN, target WAN, reasoning.  
+        - After moves → call get_organization_uplinks_statuses again for AFTER state.  
+
+        # OUTPUT:
+        - BEFORE vs AFTER table showing per-WAN:  
+        | WAN | Device Count | Avg Latency | Latency Mix |  
+        - List of all devices moved with justification.  
+        - Summary: confirm balanced device count and reduced latency gap across all WANs.
+
+        **IMPORTANT: Must dynamically handle ANY number of WANs returned by the tools.**
+        """
+
+
 
 async def create_mcp_client():
     """Create and initialize MCP client using FastMCP."""

@@ -228,6 +228,10 @@ async def update_uplink_status(network_id: str, uplink_data: dict):
         logger.info(f"PUT /networks/{network_id}/uplinks/statuses")
         logger.info(f"Uplink data: {uplink_data}")
         
+        # Require a specific device serial to avoid unintended bulk updates
+        if not uplink_data.get("serial"):
+            raise HTTPException(status_code=400, detail="'serial' is required to update a specific device uplink. Bulk updates are disabled.")
+        
         # Load comprehensive data
         comprehensive_data = load_from_json_file("comprehensive_api_data.json")
         if not comprehensive_data:
@@ -240,8 +244,7 @@ async def update_uplink_status(network_id: str, uplink_data: dict):
             for org_id, uplinks in mock_data["organization_uplinks_statuses"].items():
                 for device in uplinks:
                     # If serial is provided, match by serial; otherwise update all devices with matching interface
-                    if (uplink_data.get("serial") and device.get("serial") == uplink_data.get("serial")) or \
-                       (not uplink_data.get("serial") and uplink_data.get("interface")):
+                    if (uplink_data.get("serial") and device.get("serial") == uplink_data.get("serial")):
                         # Update the uplink interface
                         for uplink in device.get("uplinks", []):
                             # Update the interface to the new one
@@ -918,6 +921,11 @@ async def update_connectivity_monitoring_destinations(network_id: str, request: 
             # Save back to comprehensive file
             save_to_comprehensive_json(comprehensive_data)
             
+            # Also update in-memory mock_data for immediate reads
+            if "connectivity_monitoring_destinations" not in mock_data:
+                mock_data["connectivity_monitoring_destinations"] = {}
+            mock_data["connectivity_monitoring_destinations"][network_id] = monitoring_data
+            
             logger.info(f"Updated connectivity monitoring for network {network_id}")
             return monitoring_data
         else:
@@ -978,6 +986,11 @@ async def update_network_access_control_lists(network_id: str, request: Request)
             # Save back to comprehensive file
             save_to_comprehensive_json(comprehensive_data)
             
+            # Also update in-memory mock_data for immediate reads
+            if "network_access_control_lists" not in mock_data:
+                mock_data["network_access_control_lists"] = {}
+            mock_data["network_access_control_lists"][network_id] = acl_data
+            
             logger.info(f"Updated access control lists for network {network_id}")
             return acl_data
         else:
@@ -1037,6 +1050,11 @@ async def update_organization_login_security(organization_id: str, request: Requ
         # Save back to comprehensive file
         save_to_comprehensive_json(comprehensive_data)
         
+        # Also update in-memory mock_data for immediate reads
+        if "organization_login_security" not in mock_data:
+            mock_data["organization_login_security"] = {}
+        mock_data["organization_login_security"][organization_id] = security_data
+        
         logger.info(f"Updated login security for organization {organization_id}")
         return security_data
     except Exception as e:
@@ -1085,6 +1103,11 @@ async def update_network_security_intrusion(network_id: str, request: Request):
             
             # Save back to comprehensive file
             save_to_comprehensive_json(comprehensive_data)
+            
+            # Also update in-memory mock_data for immediate reads
+            if "network_security_intrusion" not in mock_data:
+                mock_data["network_security_intrusion"] = {}
+            mock_data["network_security_intrusion"][network_id] = intrusion_data
             
             logger.info(f"Updated security intrusion for network {network_id}")
             return intrusion_data

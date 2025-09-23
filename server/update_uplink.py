@@ -36,6 +36,10 @@ async def update_uplink(uplink_data: Union[Dict[str, Any], str], use_mock: bool 
         
         # Update uplink data
         logger.info("Updating uplink status data")
+
+        # Guard: require a specific serial to avoid bulk updates
+        if not uplink_data.get("serial"):
+            raise ValueError("'serial' is required to update a specific device uplink. Bulk updates are disabled.")
         
         try:
             # For mock server, we'll actually update the JSON file
