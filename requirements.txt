@@ -1,5 +1,6 @@
 langchain-groq
 langchain-mcp-adapters
+langchain-anthropic
 mcp
 mcp-use
 python-dotenv
