@@ -627,7 +627,13 @@ async def get_network_clients(network_id: str):
     """Mock endpoint for getting network clients"""
     logger.info(f"GET /networks/{network_id}/clients")
     
-    # Return data from comprehensive API data structure
+    # RELOAD data from JSON file to pick up simulation changes
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_clients" in comprehensive_data:
+        if network_id in comprehensive_data["network_clients"]:
+            return comprehensive_data["network_clients"][network_id]
+    
+    # Return data from cached mock_data structure
     if "network_clients" in mock_data and network_id in mock_data["network_clients"]:
         return mock_data["network_clients"][network_id]
     
@@ -720,7 +726,13 @@ async def get_device_loss_and_latency_history(serial: str):
     """Mock endpoint for getting device loss and latency history"""
     logger.info(f"GET /devices/{serial}/lossAndLatencyHistory")
     
-    # Return data from comprehensive API data structure
+    # RELOAD data from JSON file to pick up simulation changes
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_loss_and_latency_history" in comprehensive_data:
+        if serial in comprehensive_data["device_loss_and_latency_history"]:
+            return comprehensive_data["device_loss_and_latency_history"][serial]
+    
+    # Return data from cached mock_data structure
     if "device_loss_and_latency_history" in mock_data and serial in mock_data["device_loss_and_latency_history"]:
         return mock_data["device_loss_and_latency_history"][serial]
     
@@ -737,7 +749,13 @@ async def get_organization_uplinks_statuses(organization_id: str):
     """Mock endpoint for getting organization uplink statuses"""
     logger.info(f"GET /organizations/{organization_id}/uplinks/statuses")
     
-    # Return data from comprehensive API data structure
+    # RELOAD data from JSON file to pick up simulation changes
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "organization_uplinks_statuses" in comprehensive_data:
+        if organization_id in comprehensive_data["organization_uplinks_statuses"]:
+            return comprehensive_data["organization_uplinks_statuses"][organization_id]
+    
+    # Return data from cached mock_data structure
     if "organization_uplinks_statuses" in mock_data and organization_id in mock_data["organization_uplinks_statuses"]:
         return mock_data["organization_uplinks_statuses"][organization_id]
     

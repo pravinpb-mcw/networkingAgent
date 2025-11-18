@@ -1,0 +1,1 @@
+based on the mcp client, create me a speclist, that i can pass to other LLMs/coding agents, such that, i can get the same/similar functionality there.. give the speclist as a markdown file and save it.. client/mcp_client.py config.py mcp-inspector-config.json

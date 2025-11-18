@@ -611,7 +611,7 @@ def main():
         
     
     # Main content area
-    tab1, tab2, tab3, tab4 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics", "Network Configuration"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics", "Network Configuration", "Latency Monitoring"])
     
     with tab1:
         st.header("MCP Client Chatbot")
@@ -922,21 +922,21 @@ def main():
     
     with tab4:
          st.header("🔧 Network Configuration")
-         st.info("Configure your network settings directly from the dashboard")
+         st.info("Run network management functions directly from the dashboard")
          
          # Configuration tool selection
-         st.subheader("🔧 Select Configuration Tool")
-         st.info("💡 **Click the dropdown below to select what you want to configure**")
+         st.subheader("🔧 Select Function to Run")
+         st.info("💡 **Click the dropdown below to select what you want to run**")
          
          config_tool = st.selectbox(
-             "Choose what you want to configure:",
+             "Choose what you want to run:",
              [
-                 ("create_network_wireless_settings", "📶 Wireless Network Settings"),
-                 ("create_network_appliance_settings", "⚙️ Network Appliance Settings"), 
-                 ("create_network_group_policy", "📋 Create Group Policy")
+                 ("uplink_through_latency", "🔄 --uplink-through-latency"),
+                 ("automate", "🤖 --automate"),
+                 ("available", "📋 Available Functions")
              ],
              format_func=lambda x: x[1],  # Show the friendly name
-             help="Click to select which network configuration you want to update",
+             help="Click to select which network function you want to run",
              key="config_tool_selector"
          )
          
@@ -945,182 +945,147 @@ def main():
              config_tool = config_tool[0]
          
          
-         
-         # Initialize session state for form data
-         if 'wireless_settings' not in st.session_state:
-             st.session_state.wireless_settings = {
-                 "enabled": True,
-                 "ssid": "My_SSID",
-                 "limit_up": 1000,
-                 "limit_down": 1000
-             }
-         
-         if 'appliance_settings' not in st.session_state:
-             st.session_state.appliance_settings = {
-                 "dhcp_enabled": True,
-                 "dhcp_lease_time": 86400,
-                 "vlan_enabled": False,
-                 "vlan_id": 100
-             }
-         
-         if 'group_policy' not in st.session_state:
-             st.session_state.group_policy = {
-                 "policy_name": "Guest Policy",
-                 "bandwidth_enabled": True,
-                 "limit_up": 500,
-                 "limit_down": 1000,
-                 "scheduling_enabled": False,
-                 "traffic_shaping": True,
-                 "content_filtering": False,
-                 "splash_page": False
-             }
-         
-         if config_tool == "create_network_wireless_settings":
-             st.subheader("📶 Wireless Network Settings")
+         if config_tool == "uplink_through_latency":
+             st.subheader("🔄 --uplink-through-latency")
+             st.info("Run latency-based WAN rerouting to optimize network performance")
              
              col1, col2 = st.columns(2)
              with col1:
-                 enabled = st.checkbox("Enable Wireless Network", value=st.session_state.wireless_settings["enabled"], key="wireless_enabled")
-                 ssid = st.text_input("SSID Name", value=st.session_state.wireless_settings["ssid"], key="wireless_ssid")
+                 st.write("**Function:** `--uplink-through-latency`")
+                 st.write("**Purpose:** Automatically reroute devices across WANs based on latency thresholds")
+                 st.write("**Policy:** Uses `latency_policy.yaml` for decision making")
              
              with col2:
-                limit_up = st.number_input("Upload Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_up"], key="wireless_limit_up")
-                limit_down = st.number_input("Download Bandwidth Limit (Mbps)", min_value=1, max_value=10000, value=st.session_state.wireless_settings["limit_down"], key="wireless_limit_down")
+                 st.write("**Features:**")
+                 st.write("• Real-time latency monitoring")
+                 st.write("• Automatic device redistribution")
+                 st.write("• Before/after performance reporting")
+                 st.write("• Dynamic WAN creation")
              
-             # Reset button
-             if st.button("🔄 Reset to Defaults", help="Reset wireless settings to default values"):
-                 st.session_state.wireless_settings = {
-                     "enabled": True,
-                     "ssid": "My_SSID",
-                     "limit_up": 1000,
-                     "limit_down": 1000
-                 }
-                 st.success("Wireless settings reset to defaults!")
-                 st.rerun()
-             
-             if st.button("Create Wireless Settings", type="primary"):
-                 # Save current form values to session state
-                 st.session_state.wireless_settings = {
-                     "enabled": enabled,
-                     "ssid": ssid,
-                     "limit_up": limit_up,
-                     "limit_down": limit_down
-                 }
-                 
-                 with st.spinner("Updating wireless settings..."):
+             if st.button("🚀 Run Uplink Through Latency", type="primary"):
+                 with st.spinner("Running latency-based WAN rerouting..."):
                      try:
-                                                   # Import the function
-                          from server.create_network_wireless_settings import create_network_wireless_settings
-                          
-                          # Prepare settings data
-                          settings_data = {
-                              "enabled": enabled,
-                              "ssid": ssid,
-                              "bandwidth": {
-                                  "limitUp": limit_up,
-                                  "limitDown": limit_down
-                              }
-                          }
-                          
-                          # Call the function
-                          result = asyncio.run(create_network_wireless_settings(settings_data, use_mock=True))
-                          
-                          if result and len(result) > 0:
-                              st.success("✅ Wireless settings created successfully!")
-                              st.json(settings_data)
-                             
-                                                           # Show the result
-                              with st.expander("View Create Result"):
-                                 st.json(result[0]['text'])
-                          else:
-                              st.error("Failed to create wireless settings")
-                              
-                     except Exception as e:
-                          st.error(f"Error creating wireless settings: {e}")
-                          st.exception(e)
-         
-         elif config_tool == "create_network_appliance_settings":
-             st.subheader("⚙️ Network Appliance Settings")
-             
-             col1, col2 = st.columns(2)
-             with col1:
-                 dhcp_enabled = st.checkbox("Enable DHCP", value=st.session_state.appliance_settings["dhcp_enabled"], key="appliance_dhcp_enabled")
-                 dhcp_lease_time = st.number_input("DHCP Lease Time (seconds)", min_value=300, max_value=864000, value=st.session_state.appliance_settings["dhcp_lease_time"], key="appliance_dhcp_lease")
-             
-             with col2:
-                vlan_enabled = st.checkbox("Enable VLAN", value=st.session_state.appliance_settings["vlan_enabled"], key="appliance_vlan_enabled")
-                vlan_id = st.number_input("VLAN ID", min_value=1, max_value=4094, value=st.session_state.appliance_settings["vlan_id"], disabled=not vlan_enabled, key="appliance_vlan_id")
-             
-             # Reset button
-             if st.button("🔄 Reset to Defaults", help="Reset appliance settings to default values"):
-                 st.session_state.appliance_settings = {
-                     "dhcp_enabled": True,
-                     "dhcp_lease_time": 86400,
-                     "vlan_enabled": False,
-                     "vlan_id": 100
-                 }
-                 st.success("Appliance settings reset to defaults!")
-                 st.rerun()
-             
-             if st.button("Create Appliance Settings", type="primary"):
-                 # Save current form values to session state
-                 st.session_state.appliance_settings = {
-                     "dhcp_enabled": dhcp_enabled,
-                     "dhcp_lease_time": dhcp_lease_time,
-                     "vlan_enabled": vlan_enabled,
-                     "vlan_id": vlan_id
-                 }
-                 
-                 with st.spinner("Updating appliance settings..."):
-                     try:
-                         # Import the function
-                         from server.create_network_appliance_settings import create_network_appliance_settings
+                         # Run the MCP client with uplink-through-latency option
+                         import subprocess
+                         result = subprocess.run([
+                             "python", "client/mcp_client.py", "--uplink-through-latency"
+                         ], capture_output=True, text=True, cwd=".")
                          
-                         # Prepare settings data
-                         settings_data = {
-                             "dhcp": {
-                                 "enabled": dhcp_enabled,
-                                 "leaseTime": dhcp_lease_time
-                             },
-                             "vlan": {
-                                 "enabled": vlan_enabled,
-                                 "id": vlan_id if vlan_enabled else None
-                             }
-                         }
-                         
-                         # Call the function
-                         result = asyncio.run(create_network_appliance_settings(settings_data, use_mock=True))
-                         
-                         if result and len(result) > 0:
-                             st.success("✅ Appliance settings created successfully!")
-                             st.json(settings_data)
+                         if result.returncode == 0:
+                             st.success("✅ Uplink through latency completed successfully!")
+                             st.code(result.stdout)
                              
                              # Show the result
-                             with st.expander("View Create Result"):
-                                 st.json(result[0]['text'])
+                             with st.expander("View Full Output"):
+                                 st.text(result.stdout)
+                                 if result.stderr:
+                                     st.text("Errors/Warnings:")
+                                     st.text(result.stderr)
                          else:
-                             st.error("Failed to create appliance settings")
+                             st.error("❌ Uplink through latency failed!")
+                             st.code(result.stderr)
                              
                      except Exception as e:
-                         st.error(f"Error creating appliance settings: {e}")
+                         st.error(f"Error running uplink through latency: {e}")
+                         st.exception(e)
+         
+         elif config_tool == "automate":
+             st.subheader("🤖 --automate")
+             st.info("Run automated network management and optimization")
+             
+             col1, col2 = st.columns(2)
+             with col1:
+                 st.write("**Function:** `--automate`")
+                 st.write("**Purpose:** Automated network management and optimization")
+                 st.write("**Features:** Continuous monitoring and adjustment")
+             
+             with col2:
+                 st.write("**Capabilities:**")
+                 st.write("• Continuous monitoring")
+                 st.write("• Automatic optimization")
+                 st.write("• Performance tuning")
+                 st.write("• Proactive maintenance")
+             
+             if st.button("🚀 Run Automate", type="primary"):
+                 with st.spinner("Running automated network management..."):
+                     try:
+                         # Run the MCP client with automate option
+                         import subprocess
+                         result = subprocess.run([
+                             "python", "client/mcp_client.py", "--automate"
+                         ], capture_output=True, text=True, cwd=".")
+                         
+                         if result.returncode == 0:
+                             st.success("✅ Automate completed successfully!")
+                             st.code(result.stdout)
+                             
+                             # Show the result
+                             with st.expander("View Full Output"):
+                                 st.text(result.stdout)
+                                 if result.stderr:
+                                     st.text("Errors/Warnings:")
+                                     st.text(result.stderr)
+                         else:
+                             st.error("❌ Automate failed!")
+                             st.code(result.stderr)
+                             
+                     except Exception as e:
+                         st.error(f"Error running automate: {e}")
                          st.exception(e)
           
-             elif config_tool == "create_network_group_policy":
-              st.subheader("📋 Create Network Group Policy")
-              
-              col1, col2 = st.columns(2)
-              with col1:
-                  policy_name = st.text_input("Policy Name", value=st.session_state.group_policy["policy_name"], key="create_policy_name")
-                  bandwidth_enabled = st.checkbox("Enable Bandwidth Limits", value=st.session_state.group_policy["bandwidth_enabled"], key="create_policy_bandwidth_enabled")
-              
-              with col2:
-                  limit_up = st.number_input("Upload Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_up"], disabled=not bandwidth_enabled, key="create_policy_limit_up")
-                  limit_down = st.number_input("Download Limit (Kbps)", min_value=1, max_value=100000, value=st.session_state.group_policy["limit_down"], disabled=not bandwidth_enabled, key="create_policy_limit_down")
-              
-              # Advanced settings
-              with st.expander("Advanced Settings"):
-                  col1, col2 = st.columns(2)
-                  with col1:
+         elif config_tool == "available":
+             st.subheader("📋 Available Functions")
+             st.info("List of all available network management functions")
+             
+             # Function categories
+             col1, col2 = st.columns(2)
+             
+             with col1:
+                 st.write("**🔧 Core Functions:**")
+                 st.write("• `--uplink-through-latency` - Latency-based WAN rerouting")
+                 st.write("• `--automate` - Automated network management")
+                 st.write("• `--monitor` - Real-time network monitoring")
+                 st.write("• `--analyze` - Network analysis and reporting")
+                 
+                 st.write("**📊 Monitoring Functions:**")
+                 st.write("• `--get-clients` - Get network clients")
+                 st.write("• `--get-traffic` - Get traffic data")
+                 st.write("• `--get-events` - Get network events")
+                 st.write("• `--get-latency` - Get latency metrics")
+             
+             with col2:
+                 st.write("**⚙️ Configuration Functions:**")
+                 st.write("• `--update-uplink` - Update uplink settings")
+                 st.write("• `--update-appliance` - Update appliance settings")
+                 st.write("• `--create-policy` - Create group policies")
+                 st.write("• `--update-network` - Update network settings")
+                 
+                 st.write("**🔍 Analysis Functions:**")
+                 st.write("• `--get-vpn-stats` - Get VPN statistics")
+                 st.write("• `--get-connectivity` - Get connectivity data")
+                 st.write("• `--get-security` - Get security settings")
+                 st.write("• `--get-acl` - Get access control lists")
+             
+             # Usage examples
+             st.subheader("💡 Usage Examples")
+             st.code("""
+            # Run latency-based WAN rerouting
+            python client/mcp_client.py --uplink-through-latency
+
+            # Run automated management
+            python client/mcp_client.py --automate
+
+            # Get network clients
+            python client/mcp_client.py --get-clients
+
+            # Monitor network traffic
+            python client/mcp_client.py --get-traffic
+                        """)
+             
+             # Help button
+            if st.button("📖 Show Help", type="secondary"):
+                 st.info("Use the command line or this dashboard to run network management functions. Each function has specific parameters and options.")
+                with col1:
                       scheduling_enabled = st.checkbox("Enable Scheduling Restrictions", value=st.session_state.group_policy["scheduling_enabled"], key="create_policy_scheduling")
                       traffic_shaping = st.checkbox("Enable Firewall & Traffic Shaping", value=st.session_state.group_policy["traffic_shaping"], key="create_policy_traffic_shaping")
                   
@@ -1337,6 +1302,158 @@ def main():
                      st.json(config.get('data', {}))
          else:
              st.info("No configuration history yet. Make changes to see them here.")
+    
+    with tab5:
+        st.header("⚡ Latency Monitoring & Uplink Management")
+        st.info("Monitor network latency and automatically manage uplinks based on performance thresholds")
+        
+        # Latency monitoring controls
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("🚀 Start Latency Monitoring", type="primary"):
+                st.success("Latency monitoring started! This will monitor uplink performance and automatically manage device distribution.")
+                st.info("Use the MCP Chatbot tab with '--uplink-through-latency' command for manual latency-based uplink management.")
+        
+        with col2:
+            if st.button("📊 View Latency Policy"):
+                try:
+                    with open('latency_policy.txt', 'r') as f:
+                        policy_content = f.read()
+                    st.text_area("Latency Policy", policy_content, height=400)
+                except FileNotFoundError:
+                    st.error("Latency policy file not found")
+        
+        with col3:
+            if st.button("🔄 Refresh Latency Data"):
+                st.rerun()
+        
+        # Latency thresholds display
+        st.subheader("📈 Latency Thresholds")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("EXCELLENT", "< 30ms", "latency + < 3ms jitter")
+        with col2:
+            st.metric("GOOD", "30-50ms", "latency + 3-5ms jitter")
+        with col3:
+            st.metric("WARNING", "50-100ms", "latency OR 5-10ms jitter")
+        with col4:
+            st.metric("CRITICAL", "> 100ms", "latency OR > 10ms jitter")
+        
+        # Uplink management actions
+        st.subheader("🔧 Uplink Management Actions")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**When Latency Increases:**")
+            st.markdown("""
+            - Split devices across available WANs
+            - Move 50% of devices from high-latency WAN
+            - Prioritize high-bandwidth devices first
+            - Create WAN3 if needed for load distribution
+            """)
+        
+        with col2:
+            st.markdown("**When Latency Decreases:**")
+            st.markdown("""
+            - Consolidate devices to fewer WANs
+            - Move devices from WAN3 to WAN1/WAN2
+            - Keep WAN3 as backup only
+            - Monitor for stability before consolidation
+            """)
+        
+        # Device priority for rerouting
+        st.subheader("🎯 Device Priority for Rerouting")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("**HIGH PRIORITY**")
+            st.markdown("""
+            - Video streaming
+            - Gaming devices
+            - VoIP devices
+            """)
+        with col2:
+            st.markdown("**MEDIUM PRIORITY**")
+            st.markdown("""
+            - Web browsing
+            - File downloads
+            - General computing
+            """)
+        with col3:
+            st.markdown("**LOW PRIORITY**")
+            st.markdown("""
+            - Background sync
+            - System updates
+            - IoT devices
+            """)
+        
+        # Manual latency monitoring commands
+        st.subheader("💻 Manual Latency Monitoring Commands")
+        st.info("Use these commands in the MCP Chatbot tab for manual latency-based uplink management:")
+        
+        command_examples = [
+            "python client/mcp_client.py --uplink-through-latency",
+            "python client/mcp_client.py --uplink",
+            "python client/mcp_client.py --mock --uplink-through-latency"
+        ]
+        
+        for cmd in command_examples:
+            st.code(cmd, language="bash")
+        
+        # Latency monitoring status
+        st.subheader("📊 Current Monitoring Status")
+        if dashboard.monitoring_data:
+            latest = dashboard.monitoring_data[-1]
+            if 'performance' in latest.get('data', {}):
+                perf = latest['data']['performance']
+                if 'data' in perf and isinstance(perf['data'], list) and perf['data']:
+                    perf_data = perf['data'][0]
+                    latency = perf_data.get('latencyMs', 'N/A')
+                    jitter = perf_data.get('jitter', 'N/A')
+                    
+                    # Determine status based on latency
+                    if isinstance(latency, (int, float)):
+                        if latency < 30:
+                            status = "EXCELLENT"
+                            color = "green"
+                        elif latency < 50:
+                            status = "GOOD"
+                            color = "blue"
+                        elif latency < 100:
+                            status = "WARNING"
+                            color = "orange"
+                        else:
+                            status = "CRITICAL"
+                            color = "red"
+                    else:
+                        status = "UNKNOWN"
+                        color = "gray"
+                    
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Current Latency", f"{latency}ms", status)
+                    with col2:
+                        st.metric("Current Jitter", f"{jitter}ms")
+                    with col3:
+                        st.metric("Status", status)
+                else:
+                    st.warning("No performance data available")
+            else:
+                st.info("No performance data in latest monitoring cycle")
+        else:
+            st.info("No monitoring data available. Start monitoring to see latency data.")
+        
+        # Alert conditions
+        st.subheader("🚨 Alert Conditions")
+        alert_conditions = [
+            "CRITICAL ALERT: Any WAN > 100ms latency OR > 10ms jitter",
+            "WARNING ALERT: Any WAN 50-100ms latency OR 5-10ms jitter", 
+            "RECOVERY ALERT: All WANs return to GOOD or EXCELLENT range",
+            "SPLIT ALERT: WANs have been split due to high latency",
+            "CONSOLIDATE ALERT: WANs have been consolidated due to low latency"
+        ]
+        
+        for condition in alert_conditions:
+            st.markdown(f"• {condition}")
      
      # Footer
     st.markdown("---")

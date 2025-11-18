@@ -26,18 +26,18 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2025-11-13T15:15:36.433729",
-          "latencyMs": 15.5,
-          "packetLossPct": 0.1,
-          "jitterMs": 1.2,
+          "updated_at": "2025-11-13T22:22:06.054142",
+          "latencyMs": 273.9,
+          "packetLossPct": 5.38,
+          "jitterMs": 27.23,
           "degradedLinks": [
             {
               "uplink": "wan1",
-              "status": "active"
+              "status": "connecting"
             },
             {
               "uplink": "wan2",
-              "status": "active"
+              "status": "connecting"
             }
           ],
           "note": "RESTORED_TO_HEALTHY_STATE"
@@ -106,7 +106,7 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2025-11-13T15:15:36.419757",
+        "lastSeen": "2025-11-13T22:22:06.061410",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
@@ -122,7 +122,7 @@
           "recv": 1581769,
           "total": 1624375
         },
-        "status": "Online",
+        "status": "Offline",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -144,7 +144,7 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2025-11-13T15:15:36.419762",
+        "lastSeen": "2025-11-13T22:22:06.061423",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
@@ -182,7 +182,7 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2025-11-13T15:15:36.419764",
+        "lastSeen": "2025-11-13T22:22:06.061425",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -220,7 +220,7 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2025-11-13T14:53:58.031147",
+        "lastSeen": "2025-11-13T22:22:06.061427",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -258,7 +258,7 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2025-11-13T14:53:58.031149",
+        "lastSeen": "2025-11-13T22:22:06.061428",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
@@ -274,7 +274,7 @@
           "recv": 0,
           "total": 1
         },
-        "status": "Offline",
+        "status": "Online",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -576,6 +576,34 @@
         "description": "Network restored to healthy state",
         "severity": "info",
         "deviceSerial": "Q2MN-Q3J9-YJHW"
+      },
+      {
+        "occurredAt": "2025-11-13T15:58:19.644273",
+        "type": "network_recovery",
+        "description": "Network restored to healthy state",
+        "severity": "info",
+        "deviceSerial": "Q2MN-Q3J9-YJHW"
+      },
+      {
+        "occurredAt": "2025-11-13T16:19:31.507384",
+        "type": "network_recovery",
+        "description": "Network restored to healthy state",
+        "severity": "info",
+        "deviceSerial": "Q2MN-Q3J9-YJHW"
+      },
+      {
+        "occurredAt": "2025-11-13T16:50:32.503548",
+        "type": "network_recovery",
+        "description": "Network restored to healthy state",
+        "severity": "info",
+        "deviceSerial": "Q2MN-Q3J9-YJHW"
+      },
+      {
+        "occurredAt": "2025-11-13T16:53:47.809732",
+        "type": "network_recovery",
+        "description": "Network restored to healthy state",
+        "severity": "info",
+        "deviceSerial": "Q2MN-Q3J9-YJHW"
       }
     ]
   },
@@ -607,11 +635,11 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2025-11-13T15:15:36.425026",
+        "lastReportedAt": "2025-11-13T22:22:06.064622",
         "uplinks": [
           {
             "interface": "wan2",
-            "status": "active",
+            "status": "connecting",
             "ip": "192.168.1.69",
             "gateway": "192.168.1.254",
             "publicIp": "162.204.214.129",
@@ -1616,47 +1644,97 @@
   "device_loss_and_latency_history": {
     "Q2MN-Q3J9-YJHW": [
       {
-        "ts": "2024-01-15T10:00:00Z",
+        "ts": "2025-11-13T16:53:47.799684",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
-        "destinationIp": "8.8.8.8"
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
       },
       {
-        "ts": "2024-01-15T10:05:00Z",
-        "latencyMs": 18.2,
-        "lossPercent": 0.2,
-        "jitter": 1.5,
-        "goodput": 92.0,
-        "destinationIp": "8.8.8.8"
+        "ts": "2025-11-13T16:53:47.799691",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
       },
       {
-        "ts": "2024-01-15T10:10:00Z",
-        "latencyMs": 75.8,
-        "lossPercent": 1.5,
-        "jitter": 6.2,
-        "goodput": 85.3,
-        "destinationIp": "8.8.8.8"
+        "ts": "2025-11-13T16:53:47.799695",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
       },
       {
-        "ts": "2024-01-15T10:15:00Z",
-        "latencyMs": 95.4,
-        "lossPercent": 2.1,
-        "jitter": 8.7,
-        "goodput": 78.9,
-        "destinationIp": "8.8.8.8"
+        "ts": "2025-11-13T16:53:47.799697",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
       },
       {
-        "ts": "2024-01-15T10:20:00Z",
-        "latencyMs": 120.5,
-        "lossPercent": 3.2,
-        "jitter": 12.1,
-        "goodput": 72.1,
-        "destinationIp": "8.8.8.8"
+        "ts": "2025-11-13T16:53:47.799698",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
       },
       {
-        "ts": "2025-11-13T14:49:07.463259",
+        "ts": "2025-11-13T16:53:47.799700",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T16:53:47.799701",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T16:53:47.799704",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T16:53:47.799707",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T16:53:47.799708",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T18:15:59.143435",
         "latencyMs": 31.65,
         "lossPercent": 0.43,
         "jitter": 2.83,
@@ -1664,7 +1742,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:49:17.477495",
+        "ts": "2025-11-13T18:16:09.156711",
         "latencyMs": 47.8,
         "lossPercent": 0.76,
         "jitter": 4.45,
@@ -1672,7 +1750,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:49:27.492742",
+        "ts": "2025-11-13T18:16:19.172807",
         "latencyMs": 63.95,
         "lossPercent": 1.09,
         "jitter": 6.08,
@@ -1680,7 +1758,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:49:37.508810",
+        "ts": "2025-11-13T18:16:29.243014",
         "latencyMs": 80.1,
         "lossPercent": 1.42,
         "jitter": 7.71,
@@ -1688,7 +1766,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:49:47.529427",
+        "ts": "2025-11-13T18:16:39.330131",
         "latencyMs": 96.25,
         "lossPercent": 1.75,
         "jitter": 9.33,
@@ -1696,7 +1774,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:49:57.544780",
+        "ts": "2025-11-13T18:16:49.374161",
         "latencyMs": 112.4,
         "lossPercent": 2.08,
         "jitter": 10.96,
@@ -1704,7 +1782,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:07.568594",
+        "ts": "2025-11-13T18:16:59.397707",
         "latencyMs": 128.55,
         "lossPercent": 2.41,
         "jitter": 12.59,
@@ -1712,7 +1790,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:17.582579",
+        "ts": "2025-11-13T18:17:09.428240",
         "latencyMs": 144.7,
         "lossPercent": 2.74,
         "jitter": 14.21,
@@ -1720,7 +1798,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:27.603844",
+        "ts": "2025-11-13T18:17:19.473004",
         "latencyMs": 160.85,
         "lossPercent": 3.07,
         "jitter": 15.84,
@@ -1728,7 +1806,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:37.619584",
+        "ts": "2025-11-13T18:17:29.498071",
         "latencyMs": 177.0,
         "lossPercent": 3.4,
         "jitter": 17.47,
@@ -1736,7 +1814,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:47.642293",
+        "ts": "2025-11-13T18:17:39.522564",
         "latencyMs": 193.15,
         "lossPercent": 3.73,
         "jitter": 19.09,
@@ -1744,7 +1822,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:50:57.658408",
+        "ts": "2025-11-13T18:17:49.546361",
         "latencyMs": 209.3,
         "lossPercent": 4.06,
         "jitter": 20.72,
@@ -1752,7 +1830,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:51:07.681908",
+        "ts": "2025-11-13T18:17:59.592047",
         "latencyMs": 225.45,
         "lossPercent": 4.39,
         "jitter": 22.35,
@@ -1760,7 +1838,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:51:17.697897",
+        "ts": "2025-11-13T18:18:09.637736",
         "latencyMs": 241.6,
         "lossPercent": 4.72,
         "jitter": 23.97,
@@ -1768,7 +1846,7 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:51:27.713806",
+        "ts": "2025-11-13T22:21:56.009866",
         "latencyMs": 257.75,
         "lossPercent": 5.05,
         "jitter": 25.6,
@@ -1776,169 +1854,12 @@
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T14:51:37.731329",
+        "ts": "2025-11-13T22:22:06.058080",
         "latencyMs": 273.9,
         "lossPercent": 5.38,
         "jitter": 27.23,
         "goodput": 68.33,
         "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:51:47.751876",
-        "latencyMs": 290.05,
-        "lossPercent": 5.71,
-        "jitter": 28.85,
-        "goodput": 66.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:51:57.778773",
-        "latencyMs": 306.2,
-        "lossPercent": 6.04,
-        "jitter": 30.48,
-        "goodput": 65.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:07.795186",
-        "latencyMs": 322.35,
-        "lossPercent": 6.37,
-        "jitter": 32.11,
-        "goodput": 63.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:17.819147",
-        "latencyMs": 338.5,
-        "lossPercent": 6.7,
-        "jitter": 33.73,
-        "goodput": 61.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:27.858300",
-        "latencyMs": 354.65,
-        "lossPercent": 7.03,
-        "jitter": 35.36,
-        "goodput": 60.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:37.873046",
-        "latencyMs": 370.8,
-        "lossPercent": 7.36,
-        "jitter": 36.99,
-        "goodput": 58.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:47.887351",
-        "latencyMs": 386.95,
-        "lossPercent": 7.69,
-        "jitter": 38.61,
-        "goodput": 56.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:52:57.904610",
-        "latencyMs": 403.1,
-        "lossPercent": 8.02,
-        "jitter": 40.24,
-        "goodput": 55.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:07.922393",
-        "latencyMs": 419.25,
-        "lossPercent": 8.35,
-        "jitter": 41.87,
-        "goodput": 53.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:17.940422",
-        "latencyMs": 435.4,
-        "lossPercent": 8.68,
-        "jitter": 43.49,
-        "goodput": 51.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:27.958478",
-        "latencyMs": 451.55,
-        "lossPercent": 9.01,
-        "jitter": 45.12,
-        "goodput": 50.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:37.975734",
-        "latencyMs": 467.7,
-        "lossPercent": 9.34,
-        "jitter": 46.75,
-        "goodput": 48.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:47.992833",
-        "latencyMs": 483.85,
-        "lossPercent": 9.67,
-        "jitter": 48.37,
-        "goodput": 46.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T14:53:58.019107",
-        "latencyMs": 500.0,
-        "lossPercent": 10.0,
-        "jitter": 50.0,
-        "goodput": 45.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T15:15:36.417365",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
-      },
-      {
-        "ts": "2025-11-13T15:15:36.417371",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
-      },
-      {
-        "ts": "2025-11-13T15:15:36.417373",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
-      },
-      {
-        "ts": "2025-11-13T15:15:36.417374",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
-      },
-      {
-        "ts": "2025-11-13T15:15:36.417375",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
       }
     ]
   },

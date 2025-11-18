@@ -1,0 +1,16 @@
+- firewall
+- loadbalancer
+- switches
+
+
+find out what are devices in realtime - dump it
+set of access points and end users who are all connected to access points - topology
+if there is a impact on particular access point, suggest next best access point
+    
+
+what are the services that is getting impacted when an accesspoint/firewall/loadbalancer goes down...
+eg, teams, email, sftp, samba, nas etc..
+
+what kind of impact it will have?
+
+switch over to 

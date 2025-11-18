@@ -17,7 +17,7 @@ logger = logging.getLogger("update-appliance-settings-tool")
 mcp = FastMCP("update-appliance-settings")
 
 @mcp.tool()
-async def update_appliance_settings(settings_data: Union[Dict[str, Any], str], use_mock: bool = False) -> List[TextContent]:
+async def update_appliance_settings(settings_data: Union[Dict[str, Any], str] = None, use_mock: bool = False) -> List[TextContent]:
     """
     Update appliance settings for your configured network.
     Uses NETWORK_ID from .env file.
@@ -27,6 +27,11 @@ async def update_appliance_settings(settings_data: Union[Dict[str, Any], str], u
         use_mock: Whether to use mock server mode
     """
     try:
+        # Handle missing settings_data
+        if not settings_data:
+            logger.error("settings_data is required")
+            return [TextContent(type="text", text=f"Error executing update_appliance_settings: settings_data is required")]
+        
         # Parse settings_data if it's a string
         if isinstance(settings_data, str):
             try:

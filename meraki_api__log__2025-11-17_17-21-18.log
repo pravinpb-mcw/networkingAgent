@@ -1,0 +1,34 @@
+2025-11-17 17:21:18       meraki:     INFO > Meraki dashboard API session initialized with these parameters: {'version': '2.0.3', 'api_key': '************************************c54a', 'base_url': 'https://api.meraki.com/api/v1', 'single_request_timeout': 60, 'certificate_path': '', 'requests_proxy': '', 'wait_on_rate_limit': True, 'nginx_429_retry_wait_time': 60, 'action_batch_retry_wait_time': 60, 'network_delete_retry_wait_time': 240, 'retry_4xx_error': False, 'retry_4xx_error_wait_time': 60, 'maximum_retries': 2, 'simulate': False, 'be_geo_id': None, 'caller': None, 'use_iterator_for_get_pages': False}
+2025-11-17 17:21:18       meraki:    DEBUG > {'tags': ['organizations', 'configure', 'devices'], 'operation': 'getOrganizationDevices', 'page': 1}
+2025-11-17 17:21:18       meraki:     INFO > GET https://api.meraki.com/api/v1/organizations/999781/devices
+2025-11-17 17:21:19       meraki:     INFO > organizations, getOrganizationDevices; page 1 - 200 OK
+2025-11-17 17:21:19       meraki:    DEBUG > {'tags': ['organizations', 'configure', 'networks'], 'operation': 'getOrganizationNetworks', 'page': 1}
+2025-11-17 17:21:19       meraki:     INFO > GET https://api.meraki.com/api/v1/organizations/999781/networks
+2025-11-17 17:21:19       meraki:     INFO > organizations, getOrganizationNetworks; page 1 - 200 OK
+2025-11-17 17:21:19       meraki:    DEBUG > {'tags': ['wireless', 'monitor', 'status'], 'operation': 'getDeviceWirelessStatus', 'method': 'GET', 'url': '/devices/Q2GY-ECCL-A9TE/wireless/status', 'params': None}
+2025-11-17 17:21:19       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2GY-ECCL-A9TE/wireless/status
+2025-11-17 17:21:20       meraki:    ERROR > wireless, getDeviceWirelessStatus - 400 Bad Request, {'errors': ['This endpoint only supports wireless networks']}
+2025-11-17 17:21:23       meraki:    DEBUG > {'tags': ['networks', 'monitor', 'clients'], 'operation': 'getNetworkClients', 'page': 1}
+2025-11-17 17:21:23       meraki:     INFO > GET https://api.meraki.com/api/v1/networks/L_3947405073390239794/clients
+2025-11-17 17:21:24       meraki:     INFO > networks, getNetworkClients; page 1 - 200 OK
+2025-11-17 17:21:27       meraki:    DEBUG > {'tags': ['networks', 'monitor', 'events'], 'operation': 'getNetworkEvents', 'page': 1}
+2025-11-17 17:21:27       meraki:     INFO > GET https://api.meraki.com/api/v1/networks/L_3947405073390239794/events
+2025-11-17 17:21:28       meraki:    ERROR > networks, getNetworkEvents - 400 Bad Request, {'errors': ['productType is required']}
+2025-11-17 17:21:31       meraki:    DEBUG > {'tags': ['appliance', 'configure', 'uplinks', 'settings'], 'operation': 'getDeviceApplianceUplinksSettings', 'method': 'GET', 'url': '/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings', 'params': None}
+2025-11-17 17:21:31       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings
+2025-11-17 17:21:32       meraki:     INFO > appliance, getDeviceApplianceUplinksSettings - 200 OK
+2025-11-17 17:21:35       meraki:    DEBUG > {'tags': ['appliance', 'configure', 'uplinks', 'settings'], 'operation': 'getDeviceApplianceUplinksSettings', 'method': 'GET', 'url': '/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings', 'params': None}
+2025-11-17 17:21:35       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings
+2025-11-17 17:21:35       meraki:     INFO > appliance, getDeviceApplianceUplinksSettings - 200 OK
+2025-11-17 17:21:38       meraki:    DEBUG > {'tags': ['appliance', 'monitor', 'uplinks', 'statuses'], 'operation': 'getOrganizationApplianceUplinkStatuses', 'page': 1}
+2025-11-17 17:21:38       meraki:     INFO > GET https://api.meraki.com/api/v1/organizations/999781/appliance/uplink/statuses
+2025-11-17 17:21:39       meraki:     INFO > appliance, getOrganizationApplianceUplinkStatuses; page 1 - 200 OK
+2025-11-17 17:21:42       meraki:    DEBUG > {'tags': ['appliance', 'configure', 'uplinks', 'settings'], 'operation': 'getDeviceApplianceUplinksSettings', 'method': 'GET', 'url': '/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings', 'params': None}
+2025-11-17 17:21:42       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2GY-ECCL-A9TE/appliance/uplinks/settings
+2025-11-17 17:21:43       meraki:     INFO > appliance, getDeviceApplianceUplinksSettings - 200 OK
+2025-11-17 17:21:43       meraki:    DEBUG > {'tags': ['appliance', 'configure', 'uplinks', 'settings'], 'operation': 'getDeviceApplianceUplinksSettings', 'method': 'GET', 'url': '/devices/Q2GY-G4TM-QKM5/appliance/uplinks/settings', 'params': None}
+2025-11-17 17:21:43       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2GY-G4TM-QKM5/appliance/uplinks/settings
+2025-11-17 17:21:43       meraki:     INFO > appliance, getDeviceApplianceUplinksSettings - 200 OK
+2025-11-17 17:21:43       meraki:    DEBUG > {'tags': ['appliance', 'configure', 'uplinks', 'settings'], 'operation': 'getDeviceApplianceUplinksSettings', 'method': 'GET', 'url': '/devices/Q2MN-Q3J9-YJHW/appliance/uplinks/settings', 'params': None}
+2025-11-17 17:21:43       meraki:     INFO > GET https://api.meraki.com/api/v1/devices/Q2MN-Q3J9-YJHW/appliance/uplinks/settings
+2025-11-17 17:21:44       meraki:     INFO > appliance, getDeviceApplianceUplinksSettings - 200 OK
