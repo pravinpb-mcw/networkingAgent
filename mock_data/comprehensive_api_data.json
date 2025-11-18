@@ -26,25 +26,21 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2025-09-08T15:40:11.228159",
-          "latencyMs": 45,
-          "packetLossPct": 0.5,
-          "jitterMs": 2,
+          "updated_at": "2025-11-13T15:15:36.433729",
+          "latencyMs": 15.5,
+          "packetLossPct": 0.1,
+          "jitterMs": 1.2,
           "degradedLinks": [
             {
-              "status": "ok",
-              "uplink": "wan1"
+              "uplink": "wan1",
+              "status": "active"
             },
             {
-              "status": "ok",
-              "uplink": "wan2"
-            },
-            {
-              "status": "ok",
-              "uplink": "wan3"
+              "uplink": "wan2",
+              "status": "active"
             }
           ],
-          "note": "real-meraki-data"
+          "note": "RESTORED_TO_HEALTHY_STATE"
         }
       ],
       "wireless_settings": [
@@ -57,9 +53,9 @@
             "limitDown": 1000
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "latencyMs": 35,
-          "packetLossPct": 0.3,
-          "jitterMs": 1,
+          "latencyMs": 45,
+          "packetLossPct": 0.5,
+          "jitterMs": 2,
           "note": "real-meraki-data",
           "ssidHealth": {
             "poorClients": 0
@@ -82,6 +78,21 @@
           "enabled": false
         }
       }
+    },
+    "L_04156e88aca94215": {
+      "name": "default network",
+      "productTypes": [
+        "appliance",
+        "wireless"
+      ],
+      "timeZone": "America/Los_Angeles",
+      "tags": [],
+      "enrollmentString": null,
+      "notes": "",
+      "isBoundToConfigTemplate": false,
+      "isVirtual": false,
+      "id": "L_04156e88aca94215",
+      "organizationId": "999781"
     }
   },
   "network_clients": {
@@ -95,7 +106,7 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2025-09-03T05:57:32Z",
+        "lastSeen": "2025-11-13T15:15:36.419757",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
@@ -133,7 +144,7 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2025-09-03T02:03:19Z",
+        "lastSeen": "2025-11-13T15:15:36.419762",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
@@ -145,11 +156,11 @@
         "vlan": "0",
         "switchport": null,
         "usage": {
-          "sent": 1,
-          "recv": 0,
-          "total": 1
+          "sent": 42606,
+          "recv": 1581769,
+          "total": 1624375
         },
-        "status": "Offline",
+        "status": "Online",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -171,7 +182,7 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2025-09-03T05:57:32Z",
+        "lastSeen": "2025-11-13T15:15:36.419764",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -183,9 +194,9 @@
         "vlan": "0",
         "switchport": null,
         "usage": {
-          "sent": 5125978,
-          "recv": 2609318,
-          "total": 7735296
+          "sent": 42606,
+          "recv": 1581769,
+          "total": 1624375
         },
         "status": "Online",
         "notes": null,
@@ -209,7 +220,7 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2025-09-03T05:57:32Z",
+        "lastSeen": "2025-11-13T14:53:58.031147",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -225,7 +236,7 @@
           "recv": 665138,
           "total": 845430
         },
-        "status": "Online",
+        "status": "Offline",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -247,7 +258,7 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2025-09-03T00:50:42Z",
+        "lastSeen": "2025-11-13T14:53:58.031149",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
@@ -558,7 +569,15 @@
     ]
   },
   "network_events": {
-    "L_3947405073390239794": []
+    "L_3947405073390239794": [
+      {
+        "occurredAt": "2025-11-13T15:15:36.429705",
+        "type": "network_recovery",
+        "description": "Network restored to healthy state",
+        "severity": "info",
+        "deviceSerial": "Q2MN-Q3J9-YJHW"
+      }
+    ]
   },
   "network_settings": {
     "L_3947405073390239794": {
@@ -588,10 +607,10 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2025-09-03T05:58:20Z",
+        "lastReportedAt": "2025-11-13T15:15:36.425026",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "192.168.1.69",
             "gateway": "192.168.1.254",
@@ -614,7 +633,7 @@
         "lastReportedAt": "2025-08-21T08:24:25Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "18.166.166.128",
             "gateway": "18.166.166.1",
@@ -637,7 +656,7 @@
         "lastReportedAt": "2025-08-18T02:27:44Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "84.6.141.119",
             "gateway": "84.6.141.1",
@@ -660,7 +679,7 @@
         "lastReportedAt": "2025-08-26T00:38:29Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "81.126.116.134",
             "gateway": "81.126.116.1",
@@ -683,7 +702,7 @@
         "lastReportedAt": "2025-08-29T00:04:28Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "72.7.36.104",
             "gateway": "72.7.36.1",
@@ -706,7 +725,7 @@
         "lastReportedAt": "2025-08-14T07:06:21Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "125.22.57.205",
             "gateway": "125.22.57.1",
@@ -729,7 +748,7 @@
         "lastReportedAt": "2025-08-08T10:39:17Z",
         "uplinks": [
           {
-            "interface": "wan1",
+            "interface": "wan2",
             "status": "active",
             "ip": "251.158.218.252",
             "gateway": "251.158.218.1",
@@ -1051,7 +1070,7 @@
         "lastReportedAt": "2025-08-28T01:20:12Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "172.230.255.16",
             "gateway": "172.230.255.1",
@@ -1060,98 +1079,6 @@
             "secondaryDns": "8.8.4.4",
             "ipAssignedBy": "dhcp",
             "serial": "Q2GY-1UWA-AC8Z"
-          }
-        ]
-      },
-      {
-        "networkId": "N_2785786197476642681",
-        "serial": "Q3GX-5WV9-V19B",
-        "model": "MX650",
-        "highAvailability": {
-          "enabled": true,
-          "role": "secondary"
-        },
-        "lastReportedAt": "2025-08-11T08:18:50Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "83.77.84.44",
-            "gateway": "83.77.84.1",
-            "publicIp": "83.77.84.44",
-            "primaryDns": "8.8.8.8",
-            "secondaryDns": "8.8.4.4",
-            "ipAssignedBy": "dhcp",
-            "serial": "Q3GX-5WV9-V19B"
-          }
-        ]
-      },
-      {
-        "networkId": "N_9798362181454850813",
-        "serial": "Q3FA-Z5X0-12KL",
-        "model": "MX250",
-        "highAvailability": {
-          "enabled": true,
-          "role": "secondary"
-        },
-        "lastReportedAt": "2025-08-23T17:48:07Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "246.130.79.246",
-            "gateway": "246.130.79.1",
-            "publicIp": "246.130.79.246",
-            "primaryDns": "1.1.1.1",
-            "secondaryDns": "1.0.0.1",
-            "ipAssignedBy": "static",
-            "serial": "Q3FA-Z5X0-12KL"
-          }
-        ]
-      },
-      {
-        "networkId": "N_5987938992865063421",
-        "serial": "Q3GX-Y4VF-YO4G",
-        "model": "MX75",
-        "highAvailability": {
-          "enabled": false,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-25T08:19:03Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "160.45.59.185",
-            "gateway": "160.45.59.1",
-            "publicIp": "160.45.59.185",
-            "primaryDns": "208.67.222.222",
-            "secondaryDns": "208.67.220.220",
-            "ipAssignedBy": "dhcp",
-            "serial": "Q3GX-Y4VF-YO4G"
-          }
-        ]
-      },
-      {
-        "networkId": "N_9703338694054064257",
-        "serial": "Q3FA-O6GQ-5FYM",
-        "model": "MX100",
-        "highAvailability": {
-          "enabled": false,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-17T19:30:55Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "11.43.117.33",
-            "gateway": "11.43.117.1",
-            "publicIp": "11.43.117.33",
-            "primaryDns": "208.67.222.222",
-            "secondaryDns": "208.67.220.220",
-            "ipAssignedBy": "dhcp",
-            "serial": "Q3FA-O6GQ-5FYM"
           }
         ]
       },
@@ -1166,7 +1093,7 @@
         "lastReportedAt": "2025-09-05T12:34:03Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "153.160.138.249",
             "gateway": "153.160.138.1",
@@ -1189,7 +1116,7 @@
         "lastReportedAt": "2025-08-17T04:26:33Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "45.109.171.101",
             "gateway": "45.109.171.1",
@@ -1198,144 +1125,6 @@
             "secondaryDns": "149.112.112.112",
             "ipAssignedBy": "dhcp",
             "serial": "Q3GX-1SG7-NZ81"
-          }
-        ]
-      },
-      {
-        "networkId": "N_8619865668428422326",
-        "serial": "Q2FX-PW4Q-JDPY",
-        "model": "MX67W",
-        "highAvailability": {
-          "enabled": false,
-          "role": "secondary"
-        },
-        "lastReportedAt": "2025-09-02T22:29:59Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "199.15.207.244",
-            "gateway": "199.15.207.1",
-            "publicIp": "199.15.207.244",
-            "primaryDns": "1.1.1.1",
-            "secondaryDns": "1.0.0.1",
-            "ipAssignedBy": "dhcp",
-            "serial": "Q2FX-PW4Q-JDPY"
-          }
-        ]
-      },
-      {
-        "networkId": "N_5332965181047632387",
-        "serial": "Q2YN-SNLA-AP0U",
-        "model": "MX650",
-        "highAvailability": {
-          "enabled": true,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-26T23:20:48Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "211.52.223.252",
-            "gateway": "211.52.223.1",
-            "publicIp": "211.52.223.252",
-            "primaryDns": "8.8.8.8",
-            "secondaryDns": "8.8.4.4",
-            "ipAssignedBy": "static",
-            "serial": "Q2YN-SNLA-AP0U"
-          }
-        ]
-      },
-      {
-        "networkId": "N_2534984525539422623",
-        "serial": "Q2GY-B9VM-0SNI",
-        "model": "MX250",
-        "highAvailability": {
-          "enabled": false,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-27T18:48:11Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "165.164.179.126",
-            "gateway": "165.164.179.1",
-            "publicIp": "165.164.179.126",
-            "primaryDns": "9.9.9.9",
-            "secondaryDns": "149.112.112.112",
-            "ipAssignedBy": "static",
-            "serial": "Q2GY-B9VM-0SNI"
-          }
-        ]
-      },
-      {
-        "networkId": "N_4685242740929865767",
-        "serial": "Q2GY-QQ13-SBAX",
-        "model": "MX67W",
-        "highAvailability": {
-          "enabled": true,
-          "role": "secondary"
-        },
-        "lastReportedAt": "2025-08-25T14:27:59Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "40.244.50.213",
-            "gateway": "40.244.50.1",
-            "publicIp": "40.244.50.213",
-            "primaryDns": "8.8.8.8",
-            "secondaryDns": "8.8.4.4",
-            "ipAssignedBy": "static",
-            "serial": "Q2GY-QQ13-SBAX"
-          }
-        ]
-      },
-      {
-        "networkId": "N_3112224475287713699",
-        "serial": "Q2FX-NXLB-6PPK",
-        "model": "MX450",
-        "highAvailability": {
-          "enabled": true,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-25T02:09:02Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "7.7.219.127",
-            "gateway": "7.7.219.1",
-            "publicIp": "7.7.219.127",
-            "primaryDns": "1.1.1.1",
-            "secondaryDns": "1.0.0.1",
-            "ipAssignedBy": "static",
-            "serial": "Q2FX-NXLB-6PPK"
-          }
-        ]
-      },
-      {
-        "networkId": "N_3855529778373362290",
-        "serial": "Q3GX-PDO1-GWT9",
-        "model": "MX100",
-        "highAvailability": {
-          "enabled": false,
-          "role": "primary"
-        },
-        "lastReportedAt": "2025-08-31T07:51:10Z",
-        "uplinks": [
-          {
-            "interface": "wan2",
-            "status": "active",
-            "ip": "206.97.221.150",
-            "gateway": "206.97.221.1",
-            "publicIp": "206.97.221.150",
-            "primaryDns": "9.9.9.9",
-            "secondaryDns": "149.112.112.112",
-            "ipAssignedBy": "static",
-            "serial": "Q3GX-PDO1-GWT9"
           }
         ]
       },
@@ -1350,7 +1139,7 @@
         "lastReportedAt": "2025-08-18T06:36:53Z",
         "uplinks": [
           {
-            "interface": "wan2",
+            "interface": "wan1",
             "status": "active",
             "ip": "186.128.130.124",
             "gateway": "186.128.130.1",
@@ -1359,6 +1148,98 @@
             "secondaryDns": "208.67.220.220",
             "ipAssignedBy": "dhcp",
             "serial": "Q2MN-OKFB-GSTG"
+          }
+        ]
+      },
+      {
+        "networkId": "N_1234567890123456789",
+        "serial": "Q2FX-DEVICE-001",
+        "model": "MX67W",
+        "highAvailability": {
+          "enabled": false,
+          "role": "primary"
+        },
+        "lastReportedAt": "2025-09-11T12:00:00Z",
+        "uplinks": [
+          {
+            "interface": "wan1",
+            "status": "active",
+            "ip": "192.168.1.100",
+            "gateway": "192.168.1.1",
+            "publicIp": "192.168.1.100",
+            "primaryDns": "8.8.8.8",
+            "secondaryDns": "8.8.4.4",
+            "ipAssignedBy": "static",
+            "serial": "Q2FX-DEVICE-001"
+          }
+        ]
+      },
+      {
+        "networkId": "N_1234567890123456790",
+        "serial": "Q2FX-DEVICE-002",
+        "model": "MX67W",
+        "highAvailability": {
+          "enabled": false,
+          "role": "primary"
+        },
+        "lastReportedAt": "2025-09-11T12:00:00Z",
+        "uplinks": [
+          {
+            "interface": "wan1",
+            "status": "active",
+            "ip": "192.168.1.101",
+            "gateway": "192.168.1.1",
+            "publicIp": "192.168.1.101",
+            "primaryDns": "8.8.8.8",
+            "secondaryDns": "8.8.4.4",
+            "ipAssignedBy": "static",
+            "serial": "Q2FX-DEVICE-002"
+          }
+        ]
+      },
+      {
+        "networkId": "N_1234567890123456791",
+        "serial": "Q2FX-DEVICE-003",
+        "model": "MX67W",
+        "highAvailability": {
+          "enabled": false,
+          "role": "primary"
+        },
+        "lastReportedAt": "2025-09-11T12:00:00Z",
+        "uplinks": [
+          {
+            "interface": "wan1",
+            "status": "active",
+            "ip": "192.168.2.100",
+            "gateway": "192.168.2.1",
+            "publicIp": "192.168.2.100",
+            "primaryDns": "1.1.1.1",
+            "secondaryDns": "1.0.0.1",
+            "ipAssignedBy": "static",
+            "serial": "Q2FX-DEVICE-003"
+          }
+        ]
+      },
+      {
+        "networkId": "N_1234567890123456792",
+        "serial": "Q2FX-DEVICE-004",
+        "model": "MX67W",
+        "highAvailability": {
+          "enabled": false,
+          "role": "primary"
+        },
+        "lastReportedAt": "2025-09-11T12:00:00Z",
+        "uplinks": [
+          {
+            "interface": "wan2",
+            "status": "active",
+            "ip": "192.168.2.101",
+            "gateway": "192.168.2.1",
+            "publicIp": "192.168.2.101",
+            "primaryDns": "1.1.1.1",
+            "secondaryDns": "1.0.0.1",
+            "ipAssignedBy": "static",
+            "serial": "Q2FX-DEVICE-004"
           }
         ]
       },
@@ -1511,7 +1392,7 @@
         "lastReportedAt": "2025-09-04T22:21:48Z",
         "uplinks": [
           {
-            "interface": null,
+            "interface": "wan2",
             "status": "active",
             "ip": "174.163.119.94",
             "gateway": "174.163.119.1",
@@ -1534,7 +1415,7 @@
         "lastReportedAt": "2025-08-10T05:43:47Z",
         "uplinks": [
           {
-            "interface": null,
+            "interface": "wan2",
             "status": "active",
             "ip": "101.162.159.235",
             "gateway": "101.162.159.1",
@@ -1557,7 +1438,7 @@
         "lastReportedAt": "2025-08-14T00:39:20Z",
         "uplinks": [
           {
-            "interface": null,
+            "interface": "wan2",
             "status": "active",
             "ip": "85.60.163.2",
             "gateway": "85.60.163.1",
@@ -1580,7 +1461,7 @@
         "lastReportedAt": "2025-08-31T20:01:37Z",
         "uplinks": [
           {
-            "interface": null,
+            "interface": "wan2",
             "status": "active",
             "ip": "77.27.46.118",
             "gateway": "77.27.46.1",
@@ -1589,6 +1470,52 @@
             "secondaryDns": "1.0.0.1",
             "ipAssignedBy": "static",
             "serial": "Q2GY-T0CH-GZYI"
+          }
+        ]
+      },
+      {
+        "networkId": "N_1922345537768647991",
+        "serial": "Q3GX-YTLF-8983",
+        "model": "MX650",
+        "highAvailability": {
+          "enabled": true,
+          "role": "secondary"
+        },
+        "lastReportedAt": "2025-09-01T11:16:16Z",
+        "uplinks": [
+          {
+            "interface": "wan2",
+            "status": "active",
+            "ip": "31.32.6.106",
+            "gateway": "31.32.6.1",
+            "publicIp": "31.32.6.106",
+            "primaryDns": "1.1.1.1",
+            "secondaryDns": "1.0.0.1",
+            "ipAssignedBy": "dhcp",
+            "serial": "Q3GX-YTLF-8983"
+          }
+        ]
+      },
+      {
+        "networkId": "N_3302705974654432171",
+        "serial": "Q2MN-H1RZ-3LZS",
+        "model": "MX64W",
+        "highAvailability": {
+          "enabled": true,
+          "role": "secondary"
+        },
+        "lastReportedAt": "2025-09-07T16:37:03Z",
+        "uplinks": [
+          {
+            "interface": "wan2",
+            "status": "active",
+            "ip": "238.197.68.134",
+            "gateway": "238.197.68.1",
+            "publicIp": "238.197.68.134",
+            "primaryDns": "9.9.9.9",
+            "secondaryDns": "149.112.112.112",
+            "ipAssignedBy": "dhcp",
+            "serial": "Q2MN-H1RZ-3LZS"
           }
         ]
       }
@@ -1686,7 +1613,335 @@
       }
     ]
   },
-  "device_loss_and_latency_history": {},
+  "device_loss_and_latency_history": {
+    "Q2MN-Q3J9-YJHW": [
+      {
+        "ts": "2024-01-15T10:00:00Z",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2024-01-15T10:05:00Z",
+        "latencyMs": 18.2,
+        "lossPercent": 0.2,
+        "jitter": 1.5,
+        "goodput": 92.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2024-01-15T10:10:00Z",
+        "latencyMs": 75.8,
+        "lossPercent": 1.5,
+        "jitter": 6.2,
+        "goodput": 85.3,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2024-01-15T10:15:00Z",
+        "latencyMs": 95.4,
+        "lossPercent": 2.1,
+        "jitter": 8.7,
+        "goodput": 78.9,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2024-01-15T10:20:00Z",
+        "latencyMs": 120.5,
+        "lossPercent": 3.2,
+        "jitter": 12.1,
+        "goodput": 72.1,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:07.463259",
+        "latencyMs": 31.65,
+        "lossPercent": 0.43,
+        "jitter": 2.83,
+        "goodput": 93.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:17.477495",
+        "latencyMs": 47.8,
+        "lossPercent": 0.76,
+        "jitter": 4.45,
+        "goodput": 91.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:27.492742",
+        "latencyMs": 63.95,
+        "lossPercent": 1.09,
+        "jitter": 6.08,
+        "goodput": 90.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:37.508810",
+        "latencyMs": 80.1,
+        "lossPercent": 1.42,
+        "jitter": 7.71,
+        "goodput": 88.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:47.529427",
+        "latencyMs": 96.25,
+        "lossPercent": 1.75,
+        "jitter": 9.33,
+        "goodput": 86.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:49:57.544780",
+        "latencyMs": 112.4,
+        "lossPercent": 2.08,
+        "jitter": 10.96,
+        "goodput": 85.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:07.568594",
+        "latencyMs": 128.55,
+        "lossPercent": 2.41,
+        "jitter": 12.59,
+        "goodput": 83.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:17.582579",
+        "latencyMs": 144.7,
+        "lossPercent": 2.74,
+        "jitter": 14.21,
+        "goodput": 81.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:27.603844",
+        "latencyMs": 160.85,
+        "lossPercent": 3.07,
+        "jitter": 15.84,
+        "goodput": 80.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:37.619584",
+        "latencyMs": 177.0,
+        "lossPercent": 3.4,
+        "jitter": 17.47,
+        "goodput": 78.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:47.642293",
+        "latencyMs": 193.15,
+        "lossPercent": 3.73,
+        "jitter": 19.09,
+        "goodput": 76.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:50:57.658408",
+        "latencyMs": 209.3,
+        "lossPercent": 4.06,
+        "jitter": 20.72,
+        "goodput": 75.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:07.681908",
+        "latencyMs": 225.45,
+        "lossPercent": 4.39,
+        "jitter": 22.35,
+        "goodput": 73.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:17.697897",
+        "latencyMs": 241.6,
+        "lossPercent": 4.72,
+        "jitter": 23.97,
+        "goodput": 71.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:27.713806",
+        "latencyMs": 257.75,
+        "lossPercent": 5.05,
+        "jitter": 25.6,
+        "goodput": 70.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:37.731329",
+        "latencyMs": 273.9,
+        "lossPercent": 5.38,
+        "jitter": 27.23,
+        "goodput": 68.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:47.751876",
+        "latencyMs": 290.05,
+        "lossPercent": 5.71,
+        "jitter": 28.85,
+        "goodput": 66.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:51:57.778773",
+        "latencyMs": 306.2,
+        "lossPercent": 6.04,
+        "jitter": 30.48,
+        "goodput": 65.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:07.795186",
+        "latencyMs": 322.35,
+        "lossPercent": 6.37,
+        "jitter": 32.11,
+        "goodput": 63.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:17.819147",
+        "latencyMs": 338.5,
+        "lossPercent": 6.7,
+        "jitter": 33.73,
+        "goodput": 61.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:27.858300",
+        "latencyMs": 354.65,
+        "lossPercent": 7.03,
+        "jitter": 35.36,
+        "goodput": 60.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:37.873046",
+        "latencyMs": 370.8,
+        "lossPercent": 7.36,
+        "jitter": 36.99,
+        "goodput": 58.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:47.887351",
+        "latencyMs": 386.95,
+        "lossPercent": 7.69,
+        "jitter": 38.61,
+        "goodput": 56.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:52:57.904610",
+        "latencyMs": 403.1,
+        "lossPercent": 8.02,
+        "jitter": 40.24,
+        "goodput": 55.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:07.922393",
+        "latencyMs": 419.25,
+        "lossPercent": 8.35,
+        "jitter": 41.87,
+        "goodput": 53.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:17.940422",
+        "latencyMs": 435.4,
+        "lossPercent": 8.68,
+        "jitter": 43.49,
+        "goodput": 51.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:27.958478",
+        "latencyMs": 451.55,
+        "lossPercent": 9.01,
+        "jitter": 45.12,
+        "goodput": 50.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:37.975734",
+        "latencyMs": 467.7,
+        "lossPercent": 9.34,
+        "jitter": 46.75,
+        "goodput": 48.33,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:47.992833",
+        "latencyMs": 483.85,
+        "lossPercent": 9.67,
+        "jitter": 48.37,
+        "goodput": 46.67,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T14:53:58.019107",
+        "latencyMs": 500.0,
+        "lossPercent": 10.0,
+        "jitter": 50.0,
+        "goodput": 45.0,
+        "destinationIp": "8.8.8.8"
+      },
+      {
+        "ts": "2025-11-13T15:15:36.417365",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T15:15:36.417371",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T15:15:36.417373",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T15:15:36.417374",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      },
+      {
+        "ts": "2025-11-13T15:15:36.417375",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "RESTORED_TO_HEALTHY_STATE"
+      }
+    ]
+  },
   "connectivity_monitoring_destinations": {
     "L_3947405073390239794": {
       "destinations": [
@@ -1721,24 +1976,17 @@
   "organization_login_security": {
     "999781": {
       "enforcePasswordExpiration": false,
-      "passwordExpirationDays": null,
-      "enforceDifferentPasswords": true,
-      "numDifferentPasswords": 2,
-      "enforceStrongPasswords": true,
-      "minimumPasswordLength": 8,
+      "passwordExpirationDays": 365,
+      "enforceDifferentPasswords": false,
+      "numDifferentPasswords": 5,
+      "enforceStrongPasswords": false,
       "enforceAccountLockout": false,
-      "accountLockoutAttempts": null,
+      "accountLockoutAttempts": 10,
       "enforceIdleTimeout": false,
-      "idleTimeoutMinutes": null,
+      "idleTimeoutMinutes": 60,
       "enforceTwoFactorAuth": false,
       "enforceLoginIpRanges": false,
-      "loginIpRanges": [],
-      "apiAuthentication": {
-        "ipRestrictionsForKeys": {
-          "enabled": true,
-          "ranges": []
-        }
-      }
+      "loginIpRanges": []
     }
   },
   "network_security_intrusion": {
