@@ -32,6 +32,11 @@ warnings.filterwarnings("ignore", message=".*coroutine.*was never awaited.*")
 warnings.filterwarnings("ignore", message=".*_UnixSelectorEventLoop.*")
 warnings.filterwarnings("ignore", message=".*call_exception_handler.*")
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="asyncio")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="asyncio")
+
+# Fix for Windows Event Loop issues
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Add server directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'server'))
@@ -40,7 +45,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'server'))
 try:
     from dotenv import load_dotenv
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from mcp_use import MCPAgent, MCPClient
+    from langchain_community.chat_models import ChatZhipuAI
+    from langchain_anthropic import ChatAnthropic
+    # Fallback for mcp_use if not installed, assuming it might be a local wrapper or available package
+    try:
+        from mcp_use import MCPAgent, MCPClient
+    except ImportError:
+        # Mocking mcp_use if it's missing to prevent crash during import check, 
+        # but it will fail later if not installed.
+        # Ideally we should install it.
+        pass
     
     # Import MCP tools
     from server.get_device_loss_and_latency_history import get_device_loss_and_latency_history
@@ -52,7 +66,7 @@ try:
     IMPORTS_SUCCESS = True
 except ImportError as e:
     st.error(f"Import error: {e}")
-    st.info("Please install required packages: pip install streamlit plotly pandas nest-asyncio")
+    st.info("Please install required packages: pip install streamlit plotly pandas nest-asyncio langchain-google-genai mcp-use")
     IMPORTS_SUCCESS = False
 
 # Load environment variables
@@ -116,7 +130,10 @@ class NetworkDashboard:
     """Main dashboard class that manages both MCP client and network monitor"""
     
     def __init__(self):
-        self.gemini_api_key = os.getenv("GEMINI_API_KEY")
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        self.zhipuai_api_key = os.getenv("ZHIPUAI_API_KEY")
+        self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+        self.anthropic_base_url = os.getenv("ANTHROPIC_BASE_URL")
         self.mcp_client = None
         self.mcp_agent = None
         self.monitoring_data = []
@@ -142,28 +159,79 @@ class NetworkDashboard:
     def _init_mcp_client(self):
         """Initialize MCP client connection"""
         try:
-            config_file = "mcp-inspector-config.json"
+            # Use absolute path relative to this script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            config_file = os.path.join(script_dir, "mcp-inspector-config.json")
+            
             if os.path.exists(config_file):
+                # Ensure mcp_use is imported
+                from mcp_use import MCPClient
                 self.mcp_client = MCPClient.from_config_file(config_file)
                 st.success("MCP Client connected successfully")
             else:
-                st.error("MCP config file not found")
+                st.error(f"MCP config file not found at: {config_file}")
         except Exception as e:
             st.error(f"Failed to initialize MCP client: {e}")
     
     def _init_llm(self):
-        """Initialize Gemini LLM"""
+        """Initialize LLM (Gemini, ZhipuAI, or Anthropic)"""
         try:
+            self.llm = None
+            
+            # Check for ZhipuAI (GLM-4)
+            if self.zhipuai_api_key:
+                try:
+                    self.llm = ChatZhipuAI(
+                        model="glm-4.5",
+                        api_key=self.zhipuai_api_key,
+                        temperature=0.5,
+                    )
+                    st.success("ZhipuAI (GLM-4.5) LLM initialized successfully")
+                    return
+                except Exception as e:
+                    st.warning(f"Failed to initialize ZhipuAI: {e}")
+
+            # Check for Anthropic (Prioritized over Gemini due to quota issues)
+            if self.anthropic_api_key:
+                try:
+                    # Check if using custom base URL (e.g. for GLM-4.5 via Anthropic adapter)
+                    if self.anthropic_base_url:
+                        self.llm = ChatAnthropic(
+                            model="glm-4.5",
+                            anthropic_api_key=self.anthropic_api_key,
+                            anthropic_api_url=self.anthropic_base_url,
+                            temperature=0.3,
+                            max_tokens=4096
+                        )
+                        st.success(f"GLM-4.5 (via Anthropic SDK) initialized successfully")
+                    else:
+                        self.llm = ChatAnthropic(
+                            model="claude-3-sonnet-20240229",
+                            anthropic_api_key=self.anthropic_api_key,
+                            temperature=0.3
+                        )
+                        st.success("Anthropic Claude LLM initialized successfully")
+                    return
+                except Exception as e:
+                    st.warning(f"Failed to initialize Anthropic: {e}")
+
+            # Check for Gemini
             if self.gemini_api_key:
-                self.llm = ChatGoogleGenerativeAI(
-                    model="gemini-2.5-flash",
-                    google_api_key=self.gemini_api_key,
-                    temperature=0.3,
-                    max_tokens=2048
-                )
-                st.success("Gemini LLM initialized successfully")
-            else:
-                st.error("GEMINI_API_KEY not found in .env file")
+                try:
+                    self.llm = ChatGoogleGenerativeAI(
+                        model="gemini-2.5-flash",
+                        google_api_key=self.gemini_api_key,
+                        temperature=0.3,
+                        max_tokens=2048
+                    )
+                    st.success("Gemini LLM initialized successfully")
+                    return
+                except Exception as e:
+                    st.warning(f"Failed to initialize Gemini: {e}")
+
+            if not self.llm:
+                st.error("No valid API keys found for ZhipuAI, Gemini, or Anthropic. Please check your .env file.")
+                
         except Exception as e:
             st.error(f"Failed to initialize LLM: {e}")
     
@@ -171,13 +239,14 @@ class NetworkDashboard:
         """Create MCP agent for chat functionality"""
         try:
             if self.mcp_client and self.llm:
+                from mcp_use import MCPAgent
                 # Create agent with proper configuration
                 self.mcp_agent = MCPAgent(
                     llm=self.llm,
                     client=self.mcp_client,
                     max_steps=10,
                     memory_enabled=True,
-                    verbose=False,  # Disable verbose to reduce noise
+                    verbose=False  # Disable verbose to reduce noise
                 )
                 return True
             return False
@@ -252,25 +321,71 @@ class NetworkDashboard:
             api_call['duration'] = time.time() - start_time
             raise e
     
-    def chat_with_mcp(self, user_message: str) -> str:
+    def chat_with_mcp(self, user_message: str, skip_user_history: bool = False) -> str:
         """Chat with MCP agent and track API calls"""
         try:
-            if not self.mcp_agent:
-                if not self._create_mcp_agent():
-                    return "Failed to create MCP agent"
+            # Add user message to chat history if not skipped
+            if not skip_user_history:
+                self.chat_history.append({
+                    'role': 'user',
+                    'content': user_message,
+                    'timestamp': datetime.now().isoformat()
+                })
             
-            # Add user message to chat history
-            self.chat_history.append({
-                'role': 'user',
-                'content': user_message,
-                'timestamp': datetime.now().isoformat()
-            })
+            print(f"Sending message to agent: {user_message}")
             
-            # Get response from agent using improved async wrapper
-            response = self._run_async_operation_safe(self.mcp_agent.run(user_message))
+            # Define the async operation to run in a fresh loop
+            def run_in_thread(message):
+                import asyncio
+                
+                async def run_agent_task():
+                    # Re-initialize everything within the async context to ensure loop compatibility
+                    from mcp_use import MCPAgent, MCPClient
+                    
+                    # Load client config
+                    script_dir = os.path.dirname(os.path.abspath(__file__))
+                    config_file = os.path.join(script_dir, "mcp-inspector-config.json")
+                    
+                    if not os.path.exists(config_file):
+                        return f"Configuration file not found: {config_file}"
+                    
+                    client = MCPClient.from_config_file(config_file)
+                    
+                    # Create agent
+                    agent = MCPAgent(
+                        llm=self.llm,
+                        client=client,
+                        max_steps=10,
+                        memory_enabled=True,
+                        verbose=True
+                    )
+                    
+                    # Run agent
+                    return await agent.run(message)
+
+                # Create a new event loop for this thread
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    return loop.run_until_complete(run_agent_task())
+                finally:
+                    loop.close()
+
+            # Run the async task in a separate thread to avoid loop conflicts
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(run_in_thread, user_message)
+                raw_response = future.result(timeout=120) # 2 minute timeout
             
+            print(f"Received response from agent: {raw_response}")
+            
+            # Convert to string if needed
+            if raw_response is not None and not isinstance(raw_response, str):
+                response = str(raw_response)
+            else:
+                response = raw_response
+
             # Check if response is valid
-            if response and isinstance(response, str) and len(response.strip()) > 0:
+            if response and len(response.strip()) > 0:
                 # Add assistant response to chat history
                 self.chat_history.append({
                     'role': 'assistant',
@@ -289,6 +404,7 @@ class NetworkDashboard:
             
         except Exception as e:
             error_msg = f"Chat error: {str(e)}"
+            print(error_msg)
             self.chat_history.append({
                 'role': 'assistant',
                 'content': error_msg,
@@ -313,13 +429,33 @@ class NetworkDashboard:
     def _run_with_asyncio_run(self, coro):
         """Run coroutine using asyncio.run() for clean, isolated execution"""
         try:
-            # Use asyncio.run() which automatically handles loop creation and cleanup
-            result = asyncio.run(coro)
-            return result
+            import inspect
+            if inspect.iscoroutine(coro) or inspect.isawaitable(coro):
+                # Use asyncio.run() which automatically handles loop creation and cleanup
+                result = asyncio.run(coro)
+                return result
+            else:
+                # It's already a result (synchronous return)
+                return coro
         except Exception as e:
             print(f"Async execution failed: {e}")
             return f"Execution failed: {str(e)}"
     
+    async def _collect_monitoring_data_async(self):
+        """Collect all monitoring data in parallel"""
+        try:
+            results = await asyncio.gather(
+                self._call_mcp_tool('get_device_loss_and_latency_history'),
+                self._call_mcp_tool('get_network_traffic'),
+                self._call_mcp_tool('get_network_events'),
+                self._call_mcp_tool('get_network_clients'),
+                return_exceptions=True
+            )
+            return results
+        except Exception as e:
+            print(f"Error in parallel collection: {e}")
+            return [None, None, None, None]
+
     def run_network_monitor_cycle(self):
         """Run one network monitoring cycle"""
         try:
@@ -327,49 +463,59 @@ class NetworkDashboard:
             # Collect data from all tools using async wrapper
             data = {}
             
-            # Get performance data
-            print("Getting performance data...")
-            performance_response = self._run_async_operation_safe(self._call_mcp_tool('get_device_loss_and_latency_history'))
-            if performance_response and hasattr(performance_response, '__iter__') and len(performance_response) > 0:
+            print("Collecting all network data in parallel...")
+            # Run all data collection in parallel
+            results = self._run_async_operation_safe(self._collect_monitoring_data_async())
+            
+            if not results or not isinstance(results, list) or len(results) < 4:
+                print("Failed to collect data or partial results")
+                results = [None, None, None, None]
+
+            performance_response, traffic_response, events_response, clients_response = results[0], results[1], results[2], results[3]
+            
+            # Process performance data
+            if performance_response and not isinstance(performance_response, Exception) and hasattr(performance_response, '__iter__') and len(performance_response) > 0:
                 try:
                     data['performance'] = json.loads(performance_response[0].text)
                     print(f"Performance data collected: {len(data['performance'].get('data', []))} points")
                 except Exception as e:
                     print(f"Error parsing performance response: {e}")
                     data['performance'] = {'data': [], 'error': str(e)}
+            else:
+                data['performance'] = {'data': [], 'error': "Failed to fetch"}
             
-            # Get traffic data
-            print("Getting traffic data...")
-            traffic_response = self._run_async_operation_safe(self._call_mcp_tool('get_network_traffic'))
-            if traffic_response and hasattr(traffic_response, '__iter__') and len(traffic_response) > 0:
+            # Process traffic data
+            if traffic_response and not isinstance(traffic_response, Exception) and hasattr(traffic_response, '__iter__') and len(traffic_response) > 0:
                 try:
                     data['traffic'] = json.loads(traffic_response[0].text)
                     print(f"Traffic data collected: {len(data['traffic'].get('data', []))} points")
                 except Exception as e:
                     print(f"Error parsing traffic response: {e}")
                     data['traffic'] = {'data': [], 'error': str(e)}
+            else:
+                data['traffic'] = {'data': [], 'error': "Failed to fetch"}
             
-            # Get events data
-            print("Getting events data...")
-            events_response = self._run_async_operation_safe(self._call_mcp_tool('get_network_events'))
-            if events_response and hasattr(events_response, '__iter__') and len(events_response) > 0:
+            # Process events data
+            if events_response and not isinstance(events_response, Exception) and hasattr(events_response, '__iter__') and len(events_response) > 0:
                 try:
                     data['events'] = json.loads(events_response[0].text)
                     print(f"Events data collected: {len(data['events'].get('data', []))} points")
                 except Exception as e:
                     print(f"Error parsing events response: {e}")
                     data['events'] = {'data': [], 'error': str(e)}
+            else:
+                data['events'] = {'data': [], 'error': "Failed to fetch"}
             
-            # Get clients data
-            print("Getting clients data...")
-            clients_response = self._run_async_operation_safe(self._call_mcp_tool('get_network_clients'))
-            if clients_response and hasattr(clients_response, '__iter__') and len(clients_response) > 0:
+            # Process clients data
+            if clients_response and not isinstance(clients_response, Exception) and hasattr(clients_response, '__iter__') and len(clients_response) > 0:
                 try:
                     data['clients'] = json.loads(clients_response[0].text)
                     print(f"Clients data collected: {len(data['clients'].get('data', []))} points")
                 except Exception as e:
                     print(f"Error parsing clients response: {e}")
                     data['clients'] = {'data': [], 'error': str(e)}
+            else:
+                data['clients'] = {'data': [], 'error': "Failed to fetch"}
             
             # Analyze data and get insights
             print("Getting AI insights...")
@@ -434,17 +580,18 @@ class NetworkDashboard:
             
             # Try synchronous LLM call first
             try:
-                response = self.llm.generate([messages])
-                if hasattr(response, 'generations') and response.generations:
-                    return response.generations[0][0].text
+                # Use invoke instead of generate for newer LangChain versions and better compatibility
+                response = self.llm.invoke(messages)
+                if hasattr(response, 'content'):
+                    return response.content
+                return str(response)
             except Exception as sync_error:
                 print(f"Sync LLM call failed: {sync_error}, trying async...")
                 # Fallback to async wrapper
-                response = self._run_async_operation_safe(self.llm.agenerate([messages]))
-                if hasattr(response, 'generations') and response.generations:
-                    return response.generations[0][0].text
-                else:
-                    return str(response)
+                response = self._run_async_operation_safe(self.llm.ainvoke(messages))
+                if hasattr(response, 'content'):
+                    return response.content
+                return str(response)
             
         except Exception as e:
             return f"Unable to get insights: {str(e)}"
@@ -475,11 +622,11 @@ class NetworkDashboard:
         
         return "\n".join(summary_parts) if summary_parts else "No data available"
     
-    def start_monitoring(self, interval_minutes: int = 1):
+    def start_monitoring(self, interval_seconds: int = 3):
         """Start background monitoring"""
         if not self.monitoring_active:
             self.monitoring_active = True
-            print(f"Starting monitoring with {interval_minutes} minute interval")
+            print(f"Starting monitoring with {interval_seconds} second interval")
             
             def monitor_loop():
                 cycle_count = 0
@@ -490,11 +637,11 @@ class NetworkDashboard:
                         # Run monitoring cycle
                         self.run_network_monitor_cycle()
                         print(f"Monitoring cycle {cycle_count} completed")
-                        time.sleep(interval_minutes * 60)
+                        time.sleep(interval_seconds)
                     except Exception as e:
                         # Don't use st.error in background thread
                         print(f"Monitoring error in cycle {cycle_count}: {e}")
-                        time.sleep(60)  # Wait 1 minute on error
+                        time.sleep(5)  # Wait 5 seconds on error
             
             self.monitor_thread = threading.Thread(target=monitor_loop, daemon=True)
             self.monitor_thread.start()
@@ -565,54 +712,79 @@ def main():
     tab1, tab2, tab3 = st.tabs(["MCP Chatbot", "Network Monitor", "Analytics"])
     
     with tab1:
-        st.header("MCP Client Chatbot")
-        st.info("Chat with the MCP agent to analyze network data using available tools")
+        st.header("🤖 MCP Client Chatbot")
         
+        # Instructional Text
+        st.markdown("""
+        I can help you analyze your Meraki network using real-time data. 
+        
+        **What I can do:**
+        *   **Monitor Performance:** Check for packet loss, latency, and connectivity issues.
+        *   **Analyze Traffic:** Identify top applications and bandwidth usage.
+        *   **Track Clients:** List connected devices and their activity.
+        *   **Security Insights:** Review network events for anomalies.
+        
+        👇 **Click a Quick Command below or type your own question:**
+        """)
+        
+        # Quick Commands Section
+        st.subheader("⚡ Quick Commands")
+        qc_col1, qc_col2, qc_col3 = st.columns(3)
+        
+        quick_command = None
+        
+        with qc_col1:
+            if st.button("📉 Check Performance", help="Check for packet loss and latency issues"):
+                quick_command = "Check for any device loss or latency issues in the last 2 hours"
+            if st.button("👥 Top Clients", help="List top clients by usage"):
+                quick_command = "List the top network clients by usage"
+                
+        with qc_col2:
+            if st.button("🚦 Analyze Traffic", help="Analyze traffic patterns"):
+                quick_command = "Analyze the network traffic patterns and identify top applications"
+            if st.button("🔔 Recent Events", help="Show recent network events"):
+                quick_command = "Show me the most recent network events"
+                
+        with qc_col3:
+            if st.button("🛡️ Security Check", help="Analyze for security threats"):
+                quick_command = "Analyze network events for any security threats or anomalies"
+            if st.button("🏢 Org Info", help="Get organization details"):
+                quick_command = "Get information about the Meraki organization"
+
+        # Handle Quick Command Execution
+        if quick_command:
+            # Add user message to history immediately
+            dashboard.chat_history.append({
+                'role': 'user',
+                'content': quick_command,
+                'timestamp': datetime.now().isoformat()
+            })
+            
+            with st.spinner(f"🤖 Processing: {quick_command}..."):
+                # Call MCP directly (it will add the assistant response)
+                dashboard.chat_with_mcp(quick_command, skip_user_history=True)
+                st.rerun()
+
+        st.divider()
+
         # Chat interface with custom styling
         st.markdown("""
         <style>
-        .user-message {
-            background-color: #02101b;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            border-left: 4px solid #2196f3;
+        .stChatMessage {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
         }
-        .assistant-message {
-            background-color: #0f0611;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            border-left: 4px solid #9c27b0;
+        .stChatMessage[data-testid="stChatMessageUser"] {
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196f3;
+        }
+        .stChatMessage[data-testid="stChatMessageAssistant"] {
+            background-color: #f3e5f5;
+            border-left: 5px solid #9c27b0;
         }
         </style>
         """, unsafe_allow_html=True)
-        
-        chat_container = st.container()
-        
-        with chat_container:
-            # Display chat history
-            for message in dashboard.chat_history:
-                if message['role'] == 'user':
-                    st.markdown(f'<div class="user-message"><strong>You:</strong> {message["content"]}</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div class="assistant-message"><strong>Assistant:</strong> {message["content"]}</div>', unsafe_allow_html=True)
-        
-        # Chat input
-        user_input = st.text_input("Ask about your network:", key="chat_input")
-        col1, col2 = st.columns([1, 4])
-        
-        with col1:
-            if st.button("Send", type="primary"):
-                if user_input.strip():
-                    with st.spinner("Getting response..."):
-                        response = dashboard.chat_with_mcp(user_input.strip())
-                        st.rerun()
-        
-        with col2:
-            if st.button("Clear Chat"):
-                dashboard.chat_history.clear()
-                st.rerun()
         
         # Available tools info
         with st.expander("🔧 Available MCP Tools"):
@@ -623,6 +795,44 @@ def main():
             - **get_organization_vpn_stats** - Get VPN statistics
             - **get_network_events** - Get network events
             """)
+
+        # Clear chat button
+        if dashboard.chat_history:
+            if st.button("🗑️ Clear Chat History"):
+                dashboard.chat_history.clear()
+                st.rerun()
+
+        # Display chat history using Streamlit's native chat components
+        chat_container = st.container()
+        with chat_container:
+            if not dashboard.chat_history:
+                st.info("👋 Chat history is empty. Start a conversation!")
+            
+            for message in dashboard.chat_history:
+                with st.chat_message(message['role']):
+                    st.markdown(message['content'])
+
+        # Chat Input using st.chat_input (The "Real" Chatbox)
+        if prompt := st.chat_input("Ask about your network..."):
+            # Add user message to history
+            dashboard.chat_history.append({
+                'role': 'user',
+                'content': prompt,
+                'timestamp': datetime.now().isoformat()
+            })
+            
+            # Display user message immediately
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            # Get response
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking..."):
+                    response = dashboard.chat_with_mcp(prompt, skip_user_history=True)
+                    st.markdown(response)
+            
+            # Rerun to update history properly
+            st.rerun()
     
     with tab2:
         st.header("📊 Network Monitor")
@@ -791,7 +1001,7 @@ def main():
     
     # Auto-refresh for real-time updates
     if dashboard.monitoring_active:
-        time.sleep(5)
+        time.sleep(3)
         st.rerun()
 
     # Cleanup on exit

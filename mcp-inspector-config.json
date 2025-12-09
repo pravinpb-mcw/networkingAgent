@@ -1,13 +1,9 @@
 {
   "mcpServers": {
     "cisco-meraki-observability": {
-      "command": "/usr/local/bin/python3",
-      "args": ["server/meraki_server.py"],
-      "env": {
-        "TIMESPAN": "7200",
-        "BASE_URL": "https://api.meraki.com/api/v1",
-        "PRODUCT_TYPE": "appliance"
-      }
+      "command": "E:\\network of obserbility\\.wenv\\Scripts\\python.exe",
+      "args": ["-u", "E:\\network of obserbility\\networkingAgent\\server\\meraki_server.py"],
+      "cwd": "E:\\network of obserbility\\networkingAgent"
     }
   }
 } 

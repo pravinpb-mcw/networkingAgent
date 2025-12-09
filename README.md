@@ -1,134 +1,120 @@
-# Cisco Meraki MCP Server
+# Network Observability Agent Dashboard
 
-A Model Context Protocol (MCP) server that exposes 5 specific Cisco Meraki Dashboard API endpoints as tools for network observability.
+A comprehensive Network Observability Dashboard powered by **Cisco Meraki**, **MCP (Model Context Protocol)**, and **LLM (Large Language Model)** integration. This tool provides real-time network monitoring, automated insights, and an interactive chat interface to query your network status using natural language.
 
-## Features
+## 🚀 Features
 
-This MCP server provides the following tools:
+-   **Real-time Monitoring**: Track packet loss, latency, jitter, and traffic patterns.
+-   **Interactive AI Chat**: Ask questions about your network (e.g., "Check for packet loss", "Show top clients") and get instant answers.
+-   **Automated Insights**: The AI agent analyzes network data to identify anomalies and security threats.
+-   **Visual Analytics**: Interactive charts and graphs for performance trends and data volume.
+-   **MCP Integration**: Built on the Model Context Protocol for standardized tool usage.
 
-1. **get_network_clients** - Retrieve clients connected to your configured network
-2. **get_network_traffic** - Analyze network traffic patterns and bandwidth usage
-3. **get_device_loss_and_latency_history** - Get loss and latency history for your configured device
-4. **get_organization_vpn_stats** - Retrieve VPN statistics for your configured organization
-5. **get_network_events** - Retrieve events for your configured network
+## 📋 Prerequisites
 
-## Project Structure
+-   **Python 3.10+**
+-   **Cisco Meraki Account** (with API access)
+-   **LLM API Key** (Anthropic, Gemini, or ZhipuAI)
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd networkingAgent
+```
+
+### 2. Set Up Virtual Environment
+It is recommended to use a virtual environment to manage dependencies.
+
+**Windows:**
+```powershell
+# Create virtual environment
+python -m venv .wenv
+
+# Activate virtual environment
+.wenv\Scripts\activate
+```
+
+**macOS/Linux:**
+```bash
+# Create virtual environment
+python3 -m venv .wenv
+
+# Activate virtual environment
+source .wenv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+Create a `.env` file in the `networkingAgent` directory with your API keys and configuration.
+
+```ini
+# Cisco Meraki API Configuration
+MERAKI_API_KEY=your_meraki_api_key_here
+BASE_URL=https://api.meraki.com/api/v1
+NETWORK_ID=your_network_id
+ORGANIZATION_ID=your_organization_id
+SERIAL=your_device_serial
+IP=your_device_ip
+PRODUCT_TYPE=appliance
+TIMESPAN=86400
+
+# LLM Configuration (Choose one or more)
+ANTHROPIC_API_KEY=your_anthropic_key
+ANTHROPIC_BASE_URL=https://api.anthropic.com # Optional: Custom base URL
+GEMINI_API_KEY=your_gemini_key
+ZHIPUAI_API_KEY=your_zhipuai_key
+```
+
+**How to get Meraki IDs:**
+-   **NETWORK_ID**: Found in the URL of your Meraki Dashboard when viewing a network.
+-   **ORGANIZATION_ID**: Found in the URL when viewing Organization Settings.
+
+## 🖥️ Usage
+
+### Start the Dashboard
+Run the Streamlit application:
+
+```bash
+streamlit run dashboard.py
+```
+
+The dashboard will open in your default web browser (usually at `http://localhost:8501`).
+
+### Using the Chatbot
+1.  Navigate to the **MCP Chatbot** tab.
+2.  Use the **Quick Commands** buttons for common tasks (e.g., "Check Performance", "Top Clients").
+3.  Or type your question in the chat input (e.g., "Is there any high latency on the network?").
+
+### Network Monitor
+1.  Navigate to the **Network Monitor** tab.
+2.  Click **Start Monitoring** in the sidebar to begin real-time data collection.
+3.  View live status and data points.
+
+## 📂 Project Structure
 
 ```
 networkingAgent/
-├── main.py                 # Main entry point
-├── .env                    # Environment variables (create this file)
-├── server/
-│   ├── __init__.py        # Package initialization
-│   ├── meraki_client.py   # Shared Meraki API client
-│   ├── meraki_server.py   # Main MCP server that combines all tools
-│   ├── get_network_clients.py
-│   ├── get_network_traffic.py
-│   ├── get_device_loss_and_latency_history.py
-│   ├── get_network_vpn_stats.py
-│   └── get_network_events.py
-├── requirements.txt
-└── README.md
+├── dashboard.py                # Main Streamlit Dashboard application
+├── mcp-inspector-config.json   # MCP Client configuration
+├── requirements.txt            # Python dependencies
+├── .env                        # Configuration file (not committed)
+├── server/                     # MCP Server & Tools
+│   ├── meraki_server.py        # MCP Server entry point
+│   ├── meraki_client.py        # Shared Meraki API client
+│   ├── get_network_clients.py  # Tool: Get connected clients
+│   ├── get_network_traffic.py  # Tool: Analyze traffic
+│   ├── get_network_events.py   # Tool: Get network events
+│   └── ...
+└── test/                       # Test scripts
+    └── test_tools.py           # Tool verification script
 ```
 
-## Modular Design
+## 🤝 Contributing
 
-Each API endpoint is implemented as a separate tool file in the `server/` directory:
-
-- **meraki_client.py**: Shared API client for all tools
-- **get_network_clients.py**: Tool for retrieving network clients
-- **get_network_traffic.py**: Tool for retrieving network traffic data
-- **get_device_loss_and_latency_history.py**: Tool for retrieving device loss and latency history
-- **get_network_vpn_stats.py**: Tool for retrieving organization VPN statistics
-- **get_network_events.py**: Tool for retrieving network events
-
-## Setup
-
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. Create a `.env` file in the project root with your configuration:
-   ```bash
-   # Cisco Meraki API Configuration
-   MERAKI_API_KEY=your_meraki_api_key_here
-   BASE_URL=https://api.meraki.com/api/v1
-   NETWORK_ID=your_network_id
-   ORGANIZATION_ID=your_organization_id
-   SERIAL=your_device_serial
-   IP=your_device_ip
-   PRODUCT_TYPE=your_product_type
-   TIMESPAN=86400
-   ```
-
-3. Run the server:
-   ```bash
-   python main.py
-   ```
-
-## Usage
-
-The server exposes tools that can be called via MCP. Each tool returns structured JSON data with:
-
-- Tool name and timestamp
-- Configuration values used (from .env)
-- API response data
-- Summary information
-
-### Example Tool Calls
-
-```python
-# Get network clients (uses NETWORK_ID and TIMESPAN from .env)
-await get_network_clients()
-
-# Get network traffic (uses NETWORK_ID and TIMESPAN from .env)
-await get_network_traffic()
-
-# Get device loss and latency history (uses SERIAL and IP from .env)
-await get_device_loss_and_latency_history()
-
-# Get organization VPN statistics (uses ORGANIZATION_ID and TIMESPAN from .env)
-await get_organization_vpn_stats()
-
-# Get network events (uses NETWORK_ID and PRODUCT_TYPE from .env)
-await get_network_events()
-```
-
-## Configuration
-
-All tools automatically use the configuration from your `.env` file:
-
-- **MERAKI_API_KEY**: Your Cisco Meraki Dashboard API key
-- **BASE_URL**: Meraki API base URL (default: https://api.meraki.com/api/v1)
-- **NETWORK_ID**: Your network ID
-- **ORGANIZATION_ID**: Your organization ID
-- **SERIAL**: Your device serial number
-- **IP**: Your device IP address
-- **PRODUCT_TYPE**: Your product type
-- **TIMESPAN**: Time span in seconds for data queries (default: 86400 = 24 hours)
-
-## API Requirements
-
-- Valid Cisco Meraki Dashboard API key
-- Network access to api.meraki.com
-- Appropriate permissions for the API endpoints being accessed
-
-## Error Handling
-
-Each tool includes comprehensive error handling for:
-- Missing configuration in .env file
-- Network connectivity issues
-- API authentication failures
-- Invalid parameters
-- API rate limiting
-- Device not found errors
-
-## Logging
-
-The server uses structured logging with different loggers for:
-- Main server operations
-- Individual tool operations
-- API client operations
-
-Logs include timestamps, error details, and operation summaries.
+Contributions are welcome! Please feel free to submit a Pull Request.

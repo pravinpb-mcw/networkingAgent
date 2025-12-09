@@ -10,7 +10,12 @@ import httpx
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+# Try to find .env in parent directories
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), '.env')
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv() # Fallback to default search
 
 logger = logging.getLogger("meraki-client")
 
@@ -65,6 +70,10 @@ class MerakiAPIClient:
             except Exception as e:
                 logger.error(f"Request failed: {str(e)}")
                 raise Exception(f"Request failed: {str(e)}")
+
+    async def get_organizations(self) -> List[Dict[str, Any]]:
+        """Get all organizations"""
+        return await self._make_request("/organizations")
 
     async def get_network_clients(self, network_id: str = None, timespan: int = None) -> List[Dict[str, Any]]:
         """Get clients connected to a network"""
