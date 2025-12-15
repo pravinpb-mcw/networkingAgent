@@ -8,10 +8,9 @@ Handles the same endpoints as the real Meraki API for development and testing
 import json
 import logging
 import os
-from datetime import datetime
-from typing import Dict, Any, List
+from datetime import datetime, timedelta, timezone
+from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
 import uvicorn
 from pydantic import BaseModel
 
@@ -22,16 +21,180 @@ logger = logging.getLogger("mock-meraki-server")
 app = FastAPI(title="Mock Meraki API Server", version="1.0.0")
 
 # Mock data storage
-mock_data = {
-    "networks": {},
-    "organizations": {},
-    "devices": {},
-    "clients": [],
-    "traffic": [],
-    "events": [],
-    "vpn_stats": [],
-    "uplinks_statuses": []
-}
+def _initial_mock_state() -> Dict[str, Any]:
+    return {
+        "networks": {},
+        "organizations": {},
+        "organization_devices": {},
+        "device_details": {},
+        "device_wireless_status": {},
+        "network_wireless_latency_history": {},
+        "network_wireless_failed_connections": {},
+        "network_wireless_usage_history": {},
+        "network_wireless_health": {},
+        "network_clients": {},
+        "device_clients": {},
+        "network_traffic": {},
+        "network_events": {},
+        "network_vpn_stats": {},
+        "organization_uplinks_statuses": {},
+        "device_uplink_status": {},
+        "device_appliance_uplinks_settings": {},
+        "device_loss_and_latency_history": {},
+        "connectivity_monitoring_destinations": {},
+        "network_group_policies": {},
+        "network_access_control_lists": {},
+        "organization_login_security": {},
+        "network_security_intrusion": {},
+        "appliance_settings": {},
+        "wireless_settings": {},
+        "network_topology_link_layer": {},
+        "network_floor_plans": {},
+        "service_impact_predictions": {}
+    }
+
+
+mock_data = _initial_mock_state()
+
+SAMPLE_ORGANIZATION_ID = "1234"
+SAMPLE_NETWORK_ID = "N_001"
+SAMPLE_DEVICE_SERIAL = "Q2XX-ABCD-1234"
+SAMPLE_DEVICE_MAC = "00:11:22:33:44:55"
+
+
+def _utc_iso(delta_minutes: int = 0) -> str:
+    return (datetime.now(timezone.utc) - timedelta(minutes=delta_minutes)).isoformat()
+
+
+def _default_devices() -> Dict[str, List[Dict[str, Any]]]:
+    return {
+        SAMPLE_ORGANIZATION_ID: [
+            {
+                "name": "AP-03",
+                "serial": SAMPLE_DEVICE_SERIAL,
+                "model": "MR46",
+                "mac": SAMPLE_DEVICE_MAC,
+                "lanIp": "10.0.0.23",
+                "firmware": "wireless-29.6",
+                "networkId": SAMPLE_NETWORK_ID,
+                "tags": ["floor-1", "west-wing"],
+                "address": "123 Innovation Way",
+                "lat": 37.423,
+                "lng": -122.084,
+                "notes": "Primary AP for west wing"
+            }
+        ]
+    }
+
+
+def _default_device_details() -> Dict[str, Dict[str, Any]]:
+    return {
+        SAMPLE_DEVICE_SERIAL: {
+            "serial": SAMPLE_DEVICE_SERIAL,
+            "model": "MR46",
+            "mac": SAMPLE_DEVICE_MAC,
+            "networkId": SAMPLE_NETWORK_ID,
+            "name": "AP-03",
+            "status": "online",
+            "tags": ["floor-1", "west-wing"],
+            "firmware": "wireless-29.6",
+            "lanIp": "10.0.0.23",
+            "address": "123 Innovation Way"
+        }
+    }
+
+
+def _default_wireless_status() -> Dict[str, Dict[str, Any]]:
+    return {
+        SAMPLE_DEVICE_SERIAL: {
+            "serial": SAMPLE_DEVICE_SERIAL,
+            "timestamp": _utc_iso(),
+            "radio0": {
+                "channel": 36,
+                "snr": 32.5,
+                "noiseFloor": -95,
+                "clientCount": 18,
+                "utilizationPercent": 46.3
+            },
+            "radio1": {
+                "channel": 11,
+                "snr": 29.1,
+                "noiseFloor": -92,
+                "clientCount": 12,
+                "utilizationPercent": 34.4
+            }
+        }
+    }
+
+
+def _default_latency_history() -> Dict[str, List[Dict[str, Any]]]:
+    history = []
+    for idx in range(6):
+        history.append(
+            {
+                "timeslotStart": _utc_iso(delta_minutes=idx * 5 + 5),
+                "timeslotEnd": _utc_iso(delta_minutes=idx * 5),
+                "latencyMs": 12 + idx * 3,
+                "jitterMs": 3 + idx,
+                "packetLossPercent": round(0.5 + idx * 0.3, 2),
+                "deviceMac": SAMPLE_DEVICE_MAC
+            }
+        )
+    return {SAMPLE_NETWORK_ID: list(reversed(history))}
+
+
+def _default_failed_connections() -> Dict[str, List[Dict[str, Any]]]:
+    return {
+        SAMPLE_NETWORK_ID: [
+            {
+                "eventTime": _utc_iso(delta_minutes=15),
+                "deviceSerial": SAMPLE_DEVICE_SERIAL,
+                "clientMac": "AA:BB:CC:DD:EE:01",
+                "failureReason": "auth_failure",
+                "ssid": "Meraki-Guest",
+                "apMac": SAMPLE_DEVICE_MAC
+            },
+            {
+                "eventTime": _utc_iso(delta_minutes=7),
+                "deviceSerial": SAMPLE_DEVICE_SERIAL,
+                "clientMac": "AA:BB:CC:DD:EE:02",
+                "failureReason": "dhcp_timeout",
+                "ssid": "Meraki-Prod",
+                "apMac": SAMPLE_DEVICE_MAC
+            }
+        ]
+    }
+
+
+def _default_device_clients() -> Dict[str, List[Dict[str, Any]]]:
+    return {
+        SAMPLE_DEVICE_SERIAL: [
+            {
+                "mac": "AA:BB:CC:DD:EE:01",
+                "ip": "10.0.0.101",
+                "description": "Anton-Laptop",
+                "ssid": "Meraki-Prod",
+                "status": "Online",
+                "usageKb": 18234
+            },
+            {
+                "mac": "AA:BB:CC:DD:EE:02",
+                "ip": "10.0.0.102",
+                "description": "Teams-Room",
+                "ssid": "Meraki-Prod",
+                "status": "Online",
+                "usageKb": 76211
+            }
+        ]
+    }
+
+
+def _find_device_by_serial(serial: str, organizations: Dict[str, List[Dict[str, Any]]]) -> Optional[Dict[str, Any]]:
+    for devices in organizations.values():
+        for device in devices:
+            if device.get("serial") == serial:
+                return device
+    return None
 
 # Data directory for JSON files
 DATA_DIR = "mock_data"
@@ -93,11 +256,21 @@ def initialize_mock_data():
         # Map the comprehensive data to our mock_data structure
         mock_data["organizations"] = comprehensive_data.get("organizations", [])
         mock_data["networks"] = comprehensive_data.get("networks", {})
+        mock_data["organization_devices"] = comprehensive_data.get("organization_devices") or _default_devices()
+        mock_data["device_details"] = comprehensive_data.get("device_details") or _default_device_details()
+        mock_data["device_wireless_status"] = comprehensive_data.get("device_wireless_status") or _default_wireless_status()
+        mock_data["network_wireless_latency_history"] = comprehensive_data.get("network_wireless_latency_history") or _default_latency_history()
+        mock_data["network_wireless_failed_connections"] = comprehensive_data.get("network_wireless_failed_connections") or _default_failed_connections()
+        mock_data["network_wireless_usage_history"] = comprehensive_data.get("network_wireless_usage_history", {})
+        mock_data["network_wireless_health"] = comprehensive_data.get("network_wireless_health", {})
         mock_data["network_clients"] = comprehensive_data.get("network_clients", {})
+        mock_data["device_clients"] = comprehensive_data.get("device_clients") or _default_device_clients()
         mock_data["network_traffic"] = comprehensive_data.get("network_traffic", {})
         mock_data["network_events"] = comprehensive_data.get("network_events", {})
         mock_data["network_settings"] = comprehensive_data.get("network_settings", {})
         mock_data["organization_uplinks_statuses"] = comprehensive_data.get("organization_uplinks_statuses", {})
+        mock_data["device_uplink_status"] = comprehensive_data.get("device_uplink_status", {})
+        mock_data["device_appliance_uplinks_settings"] = comprehensive_data.get("device_appliance_uplinks_settings", {})
         mock_data["network_vpn_stats"] = comprehensive_data.get("network_vpn_stats", {})
         mock_data["device_loss_and_latency_history"] = comprehensive_data.get("device_loss_and_latency_history", {})
         mock_data["connectivity_monitoring_destinations"] = comprehensive_data.get("connectivity_monitoring_destinations", {})
@@ -107,6 +280,9 @@ def initialize_mock_data():
         mock_data["network_security_intrusion"] = comprehensive_data.get("network_security_intrusion", {})
         mock_data["appliance_settings"] = comprehensive_data.get("appliance_settings", {})
         mock_data["wireless_settings"] = comprehensive_data.get("wireless_settings", {})
+        mock_data["network_topology_link_layer"] = comprehensive_data.get("network_topology_link_layer", {})
+        mock_data["network_floor_plans"] = comprehensive_data.get("network_floor_plans", {})
+        mock_data["service_impact_predictions"] = comprehensive_data.get("service_impact_predictions", {})
         
         # Backward compatibility with old structure
         mock_data["clients"] = comprehensive_data.get("clients", [])
@@ -121,6 +297,20 @@ def initialize_mock_data():
         networks_data = load_from_json_file("networks.json")
         if networks_data:
             mock_data["networks"] = networks_data
+
+        mock_data["organization_devices"] = _default_devices()
+        mock_data["device_details"] = _default_device_details()
+        mock_data["device_wireless_status"] = _default_wireless_status()
+        mock_data["network_wireless_latency_history"] = _default_latency_history()
+        mock_data["network_wireless_failed_connections"] = _default_failed_connections()
+        mock_data["network_wireless_usage_history"] = {}
+        mock_data["network_wireless_health"] = {}
+        mock_data["device_clients"] = _default_device_clients()
+        mock_data["device_uplink_status"] = {}
+        mock_data["device_appliance_uplinks_settings"] = {}
+        mock_data["network_topology_link_layer"] = {}
+        mock_data["network_floor_plans"] = {}
+        mock_data["service_impact_predictions"] = {}
         
         # Load other data types
         mock_data["clients"] = load_from_json_file("clients.json").get("clients", [])
@@ -167,6 +357,20 @@ async def root():
         "status": "running",
         "timestamp": datetime.now().isoformat(),
         "endpoints": [
+            "GET /organizations/{orgId}/devices",
+            "GET /devices/{serial}",
+            "GET /devices/{serial}/wireless/status",
+            "GET /networks/{networkId}/wireless/latencyHistory",
+            "GET /networks/{networkId}/wireless/failedConnections",
+            "GET /networks/{networkId}/wireless/usageHistory",
+            "GET /networks/{networkId}/wireless/health",
+            "GET /devices/{serial}/clients",
+            "GET /devices/{serial}/uplink",
+            "GET /devices/{serial}/appliance/uplinks/settings",
+            "GET /networks/{networkId}/events?productType=wireless",
+            "GET /networks/{networkId}/topologyLinkLayer",
+            "GET /networks/{networkId}/floorPlans",
+            "GET /networks/{networkId}/serviceImpact",
             "GET /organizations/uplinks/statuses",
             "POST /networks/{network_id}/appliance/settings",
             "POST /networks/{network_id}/wireless/settings", 
@@ -199,6 +403,199 @@ async def get_organizations():
     
     # Fallback to empty list
     return []
+
+
+@app.get("/organizations/{organization_id}/devices")
+async def get_organization_devices(organization_id: str):
+    """Mock endpoint for getting devices within an organization"""
+    logger.info(f"GET /organizations/{organization_id}/devices")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "organization_devices" in comprehensive_data:
+        devices = comprehensive_data["organization_devices"].get(organization_id)
+        if devices is not None:
+            return devices
+
+    if organization_id in mock_data.get("organization_devices", {}):
+        return mock_data["organization_devices"][organization_id]
+
+    return _default_devices().get(organization_id, [])
+
+
+@app.get("/devices/{serial}")
+async def get_device_details(serial: str):
+    """Mock endpoint for getting device details"""
+    logger.info(f"GET /devices/{serial}")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_details" in comprehensive_data:
+        if serial in comprehensive_data["device_details"]:
+            return comprehensive_data["device_details"][serial]
+
+    device = mock_data.get("device_details", {}).get(serial)
+    if device:
+        return device
+
+    org_device = _find_device_by_serial(serial, mock_data.get("organization_devices", {}))
+    if org_device:
+        return org_device
+
+    raise HTTPException(status_code=404, detail=f"Device {serial} not found")
+
+
+@app.get("/devices/{serial}/wireless/status")
+async def get_device_wireless_status(serial: str):
+    """Mock endpoint for getting device wireless status"""
+    logger.info(f"GET /devices/{serial}/wireless/status")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_wireless_status" in comprehensive_data:
+        if serial in comprehensive_data["device_wireless_status"]:
+            return comprehensive_data["device_wireless_status"][serial]
+
+    if serial in mock_data.get("device_wireless_status", {}):
+        return mock_data["device_wireless_status"][serial]
+
+    raise HTTPException(status_code=404, detail=f"Wireless status for {serial} not found")
+
+
+@app.get("/networks/{network_id}/wireless/latencyHistory")
+async def get_network_wireless_latency_history(network_id: str):
+    """Mock endpoint for getting network wireless latency history"""
+    logger.info(f"GET /networks/{network_id}/wireless/latencyHistory")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_wireless_latency_history" in comprehensive_data:
+        if network_id in comprehensive_data["network_wireless_latency_history"]:
+            return comprehensive_data["network_wireless_latency_history"][network_id]
+
+    if network_id in mock_data.get("network_wireless_latency_history", {}):
+        return mock_data["network_wireless_latency_history"][network_id]
+
+    return _default_latency_history().get(network_id, [])
+
+
+@app.get("/networks/{network_id}/wireless/failedConnections")
+async def get_network_wireless_failed_connections(network_id: str):
+    """Mock endpoint for getting network wireless failed connections"""
+    logger.info(f"GET /networks/{network_id}/wireless/failedConnections")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_wireless_failed_connections" in comprehensive_data:
+        if network_id in comprehensive_data["network_wireless_failed_connections"]:
+            return comprehensive_data["network_wireless_failed_connections"][network_id]
+
+    if network_id in mock_data.get("network_wireless_failed_connections", {}):
+        return mock_data["network_wireless_failed_connections"][network_id]
+
+    return _default_failed_connections().get(network_id, [])
+
+
+@app.get("/networks/{network_id}/wireless/usageHistory")
+async def get_network_wireless_usage_history(network_id: str):
+    """Mock endpoint for wireless usage / bandwidth load"""
+    logger.info(f"GET /networks/{network_id}/wireless/usageHistory")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_wireless_usage_history" in comprehensive_data:
+        if network_id in comprehensive_data["network_wireless_usage_history"]:
+            return comprehensive_data["network_wireless_usage_history"][network_id]
+
+    if network_id in mock_data.get("network_wireless_usage_history", {}):
+        return mock_data["network_wireless_usage_history"][network_id]
+
+    return []
+
+
+@app.get("/networks/{network_id}/wireless/health")
+async def get_network_wireless_health(network_id: str):
+    """Mock endpoint for wireless health overview"""
+    logger.info(f"GET /networks/{network_id}/wireless/health")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_wireless_health" in comprehensive_data:
+        if network_id in comprehensive_data["network_wireless_health"]:
+            return comprehensive_data["network_wireless_health"][network_id]
+
+    if network_id in mock_data.get("network_wireless_health", {}):
+        return mock_data["network_wireless_health"][network_id]
+
+    raise HTTPException(status_code=404, detail=f"Wireless health for network {network_id} not found")
+
+
+@app.get("/networks/{network_id}/wireless/apTopology/{ap_serial}")
+async def get_ap_topology_endpoint(network_id: str, ap_serial: str):
+    """Mock endpoint for getting AP topology with nearby APs"""
+    logger.info(f"GET /networks/{network_id}/wireless/apTopology/{ap_serial}")
+    
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "ap_topology" in comprehensive_data:
+        if network_id in comprehensive_data["ap_topology"]:
+            if ap_serial in comprehensive_data["ap_topology"][network_id]:
+                return comprehensive_data["ap_topology"][network_id][ap_serial]
+    
+    # Fallback if not in comprehensive data
+    raise HTTPException(status_code=404, detail=f"AP topology not found for {ap_serial} in network {network_id}")
+
+
+@app.get("/devices/{serial}/clients")
+async def get_device_clients(serial: str):
+    """Mock endpoint for getting clients connected to a specific device"""
+    logger.info(f"GET /devices/{serial}/clients")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_clients" in comprehensive_data:
+        if serial in comprehensive_data["device_clients"]:
+            return comprehensive_data["device_clients"][serial]
+
+    if serial in mock_data.get("device_clients", {}):
+        return mock_data["device_clients"][serial]
+
+    # As a final fallback, find all clients from network lists mapped to the device serial
+    aggregated_clients: List[Dict[str, Any]] = []
+    for network_clients in mock_data.get("network_clients", {}).values():
+        filtered = [client for client in network_clients if client.get("deviceSerial") == serial]
+        aggregated_clients.extend(filtered)
+
+    if aggregated_clients:
+        return aggregated_clients
+
+    if serial in _default_device_clients():
+        return _default_device_clients()[serial]
+
+    return []
+
+
+@app.get("/devices/{serial}/uplink")
+async def get_device_uplink(serial: str):
+    """Mock endpoint for getting device uplink status"""
+    logger.info(f"GET /devices/{serial}/uplink")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_uplink_status" in comprehensive_data:
+        if serial in comprehensive_data["device_uplink_status"]:
+            return comprehensive_data["device_uplink_status"][serial]
+
+    if serial in mock_data.get("device_uplink_status", {}):
+        return mock_data["device_uplink_status"][serial]
+
+    raise HTTPException(status_code=404, detail=f"Uplink status for device {serial} not found")
+
+
+@app.get("/devices/{serial}/appliance/uplinks/settings")
+async def get_device_appliance_uplink_settings(serial: str):
+    """Mock endpoint for getting device uplink configuration"""
+    logger.info(f"GET /devices/{serial}/appliance/uplinks/settings")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "device_appliance_uplinks_settings" in comprehensive_data:
+        if serial in comprehensive_data["device_appliance_uplinks_settings"]:
+            return comprehensive_data["device_appliance_uplinks_settings"][serial]
+
+    if serial in mock_data.get("device_appliance_uplinks_settings", {}):
+        return mock_data["device_appliance_uplinks_settings"][serial]
+
+    raise HTTPException(status_code=404, detail=f"Uplink settings for device {serial} not found")
 
 @app.get("/organizations/uplinks/statuses")
 async def get_organization_uplinks_statuses():
@@ -663,21 +1060,76 @@ async def get_network_traffic(network_id: str):
     return []
 
 @app.get("/networks/{network_id}/events")
-async def get_network_events(network_id: str):
-    """Mock endpoint for getting network events"""
-    logger.info(f"GET /networks/{network_id}/events")
-    
-    # Return data from comprehensive API data structure
-    if "network_events" in mock_data and network_id in mock_data["network_events"]:
-        return mock_data["network_events"][network_id]
-    
-    # Fallback to old common_data.json
-    common_data = load_from_json_file("common_data.json")
-    if common_data and "events" in common_data:
-        return common_data["events"]
-    
-    # Return empty list if no data found
+async def get_network_events(network_id: str, productType: Optional[str] = None):
+    """Mock endpoint for getting network events with optional product filtering"""
+    logger.info(f"GET /networks/{network_id}/events productType={productType}")
+
+    events: List[Dict[str, Any]] = []
+
+    # Reload comprehensive data for freshest events
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_events" in comprehensive_data and network_id in comprehensive_data["network_events"]:
+        events = comprehensive_data["network_events"][network_id]
+    elif "network_events" in mock_data and network_id in mock_data["network_events"]:
+        events = mock_data["network_events"][network_id]
+    else:
+        common_data = load_from_json_file("common_data.json")
+        if common_data and "events" in common_data:
+            events = common_data["events"]
+
+    if productType:
+        normalized = productType.lower()
+        events = [event for event in events if event.get("productType", "").lower() == normalized]
+
+    return events
+
+
+@app.get("/networks/{network_id}/topologyLinkLayer")
+async def get_network_topology_link_layer(network_id: str):
+    """Mock endpoint for retrieving layer 2 topology"""
+    logger.info(f"GET /networks/{network_id}/topologyLinkLayer")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_topology_link_layer" in comprehensive_data:
+        if network_id in comprehensive_data["network_topology_link_layer"]:
+            return comprehensive_data["network_topology_link_layer"][network_id]
+
+    if network_id in mock_data.get("network_topology_link_layer", {}):
+        return mock_data["network_topology_link_layer"][network_id]
+
+    raise HTTPException(status_code=404, detail=f"Topology data for network {network_id} not found")
+
+
+@app.get("/networks/{network_id}/floorPlans")
+async def get_network_floor_plans(network_id: str):
+    """Mock endpoint for retrieving floor plans and AP coordinates"""
+    logger.info(f"GET /networks/{network_id}/floorPlans")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "network_floor_plans" in comprehensive_data:
+        if network_id in comprehensive_data["network_floor_plans"]:
+            return comprehensive_data["network_floor_plans"][network_id]
+
+    if network_id in mock_data.get("network_floor_plans", {}):
+        return mock_data["network_floor_plans"][network_id]
+
     return []
+
+
+@app.get("/networks/{network_id}/serviceImpact")
+async def get_network_service_impact(network_id: str):
+    """Mock endpoint for LLM-ready service impact predictions"""
+    logger.info(f"GET /networks/{network_id}/serviceImpact")
+
+    comprehensive_data = load_from_json_file("comprehensive_api_data.json")
+    if comprehensive_data and "service_impact_predictions" in comprehensive_data:
+        if network_id in comprehensive_data["service_impact_predictions"]:
+            return comprehensive_data["service_impact_predictions"][network_id]
+
+    if network_id in mock_data.get("service_impact_predictions", {}):
+        return mock_data["service_impact_predictions"][network_id]
+
+    raise HTTPException(status_code=404, detail=f"Service impact predictions for network {network_id} not found")
 
 @app.get("/organizations/appliance/vpn/stats")
 async def get_organization_vpn_stats():
@@ -1121,16 +1573,7 @@ async def get_mock_data():
 async def clear_mock_data():
     """Clear all stored mock data"""
     global mock_data
-    mock_data = {
-        "networks": {},
-        "organizations": {},
-        "devices": {},
-        "clients": [],
-        "traffic": [],
-        "events": [],
-        "vpn_stats": [],
-        "uplinks_statuses": []
-    }
+    mock_data = _initial_mock_state()
     
     # Clear JSON files
     try:

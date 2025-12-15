@@ -557,3 +557,151 @@ class MerakiAPIClient:
             method="PUT",
             data=intrusion_data
         )
+
+    # Wireless Health
+    async def get_wireless_health(
+        self, 
+        network_id: str = None,
+        device_serial: str = None
+    ) -> Dict[str, Any]:
+        """Get wireless health metrics
+        
+        GET /networks/{id}/wireless/health
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        params = {}
+        if device_serial:
+            params['serial'] = device_serial
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/health",
+            params=params,
+            method="GET",
+            tool_name="get_wireless_health"
+        )
+
+    # Wireless Usage History
+    async def get_wireless_usage_history(
+        self, 
+        network_id: str = None,
+        device_serial: str = None,
+        timespan: int = None
+    ) -> List[Dict[str, Any]]:
+        """Get wireless usage history
+        
+        GET /networks/{id}/wireless/usageHistory
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        params = {"timespan": timespan or self.timespan}
+        if device_serial:
+            params['serial'] = device_serial
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/usageHistory",
+            params=params,
+            method="GET",
+            tool_name="get_wireless_usage_history"
+        )
+
+    # Wireless Latency History
+    async def get_wireless_latency_history(
+        self, 
+        network_id: str = None,
+        device_serial: str = None,
+        timespan: int = None
+    ) -> List[Dict[str, Any]]:
+        """Get wireless latency history
+        
+        GET /networks/{id}/wireless/latencyHistory
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        params = {"timespan": timespan or self.timespan}
+        if device_serial:
+            params['serial'] = device_serial
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/latencyHistory",
+            params=params,
+            method="GET",
+            tool_name="get_wireless_latency_history"
+        )
+
+    # Wireless Failed Connections
+    async def get_wireless_failed_connections(
+        self, 
+        network_id: str = None,
+        device_serial: str = None,
+        timespan: int = None
+    ) -> List[Dict[str, Any]]:
+        """Get wireless failed connections
+        
+        GET /networks/{id}/wireless/failedConnections
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        params = {"timespan": timespan or self.timespan}
+        if device_serial:
+            params['serial'] = device_serial
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/failedConnections",
+            params=params,
+            method="GET",
+            tool_name="get_wireless_failed_connections"
+        )
+
+    # Device Clients
+    async def get_device_clients(
+        self, 
+        device_serial: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get clients connected to a device
+        
+        GET /devices/{serial}/clients
+        """
+        serial = device_serial or self.serial
+        if not serial:
+            raise ValueError("SERIAL not found in .env file or parameters")
+        
+        return await self._make_request(
+            f"/devices/{serial}/clients",
+            method="GET",
+            tool_name="get_device_clients"
+        )
+    
+    # AP Topology
+    async def get_ap_topology(
+        self,
+        network_id: str = None,
+        ap_serial: str = None
+    ) -> Dict[str, Any]:
+        """Get AP topology information with nearby APs
+        
+        GET /networks/{networkId}/wireless/apTopology/{apSerial}
+        (Note: This is mock data structure, not a real Meraki endpoint)
+        """
+        net_id = network_id or self.network_id
+        serial = ap_serial or self.serial
+        
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file or parameters")
+        if not serial:
+            raise ValueError("AP serial not provided")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/wireless/apTopology/{serial}",
+            method="GET",
+            tool_name="get_ap_topology"
+        )
+

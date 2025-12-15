@@ -58,14 +58,20 @@ from update_access_control_lists import update_network_access_control_lists
 from update_login_security import update_organization_login_security
 from update_security_intrusion import update_network_security_intrusion
 from webhook_tool import send_teams_alert, send_slack_alert, send_network_alert, send_network_insights
+from get_wireless_health import get_wireless_health
+from get_wireless_usage_history import get_wireless_usage_history
+from get_wireless_latency_history import get_wireless_latency_history
+from get_wireless_failed_connections import get_wireless_failed_connections
+from get_device_clients import get_device_clients
+from get_ap_topology import get_ap_topology
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("meraki-mcp-server")
 
 # Check if we should use mock server - check both USE_MOCK and BASE_URL
-USE_MOCK = os.getenv("USE_MOCK", "false").lower() == "true"
-BASE_URL = os.getenv("BASE_URL", "")
+USE_MOCK = os.getenv("USE_MOCK", "true").lower() == "true"
+BASE_URL = "http://localhost:5000"
 if BASE_URL and "127.0.0.1" in BASE_URL or "localhost" in BASE_URL:
     USE_MOCK = True
 
@@ -469,6 +475,146 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
         Tool(
+            name="get_wireless_health",
+            description="Get comprehensive wireless health metrics including signal quality, client experience, coverage, performance, and capacity for Access Points.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "device_serial": {
+                        "type": "string",
+                        "description": "Optional AP serial to filter results"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_wireless_usage_history",
+            description="Get wireless usage history with time-series data including channel utilization, airtime usage, retransmissions per minute, signal quality, client count, and speed degradation. Essential for predictive failure analysis.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "device_serial": {
+                        "type": "string",
+                        "description": "Optional AP serial to filter results"
+                    },
+                    "timespan": {
+                        "type": "integer",
+                        "description": "Time span in seconds (default 7200 = 2 hours)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_wireless_latency_history",
+            description="Get wireless latency history with time-series data for latency, jitter, and packet loss. Critical for detecting gradual performance degradation before failure.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "device_serial": {
+                        "type": "string",
+                        "description": "Optional AP serial or device MAC to filter results"
+                    },
+                    "timespan": {
+                        "type": "integer",
+                        "description": "Time span in seconds (default 7200 = 2 hours)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_wireless_failed_connections",
+            description="Get wireless failed connection attempts including authentication failures, DHCP timeouts, and other connectivity issues.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "device_serial": {
+                        "type": "string",
+                        "description": "Optional AP serial to filter results"
+                    },
+                    "timespan": {
+                        "type": "integer",
+                        "description": "Time span in seconds (default 7200 = 2 hours)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_device_clients",
+            description="Get list of clients currently connected to a specific device (AP) including their connection details, signal strength, and application usage.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "device_serial": {
+                        "type": "string",
+                        "description": "Device serial number (required)"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional network ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": ["device_serial"]
+            }
+        ),
+        Tool(
+            name="get_ap_topology",
+            description="Get AP topology information including nearby APs with distance, signal strength (RSSI), channel overlap, and floor proximity. Use this to discover candidate APs for failover recommendations.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Network ID to query (required)"
+                    },
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "Serial number of the source AP (required)"
+                    }
+                },
+                "required": ["network_id", "ap_serial"]
+            }
+        ),
+        Tool(
             name="send_teams_alert",
             description="Send alert to Microsoft Teams webhook. Use this to notify users about network issues, changes, or important events.",
             inputSchema={
@@ -685,6 +831,33 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             intrusion_data = arguments.get("intrusion_data", "")
             network_id = arguments.get("network_id", None)
             return await update_network_security_intrusion(intrusion_data, network_id, use_mock=USE_MOCK)
+        elif name == "get_wireless_health":
+            network_id = arguments.get("network_id", None)
+            device_serial = arguments.get("device_serial", None)
+            return await get_wireless_health(network_id, device_serial, use_mock=True)
+        elif name == "get_wireless_usage_history":
+            network_id = arguments.get("network_id", None)
+            device_serial = arguments.get("device_serial", None)
+            timespan = arguments.get("timespan", 7200)
+            return await get_wireless_usage_history(network_id, device_serial, timespan, use_mock=USE_MOCK)
+        elif name == "get_wireless_latency_history":
+            network_id = arguments.get("network_id", None)
+            device_serial = arguments.get("device_serial", None)
+            timespan = arguments.get("timespan", 7200)
+            return await get_wireless_latency_history(network_id, device_serial, timespan, use_mock=USE_MOCK)
+        elif name == "get_wireless_failed_connections":
+            network_id = arguments.get("network_id", None)
+            device_serial = arguments.get("device_serial", None)
+            timespan = arguments.get("timespan", 7200)
+            return await get_wireless_failed_connections(network_id, device_serial, timespan, use_mock=USE_MOCK)
+        elif name == "get_device_clients":
+            device_serial = arguments.get("device_serial", "")
+            network_id = arguments.get("network_id", None)
+            return await get_device_clients(device_serial, network_id, use_mock=USE_MOCK)
+        elif name == "get_ap_topology":
+            network_id = arguments.get("network_id", "")
+            ap_serial = arguments.get("ap_serial", "")
+            return await get_ap_topology(network_id, ap_serial)
         elif name == "send_teams_alert":
             title = arguments.get("title", "")
             message = arguments.get("message", "")

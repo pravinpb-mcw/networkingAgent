@@ -116,8 +116,8 @@ class PredictiveTelemetryAgent:
             logger.info("Connecting to MCP server...")
             self.client = MCPClient.from_config_file(config_file)
             
-            # Create Anthropic LLM
-            logger.info("Initializing Anthropic LLM...")
+            # Create Anthropic LLM with Langfuse callback for tracing
+            logger.info("Initializing Anthropic LLM with Langfuse tracing...")
             self.llm = ChatAnthropic(
                 model="glm-4.5",
                 temperature=0,
@@ -126,6 +126,7 @@ class PredictiveTelemetryAgent:
                 max_retries=2,
                 api_key=os.environ.get("ANTHROPIC_API_KEY", "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj"),
                 base_url=os.environ.get("ANTHROPIC_BASE_URL", "https://api.z.ai/api/anthropic"),
+                callbacks=[get_langfuse_handler()],  # Langfuse tracing
             )
             
             # Create MCP agent
@@ -382,6 +383,33 @@ Always provide:
                 logger.info(f"🔮 Running predictive analysis on {self.target_ap_name}...")
                 logger.info(f"   Trace Session: {self.session_id[:8]}...")
                 
+                # Get the trace ID from the context for logging
+                trace_id = ctx.trace_id
+                logger.info(f"   Trace ID: {trace_id[:8] if trace_id else 'None'}...")
+                
+                # Create a NEW LLM instance with callback handler INSIDE the trace context
+                # Pass parent trace_id so all LLM generations are nested under it
+                llm_with_trace = ChatAnthropic(
+                    model="glm-4.5",
+                    temperature=0,
+                    max_tokens=4096,
+                    timeout=None,
+                    max_retries=2,
+                    api_key=os.environ.get("ANTHROPIC_API_KEY", "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj"),
+                    base_url=os.environ.get("ANTHROPIC_BASE_URL", "https://api.z.ai/api/anthropic"),
+                    # Link all LLM calls to the parent trace via update_trace callback
+                    callbacks=[get_langfuse_handler(parent_trace_id=trace_id)],
+                )
+                
+                # Create a temporary agent with this trace-aware LLM
+                agent_with_trace = MCPAgent(
+                    llm=llm_with_trace,
+                    client=self.client,
+                    max_steps=30,
+                    memory_enabled=True,
+                    verbose=False
+                )
+                
                 prompt = f"""{self.get_predictive_monitoring_prompt()}
 
 **EXECUTE PREDICTIVE ANALYSIS NOW:**
@@ -407,19 +435,23 @@ Always provide:
 
 **START ANALYSIS FOR AP {self.target_ap_serial}:**"""
                 
-                # Log the prompt as input to the trace
-                if ctx.trace:
-                    ctx.trace.update(input={"prompt_length": len(prompt), "ap": self.target_ap_name})
+                # Log the FULL prompt as input to the trace (required for LLM-as-a-judge)
+                if ctx.span:
+                    ctx.span.update(input={"prompt": prompt, "ap": self.target_ap_name})
                 
-                # Run the agent with Langfuse callbacks
-                # Note: We assume MCPAgent.run accepts callbacks or **kwargs passed to underlying LangChain agent
-                response = await self.agent.run(prompt, callbacks=[ctx.langfuse_handler])
+                # Run the agent with the trace-aware LLM
+                response = await agent_with_trace.run(prompt)
                 
-                # Log the response (if not already captured by callbacks)
+                # Log the FULL response as output (required for LLM-as-a-judge evaluation)
                 if ctx.span:
                     ctx.span.update(
-                        output={"response_length": len(str(response)), "success": True},
-                        metadata={"analysis_complete": True}
+                        output={"response": str(response), "success": True},
+                        metadata={"analysis_complete": True, "response_length": len(str(response))}
+                    )
+                    # Also update the trace level for evaluation features
+                    ctx.span.update_trace(
+                        input={"query": prompt},
+                        output={"generation": str(response)}
                     )
                 
                 logger.info("✅ Predictive analysis complete")
@@ -435,8 +467,8 @@ Always provide:
                 
             except Exception as e:
                 logger.error(f"Error running predictive analysis: {e}")
-                if ctx.trace:
-                    ctx.trace.update(output={"error": str(e), "success": False})
+                if ctx.span:
+                    ctx.span.update(output={"error": str(e), "success": False})
                 return {
                     "success": False,
                     "error": str(e),

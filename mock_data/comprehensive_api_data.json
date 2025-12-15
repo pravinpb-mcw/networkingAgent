@@ -26,21 +26,21 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2025-11-13T22:22:06.054142",
-          "latencyMs": 273.9,
-          "packetLossPct": 5.38,
-          "jitterMs": 27.23,
+          "updated_at": "2025-12-01T16:45:54.919914",
+          "latencyMs": 22.0,
+          "packetLossPct": 0.4,
+          "jitterMs": 6.0,
           "degradedLinks": [
             {
               "uplink": "wan1",
-              "status": "connecting"
+              "status": "active"
             },
             {
               "uplink": "wan2",
-              "status": "connecting"
+              "status": "active"
             }
           ],
-          "note": "RESTORED_TO_HEALTHY_STATE"
+          "note": "SCENARIO_2_PARTIAL_DEGRADE"
         }
       ],
       "wireless_settings": [
@@ -95,6 +95,598 @@
       "organizationId": "999781"
     }
   },
+  "organizations": [
+    {
+      "id": "999781",
+      "name": "MCW Global",
+      "url": "https://dashboard.meraki.com/o/999781",
+      "apiEnabled": true,
+      "domain": "mcw.example.com",
+      "region": "AMER",
+      "tags": [
+        "predictive",
+        "demo"
+      ],
+      "licenses": {
+        "status": "active",
+        "expirationDate": "2026-12-31"
+      }
+    }
+  ],
+  "organization_devices": {
+    "999781": [
+      {
+        "name": "AP-03",
+        "serial": "Q2XX-ABCD-1234",
+        "model": "MR46",
+        "mac": "00:11:22:33:44:55",
+        "lanIp": "10.0.0.23",
+        "firmware": "wireless-29.6",
+        "networkId": "L_3947405073390239794",
+        "tags": [
+          "floor-1",
+          "west-wing"
+        ],
+        "address": "123 Innovation Way, San Jose, CA",
+        "lat": 37.423,
+        "lng": -122.084,
+        "notes": "Primary AP for west wing"
+      },
+      {
+        "name": "AP-06",
+        "serial": "Q2XX-AP06-5678",
+        "model": "MR46",
+        "mac": "00:11:22:33:44:99",
+        "lanIp": "10.0.0.26",
+        "firmware": "wireless-29.6",
+        "networkId": "L_3947405073390239794",
+        "tags": [
+          "floor-1",
+          "east-wing"
+        ],
+        "address": "123 Innovation Way, San Jose, CA",
+        "lat": 37.424,
+        "lng": -122.082,
+        "notes": "Spare AP near Teams room"
+      },
+      {
+        "name": "AP-01",
+        "serial": "Q2XX-AP01-1111",
+        "model": "MR46",
+        "mac": "00:11:22:33:44:11",
+        "lanIp": "10.0.0.21",
+        "firmware": "wireless-29.6",
+        "networkId": "L_3947405073390239794",
+        "tags": [
+          "floor-1",
+          "central-lobby"
+        ],
+        "address": "123 Innovation Way, San Jose, CA",
+        "lat": 37.4235,
+        "lng": -122.083,
+        "notes": "Central lobby - high traffic area"
+      },
+      {
+        "name": "AP-04",
+        "serial": "Q2XX-AP04-4444",
+        "model": "MR46",
+        "mac": "00:11:22:33:44:44",
+        "lanIp": "10.0.0.24",
+        "firmware": "wireless-29.6",
+        "networkId": "L_3947405073390239794",
+        "tags": [
+          "floor-1",
+          "conference-room"
+        ],
+        "address": "123 Innovation Way, San Jose, CA",
+        "lat": 37.4232,
+        "lng": -122.0838,
+        "notes": "Conference room - low load, excellent signal"
+      },
+      {
+        "name": "AP-08",
+        "serial": "Q2XX-AP08-8888",
+        "model": "MR46",
+        "mac": "00:11:22:33:44:88",
+        "lanIp": "10.0.0.28",
+        "firmware": "wireless-29.6",
+        "networkId": "L_3947405073390239794",
+        "tags": [
+          "floor-2",
+          "development-area"
+        ],
+        "address": "123 Innovation Way, San Jose, CA",
+        "lat": 37.4229,
+        "lng": -122.0841,
+        "notes": "Floor 2 - distant but available"
+      }
+    ]
+  },
+  "device_details": {
+    "Q2XX-ABCD-1234": {
+      "serial": "Q2XX-ABCD-1234",
+      "model": "MR46",
+      "mac": "00:11:22:33:44:55",
+      "networkId": "L_3947405073390239794",
+      "name": "AP-03",
+      "status": "online",
+      "tags": [
+        "floor-1",
+        "west-wing"
+      ],
+      "firmware": "wireless-29.6",
+      "lanIp": "10.0.0.23",
+      "address": "123 Innovation Way, San Jose, CA"
+    },
+    "Q2XX-AP06-5678": {
+      "serial": "Q2XX-AP06-5678",
+      "model": "MR46",
+      "mac": "00:11:22:33:44:99",
+      "networkId": "L_3947405073390239794",
+      "name": "AP-06",
+      "status": "online",
+      "tags": [
+        "floor-1",
+        "east-wing"
+      ],
+      "firmware": "wireless-29.6",
+      "lanIp": "10.0.0.26",
+      "address": "123 Innovation Way, San Jose, CA"
+    },
+    "Q2XX-AP01-1111": {
+      "serial": "Q2XX-AP01-1111",
+      "model": "MR46",
+      "mac": "00:11:22:33:44:11",
+      "networkId": "L_3947405073390239794",
+      "name": "AP-01",
+      "status": "online",
+      "tags": [
+        "floor-1",
+        "central-lobby"
+      ],
+      "firmware": "wireless-29.6",
+      "lanIp": "10.0.0.21",
+      "address": "123 Innovation Way, San Jose, CA"
+    },
+    "Q2XX-AP04-4444": {
+      "serial": "Q2XX-AP04-4444",
+      "model": "MR46",
+      "mac": "00:11:22:33:44:44",
+      "networkId": "L_3947405073390239794",
+      "name": "AP-04",
+      "status": "online",
+      "tags": [
+        "floor-1",
+        "conference-room"
+      ],
+      "firmware": "wireless-29.6",
+      "lanIp": "10.0.0.24",
+      "address": "123 Innovation Way, San Jose, CA"
+    },
+    "Q2XX-AP08-8888": {
+      "serial": "Q2XX-AP08-8888",
+      "model": "MR46",
+      "mac": "00:11:22:33:44:88",
+      "networkId": "L_3947405073390239794",
+      "name": "AP-08",
+      "status": "online",
+      "tags": [
+        "floor-2",
+        "development-area"
+      ],
+      "firmware": "wireless-29.6",
+      "lanIp": "10.0.0.28",
+      "address": "123 Innovation Way, San Jose, CA"
+    }
+  },
+  "device_wireless_status": {
+    "Q2XX-ABCD-1234": {
+      "serial": "Q2XX-ABCD-1234",
+      "timestamp": "2025-11-13T22:22:06.064Z",
+      "radio0": {
+        "channel": 36,
+        "snr": 32.5,
+        "noiseFloor": -95,
+        "clientCount": 18,
+        "utilizationPercent": 46.3
+      },
+      "radio1": {
+        "channel": 11,
+        "snr": 29.1,
+        "noiseFloor": -92,
+        "clientCount": 12,
+        "utilizationPercent": 34.4
+      }
+    },
+    "Q2XX-AP06-5678": {
+      "serial": "Q2XX-AP06-5678",
+      "timestamp": "2025-11-13T22:22:06.064Z",
+      "radio0": {
+        "channel": 40,
+        "snr": 35.2,
+        "noiseFloor": -94,
+        "clientCount": 9,
+        "utilizationPercent": 22.0
+      },
+      "radio1": {
+        "channel": 6,
+        "snr": 32.8,
+        "noiseFloor": -93,
+        "clientCount": 6,
+        "utilizationPercent": 18.5
+      }
+    },
+    "Q2XX-AP01-1111": {
+      "serial": "Q2XX-AP01-1111",
+      "timestamp": "2025-11-13T22:22:06.064Z",
+      "radio0": {
+        "channel": 44,
+        "snr": 30.1,
+        "noiseFloor": -92,
+        "clientCount": 25,
+        "utilizationPercent": 68.2
+      },
+      "radio1": {
+        "channel": 1,
+        "snr": 28.4,
+        "noiseFloor": -91,
+        "clientCount": 19,
+        "utilizationPercent": 58.9
+      }
+    },
+    "Q2XX-AP04-4444": {
+      "serial": "Q2XX-AP04-4444",
+      "timestamp": "2025-11-13T22:22:06.064Z",
+      "radio0": {
+        "channel": 48,
+        "snr": 37.8,
+        "noiseFloor": -96,
+        "clientCount": 4,
+        "utilizationPercent": 12.3
+      },
+      "radio1": {
+        "channel": 11,
+        "snr": 36.1,
+        "noiseFloor": -95,
+        "clientCount": 3,
+        "utilizationPercent": 9.7
+      }
+    },
+    "Q2XX-AP08-8888": {
+      "serial": "Q2XX-AP08-8888",
+      "timestamp": "2025-11-13T22:22:06.064Z",
+      "radio0": {
+        "channel": 36,
+        "snr": 33.9,
+        "noiseFloor": -94,
+        "clientCount": 12,
+        "utilizationPercent": 35.6
+      },
+      "radio1": {
+        "channel": 6,
+        "snr": 31.7,
+        "noiseFloor": -91,
+        "clientCount": 6,
+        "utilizationPercent": 18.9
+      }
+    }
+  },
+  "network_wireless_usage_history": {
+    "L_3947405073390239794": [
+      {
+        "bucketStart": "2025-12-01T16:15:54Z",
+        "bucketEnd": "2025-12-01T16:20:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 31.4,
+        "airtimeUtilizationPercent": 34.3,
+        "retransmissionsPerMinute": 6,
+        "avgSignalToNoise": 33.8,
+        "avgRssi": -55,
+        "clientCount": 16,
+        "uplinkSpeedMbps": 899,
+        "downlinkSpeedMbps": 809,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "bucketStart": "2025-12-01T16:20:54Z",
+        "bucketEnd": "2025-12-01T16:25:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 40.0,
+        "airtimeUtilizationPercent": 40.9,
+        "retransmissionsPerMinute": 7,
+        "avgSignalToNoise": 32.0,
+        "avgRssi": -55,
+        "clientCount": 16,
+        "uplinkSpeedMbps": 862,
+        "downlinkSpeedMbps": 769,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "bucketStart": "2025-12-01T16:25:54Z",
+        "bucketEnd": "2025-12-01T16:30:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 45.3,
+        "airtimeUtilizationPercent": 47.2,
+        "retransmissionsPerMinute": 12,
+        "avgSignalToNoise": 30.1,
+        "avgRssi": -58,
+        "clientCount": 18,
+        "uplinkSpeedMbps": 805,
+        "downlinkSpeedMbps": 713,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "bucketStart": "2025-12-01T16:30:54Z",
+        "bucketEnd": "2025-12-01T16:35:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 49.9,
+        "airtimeUtilizationPercent": 52.6,
+        "retransmissionsPerMinute": 12,
+        "avgSignalToNoise": 29.1,
+        "avgRssi": -57,
+        "clientCount": 18,
+        "uplinkSpeedMbps": 789,
+        "downlinkSpeedMbps": 661,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "bucketStart": "2025-12-01T16:35:54Z",
+        "bucketEnd": "2025-12-01T16:40:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 52.8,
+        "airtimeUtilizationPercent": 54.0,
+        "retransmissionsPerMinute": 13,
+        "avgSignalToNoise": 28.0,
+        "avgRssi": -58,
+        "clientCount": 19,
+        "uplinkSpeedMbps": 754,
+        "downlinkSpeedMbps": 643,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "bucketStart": "2025-12-01T16:40:54Z",
+        "bucketEnd": "2025-12-01T16:45:54Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 50.7,
+        "airtimeUtilizationPercent": 54.7,
+        "retransmissionsPerMinute": 12,
+        "avgSignalToNoise": 29.1,
+        "avgRssi": -59,
+        "clientCount": 19,
+        "uplinkSpeedMbps": 765,
+        "downlinkSpeedMbps": 644,
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      }
+    ]
+  },
+  "ap_topology": {
+    "L_3947405073390239794": {
+      "Q2XX-ABCD-1234": {
+        "serial": "Q2XX-ABCD-1234",
+        "name": "AP-03",
+        "location": {
+          "floor": 1,
+          "zone": "west-wing",
+          "lat": 37.423,
+          "lng": -122.084
+        },
+        "nearbyAPs": [
+          {
+            "serial": "Q2XX-AP04-4444",
+            "name": "AP-04",
+            "distanceMeters": 8.5,
+            "estimatedRssi": -52,
+            "channelOverlap": false,
+            "sameFloor": true
+          },
+          {
+            "serial": "Q2XX-AP06-5678",
+            "name": "AP-06",
+            "distanceMeters": 12.3,
+            "estimatedRssi": -58,
+            "channelOverlap": false,
+            "sameFloor": true
+          },
+          {
+            "serial": "Q2XX-AP01-1111",
+            "name": "AP-01",
+            "distanceMeters": 18.7,
+            "estimatedRssi": -64,
+            "channelOverlap": true,
+            "sameFloor": true
+          },
+          {
+            "serial": "Q2XX-AP08-8888",
+            "name": "AP-08",
+            "distanceMeters": 28.4,
+            "estimatedRssi": -72,
+            "channelOverlap": false,
+            "sameFloor": false
+          }
+        ]
+      }
+    }
+  },
+  "network_wireless_health": {
+    "L_3947405073390239794": {
+      "windowStart": "2025-12-01T15:45:54Z",
+      "windowEnd": "2025-12-01T16:45:54Z",
+      "overallHealthScore": 78,
+      "coverage": {
+        "clientsBelowSNRThreshold": 1,
+        "worstSNR": 26.5,
+        "medianSNR": 29.5
+      },
+      "performance": {
+        "avgLatencyMs": 28,
+        "avgJitterMs": 8,
+        "avgPacketLossPercent": 0.7
+      },
+      "capacity": {
+        "overutilizedRadios": 0,
+        "avgChannelUtilizationPercent": 50.0,
+        "avgAirtimeUtilizationPercent": 54.0
+      },
+      "clientExperience": {
+        "dhcpFailures": 0,
+        "authFailures": 1,
+        "healthScore": 76
+      },
+      "bestApRecommendation": null,
+      "note": "SCENARIO_2_PARTIAL_DEGRADE"
+    }
+  },
+  "network_wireless_latency_history": {
+    "L_3947405073390239794": [
+      {
+        "timeslotStart": "2025-12-01T16:15:54Z",
+        "timeslotEnd": "2025-12-01T16:20:54Z",
+        "latencyMs": 17,
+        "jitterMs": 5,
+        "packetLossPercent": 0.25,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "timeslotStart": "2025-12-01T16:20:54Z",
+        "timeslotEnd": "2025-12-01T16:25:54Z",
+        "latencyMs": 24,
+        "jitterMs": 5,
+        "packetLossPercent": 0.32,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "timeslotStart": "2025-12-01T16:25:54Z",
+        "timeslotEnd": "2025-12-01T16:30:54Z",
+        "latencyMs": 28,
+        "jitterMs": 8,
+        "packetLossPercent": 0.56,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "timeslotStart": "2025-12-01T16:30:54Z",
+        "timeslotEnd": "2025-12-01T16:35:54Z",
+        "latencyMs": 29,
+        "jitterMs": 10,
+        "packetLossPercent": 0.8,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "timeslotStart": "2025-12-01T16:35:54Z",
+        "timeslotEnd": "2025-12-01T16:40:54Z",
+        "latencyMs": 35,
+        "jitterMs": 12,
+        "packetLossPercent": 0.9,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      },
+      {
+        "timeslotStart": "2025-12-01T16:40:54Z",
+        "timeslotEnd": "2025-12-01T16:45:54Z",
+        "latencyMs": 29,
+        "jitterMs": 10,
+        "packetLossPercent": 0.8,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "SCENARIO_2_PARTIAL_DEGRADE"
+      }
+    ]
+  },
+  "network_wireless_failed_connections": {
+    "L_3947405073390239794": []
+  },
+  "device_clients": {
+    "Q2XX-ABCD-1234": [
+      {
+        "mac": "AA:BB:CC:DD:EE:01",
+        "ip": "10.0.0.101",
+        "description": "Anton-Laptop",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 18234
+      },
+      {
+        "mac": "AA:BB:CC:DD:EE:02",
+        "ip": "10.0.0.102",
+        "description": "Teams-Room",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 76211
+      }
+    ],
+    "Q2XX-AP06-5678": [
+      {
+        "mac": "AA:BB:CC:DD:EE:03",
+        "ip": "10.0.0.103",
+        "description": "Design-iPad",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 9234
+      }
+    ],
+    "Q2XX-AP01-1111": [
+      {
+        "mac": "AA:BB:CC:DD:EE:04",
+        "ip": "10.0.0.104",
+        "description": "Sales-Laptop-01",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 15234
+      },
+      {
+        "mac": "AA:BB:CC:DD:EE:05",
+        "ip": "10.0.0.105",
+        "description": "Reception-Desktop",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 22100
+      },
+      {
+        "mac": "AA:BB:CC:DD:EE:06",
+        "ip": "10.0.0.106",
+        "description": "Visitor-iPhone",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 5234
+      }
+    ],
+    "Q2XX-AP04-4444": [
+      {
+        "mac": "AA:BB:CC:DD:EE:07",
+        "ip": "10.0.0.107",
+        "description": "Conference-Display",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 8234
+      }
+    ],
+    "Q2XX-AP08-8888": [
+      {
+        "mac": "AA:BB:CC:DD:EE:08",
+        "ip": "10.0.0.108",
+        "description": "Dev-Laptop-01",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 19234
+      },
+      {
+        "mac": "AA:BB:CC:DD:EE:09",
+        "ip": "10.0.0.109",
+        "description": "Dev-Laptop-02",
+        "ssid": "MCW-SanJose",
+        "status": "Online",
+        "usageKb": 14234
+      }
+    ]
+  },
   "network_clients": {
     "L_3947405073390239794": [
       {
@@ -106,10 +698,11 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2025-11-13T22:22:06.061410",
+        "lastSeen": "2025-12-01T16:45:54.920082",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
+        "deviceSerial": "Q2XX-ABCD-1234",
         "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
         "recentDeviceName": "San Jose 2",
         "recentDeviceMac": "0c:8d:db:8d:30:80",
@@ -122,7 +715,8 @@
           "recv": 1581769,
           "total": 1624375
         },
-        "status": "Offline",
+        "status": "Online",
+        "wiredOrWireless": "wireless",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -144,10 +738,11 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2025-11-13T22:22:06.061423",
+        "lastSeen": "2025-12-01T16:45:54.920085",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
+        "deviceSerial": "Q2XX-ABCD-1234",
         "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
         "recentDeviceName": "San Jose 2",
         "recentDeviceMac": "0c:8d:db:8d:30:80",
@@ -161,6 +756,7 @@
           "total": 1624375
         },
         "status": "Online",
+        "wiredOrWireless": "wired",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -182,10 +778,11 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2025-11-13T22:22:06.061425",
+        "lastSeen": "2025-12-01T16:45:54.920086",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
+        "deviceSerial": "Q2XX-ABCD-1234",
         "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
         "recentDeviceName": "San Jose 2",
         "recentDeviceMac": "0c:8d:db:8d:30:80",
@@ -199,6 +796,7 @@
           "total": 1624375
         },
         "status": "Online",
+        "wiredOrWireless": "wired",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -220,10 +818,11 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2025-11-13T22:22:06.061427",
+        "lastSeen": "2025-12-01T16:45:54.920087",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
+        "deviceSerial": "Q2XX-ABCD-1234",
         "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
         "recentDeviceName": "San Jose 2",
         "recentDeviceMac": "0c:8d:db:8d:30:80",
@@ -236,7 +835,8 @@
           "recv": 665138,
           "total": 845430
         },
-        "status": "Offline",
+        "status": "Online",
+        "wiredOrWireless": "wired",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -258,10 +858,11 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2025-11-13T22:22:06.061428",
+        "lastSeen": "2025-12-01T16:45:54.920088",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
+        "deviceSerial": "Q2XX-ABCD-1234",
         "recentDeviceSerial": "Q2MN-Q3J9-YJHW",
         "recentDeviceName": "San Jose 2",
         "recentDeviceMac": "0c:8d:db:8d:30:80",
@@ -275,6 +876,7 @@
           "total": 1
         },
         "status": "Online",
+        "wiredOrWireless": "wired",
         "notes": null,
         "groupPolicy8021x": null,
         "adaptivePolicyGroup": null,
@@ -572,34 +1174,38 @@
     "L_3947405073390239794": [
       {
         "occurredAt": "2025-11-13T15:15:36.429705",
-        "type": "network_recovery",
-        "description": "Network restored to healthy state",
-        "severity": "info",
-        "deviceSerial": "Q2MN-Q3J9-YJHW"
+        "eventType": "wireless_channel_change",
+        "productType": "wireless",
+        "description": "DFS event forced AP-03 to new channel",
+        "severity": "warning",
+        "deviceSerial": "Q2XX-ABCD-1234"
       },
       {
         "occurredAt": "2025-11-13T15:58:19.644273",
-        "type": "network_recovery",
-        "description": "Network restored to healthy state",
-        "severity": "info",
-        "deviceSerial": "Q2MN-Q3J9-YJHW"
-      },
-      {
-        "occurredAt": "2025-11-13T16:19:31.507384",
-        "type": "network_recovery",
-        "description": "Network restored to healthy state",
-        "severity": "info",
-        "deviceSerial": "Q2MN-Q3J9-YJHW"
+        "eventType": "client_assoc_failure",
+        "productType": "wireless",
+        "description": "Client Anton-Laptop failed 802.1X auth",
+        "severity": "warning",
+        "deviceSerial": "Q2XX-ABCD-1234"
       },
       {
         "occurredAt": "2025-11-13T16:50:32.503548",
-        "type": "network_recovery",
-        "description": "Network restored to healthy state",
-        "severity": "info",
+        "eventType": "vpn_failover",
+        "productType": "appliance",
+        "description": "MX WAN1 latency triggered failover",
+        "severity": "warning",
         "deviceSerial": "Q2MN-Q3J9-YJHW"
       },
       {
         "occurredAt": "2025-11-13T16:53:47.809732",
+        "eventType": "network_recovery",
+        "productType": "wireless",
+        "description": "AP-03 recovered after channel change",
+        "severity": "info",
+        "deviceSerial": "Q2XX-ABCD-1234"
+      },
+      {
+        "occurredAt": "2025-11-27T20:47:26.721989",
         "type": "network_recovery",
         "description": "Network restored to healthy state",
         "severity": "info",
@@ -625,6 +1231,90 @@
       }
     }
   },
+  "device_uplink_status": {
+    "Q2MN-Q3J9-YJHW": [
+      {
+        "interface": "wan1",
+        "status": "failed",
+        "ip": "192.168.1.10",
+        "gateway": "192.168.1.1",
+        "publicIp": "104.28.10.5",
+        "latencyMs": 210,
+        "jitterMs": 32,
+        "lossPercent": 4.8,
+        "uplinkSpeedMbps": 120,
+        "downlinkSpeedMbps": 210,
+        "lastReportedAt": "2025-11-13T22:22:06Z"
+      },
+      {
+        "interface": "wan2",
+        "status": "active",
+        "ip": "192.168.0.10",
+        "gateway": "192.168.0.1",
+        "publicIp": "44.31.18.90",
+        "latencyMs": 34,
+        "jitterMs": 4,
+        "lossPercent": 0.2,
+        "uplinkSpeedMbps": 940,
+        "downlinkSpeedMbps": 940,
+        "lastReportedAt": "2025-11-13T22:22:06Z"
+      }
+    ],
+    "Q2FX-DEVICE-001": [
+      {
+        "interface": "wan1",
+        "status": "active",
+        "ip": "192.168.1.100",
+        "gateway": "192.168.1.1",
+        "publicIp": "192.168.1.100",
+        "latencyMs": 18,
+        "jitterMs": 2,
+        "lossPercent": 0.1,
+        "uplinkSpeedMbps": 480,
+        "downlinkSpeedMbps": 520,
+        "lastReportedAt": "2025-11-13T22:22:06Z"
+      }
+    ]
+  },
+  "device_appliance_uplinks_settings": {
+    "Q2MN-Q3J9-YJHW": {
+      "wan1": {
+        "enabled": true,
+        "defaultGateway": "192.168.1.1",
+        "primaryDns": "8.8.8.8",
+        "secondaryDns": "8.8.4.4",
+        "uplinkSelection": "loadBalancing",
+        "bandwidthLimitsMbps": {
+          "up": 150,
+          "down": 300
+        }
+      },
+      "wan2": {
+        "enabled": true,
+        "defaultGateway": "192.168.0.1",
+        "primaryDns": "1.1.1.1",
+        "secondaryDns": "1.0.0.1",
+        "uplinkSelection": "preferred",
+        "bandwidthLimitsMbps": {
+          "up": 500,
+          "down": 1000
+        }
+      }
+    },
+    "Q2FX-DEVICE-001": {
+      "wan1": {
+        "enabled": true,
+        "defaultGateway": "192.168.1.1",
+        "primaryDns": "9.9.9.9",
+        "secondaryDns": "149.112.112.112",
+        "uplinkSelection": "failover",
+        "bandwidthLimitsMbps": {
+          "up": 200,
+          "down": 400
+        }
+      }
+    }
+  },
   "organization_uplinks_statuses": {
     "999781": [
       {
@@ -635,18 +1325,15 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2025-11-13T22:22:06.064622",
+        "lastReportedAt": "2025-12-01T16:45:23.668971",
         "uplinks": [
           {
-            "interface": "wan2",
-            "status": "connecting",
-            "ip": "192.168.1.69",
-            "gateway": "192.168.1.254",
-            "publicIp": "162.204.214.129",
-            "primaryDns": "192.168.1.254",
-            "secondaryDns": "0.0.0.0",
-            "ipAssignedBy": "dhcp",
-            "serial": "Q2MN-Q3J9-YJHW"
+            "uplink": "wan1",
+            "status": "active"
+          },
+          {
+            "uplink": "wan2",
+            "status": "active"
           }
         ]
       },
@@ -1553,7 +2240,7 @@
     "999781": [
       {
         "networkId": "L_3947405073390239794",
-        "networkName": "MCW San Jose New ",
+        "networkName": "MCW San Jose New",
         "merakiVpnPeers": [
           {
             "networkId": "N_615304299089607871",
@@ -1644,221 +2331,149 @@
   "device_loss_and_latency_history": {
     "Q2MN-Q3J9-YJHW": [
       {
-        "ts": "2025-11-13T16:53:47.799684",
+        "ts": "2025-12-01T16:45:23.668799",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799691",
+        "ts": "2025-12-01T16:45:23.668801",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799695",
+        "ts": "2025-12-01T16:45:23.668803",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799697",
+        "ts": "2025-12-01T16:45:23.668805",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799698",
+        "ts": "2025-12-01T16:45:23.668806",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799700",
+        "ts": "2025-12-01T16:45:23.668807",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799701",
+        "ts": "2025-12-01T16:45:23.668809",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799704",
+        "ts": "2025-12-01T16:45:23.668815",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799707",
+        "ts": "2025-12-01T16:45:23.668817",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T16:53:47.799708",
+        "ts": "2025-12-01T16:45:23.668819",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "RESTORED_TO_HEALTHY_STATE"
+        "note": "SCENARIO_1_HEALTHY"
       },
       {
-        "ts": "2025-11-13T18:15:59.143435",
-        "latencyMs": 31.65,
-        "lossPercent": 0.43,
-        "jitter": 2.83,
-        "goodput": 93.33,
+        "ts": "2025-12-01T16:45:29.812953",
+        "latencyMs": 28.69,
+        "lossPercent": 0.96,
+        "jitter": 6.79,
+        "goodput": 93.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:09.156711",
-        "latencyMs": 47.8,
-        "lossPercent": 0.76,
-        "jitter": 4.45,
-        "goodput": 91.67,
+        "ts": "2025-12-01T16:45:34.825689",
+        "latencyMs": 36.02,
+        "lossPercent": 1.2,
+        "jitter": 14.01,
+        "goodput": 90.3,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:19.172807",
-        "latencyMs": 63.95,
-        "lossPercent": 1.09,
-        "jitter": 6.08,
-        "goodput": 90.0,
+        "ts": "2025-12-01T16:45:39.845950",
+        "latencyMs": 29.22,
+        "lossPercent": 1.1,
+        "jitter": 10.52,
+        "goodput": 90.4,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:29.243014",
-        "latencyMs": 80.1,
-        "lossPercent": 1.42,
-        "jitter": 7.71,
-        "goodput": 88.33,
+        "ts": "2025-12-01T16:45:44.859533",
+        "latencyMs": 32.27,
+        "lossPercent": 0.54,
+        "jitter": 7.92,
+        "goodput": 91.6,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:39.330131",
-        "latencyMs": 96.25,
-        "lossPercent": 1.75,
-        "jitter": 9.33,
-        "goodput": 86.67,
+        "ts": "2025-12-01T16:45:49.873820",
+        "latencyMs": 26.48,
+        "lossPercent": 0.52,
+        "jitter": 10.16,
+        "goodput": 91.2,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:49.374161",
-        "latencyMs": 112.4,
-        "lossPercent": 2.08,
-        "jitter": 10.96,
-        "goodput": 85.0,
+        "ts": "2025-12-01T16:45:54.909388",
+        "latencyMs": 32.99,
+        "lossPercent": 0.4,
+        "jitter": 10.06,
+        "goodput": 91.1,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-11-13T18:16:59.397707",
-        "latencyMs": 128.55,
-        "lossPercent": 2.41,
-        "jitter": 12.59,
-        "goodput": 83.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:09.428240",
-        "latencyMs": 144.7,
-        "lossPercent": 2.74,
-        "jitter": 14.21,
-        "goodput": 81.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:19.473004",
-        "latencyMs": 160.85,
-        "lossPercent": 3.07,
-        "jitter": 15.84,
-        "goodput": 80.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:29.498071",
-        "latencyMs": 177.0,
-        "lossPercent": 3.4,
-        "jitter": 17.47,
-        "goodput": 78.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:39.522564",
-        "latencyMs": 193.15,
-        "lossPercent": 3.73,
-        "jitter": 19.09,
-        "goodput": 76.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:49.546361",
-        "latencyMs": 209.3,
-        "lossPercent": 4.06,
-        "jitter": 20.72,
-        "goodput": 75.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:17:59.592047",
-        "latencyMs": 225.45,
-        "lossPercent": 4.39,
-        "jitter": 22.35,
-        "goodput": 73.33,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T18:18:09.637736",
-        "latencyMs": 241.6,
-        "lossPercent": 4.72,
-        "jitter": 23.97,
-        "goodput": 71.67,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T22:21:56.009866",
-        "latencyMs": 257.75,
-        "lossPercent": 5.05,
-        "jitter": 25.6,
-        "goodput": 70.0,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2025-11-13T22:22:06.058080",
-        "latencyMs": 273.9,
-        "lossPercent": 5.38,
-        "jitter": 27.23,
-        "goodput": 68.33,
+        "ts": "2025-12-01T16:45:54.919923",
+        "latencyMs": 22.0,
+        "lossPercent": 0.4,
+        "jitter": 6.0,
+        "goodput": 93.0,
         "destinationIp": "8.8.8.8"
       }
     ]
@@ -1938,6 +2553,118 @@
         "permits6e": true
       },
       "upgradeStrategy": "minimizeUpgradeTime"
+    }
+  },
+  "network_topology_link_layer": {
+    "L_3947405073390239794": {
+      "nodes": [
+        {
+          "type": "appliance",
+          "id": "Q2MN-Q3J9-YJHW",
+          "name": "San Jose MX64",
+          "uplink": "wan1",
+          "status": "online"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-ABCD-1234",
+          "name": "AP-03",
+          "floorPlanId": "FP-FLR1",
+          "status": "warning"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP06-5678",
+          "name": "AP-06",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        }
+      ],
+      "links": [
+        {
+          "source": "Q2MN-Q3J9-YJHW",
+          "target": "Q2XX-ABCD-1234",
+          "linkType": "wired",
+          "status": "warning",
+          "latencyMs": 8,
+          "lossPercent": 0.2
+        },
+        {
+          "source": "Q2MN-Q3J9-YJHW",
+          "target": "Q2XX-AP06-5678",
+          "linkType": "wired",
+          "status": "ok",
+          "latencyMs": 4,
+          "lossPercent": 0.05
+        },
+        {
+          "source": "Q2XX-ABCD-1234",
+          "target": "Q2XX-AP06-5678",
+          "linkType": "wireless-mesh",
+          "status": "ok",
+          "latencyMs": 6,
+          "lossPercent": 0.15
+        }
+      ]
+    }
+  },
+  "network_floor_plans": {
+    "L_3947405073390239794": [
+      {
+        "floorPlanId": "FP-FLR1",
+        "name": "San Jose HQ - Floor 1",
+        "center": {
+          "lat": 37.4232,
+          "lng": -122.0841
+        },
+        "apCoordinates": [
+          {
+            "deviceSerial": "Q2XX-ABCD-1234",
+            "x": 12.4,
+            "y": 6.1,
+            "rfCoverageMeters": 24,
+            "historicalStabilityScore": 78
+          },
+          {
+            "deviceSerial": "Q2XX-AP06-5678",
+            "x": 35.2,
+            "y": 8.7,
+            "rfCoverageMeters": 25,
+            "historicalStabilityScore": 92
+          }
+        ]
+      }
+    ]
+  },
+  "service_impact_predictions": {
+    "L_3947405073390239794": {
+      "sourceAp": "AP-03",
+      "window": "2025-12-01T16:15:54Z/2025-12-01T16:45:54Z",
+      "usersImpacted": 2,
+      "failureProbability": 0.18,
+      "recommendedFallbackAp": null,
+      "reason": "Minor jitter spikes, likely transient",
+      "applications": [
+        {
+          "name": "Teams",
+          "activeUserPercent": 62,
+          "impactLevel": "low",
+          "notes": "Minor video quality fluctuation possible"
+        },
+        {
+          "name": "Email",
+          "activeUserPercent": 20,
+          "impactLevel": "none",
+          "notes": "Operating normally"
+        },
+        {
+          "name": "SMB/SFTP",
+          "activeUserPercent": 12,
+          "impactLevel": "none",
+          "notes": "Operating normally"
+        }
+      ],
+      "note": "SCENARIO_2_PARTIAL_DEGRADE"
     }
   }
 }

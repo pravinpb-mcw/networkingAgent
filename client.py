@@ -189,7 +189,7 @@ class AgenticContext:
 
 # GLM Configuration
 GLM_CONFIG = {
-    "api_key": os.environ.get("ANTHROPIC_API_KEY", "55f27b9278af4b3a83a735e228ae4fb8.2oREoHAH8PdKM13f"),
+    "api_key": "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj",
     "base_url": os.environ.get("ANTHROPIC_BASE_URL", "https://api.z.ai/api/anthropic"),
     "model": "glm-4.5",
     "max_tokens": 4096,
