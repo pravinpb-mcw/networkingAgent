@@ -10,4 +10,5 @@ network_monitor.log
 
 /__pycache__/
 
-
+.wenv
+langfuse/*

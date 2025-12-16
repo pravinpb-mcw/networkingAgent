@@ -1,5 +1,0 @@
-2025-11-13 17:20:20,624 - __main__ - INFO - Logging to client_debug_20251113_172020.log
-2025-11-13 17:20:20,626 - asyncio - DEBUG - Using selector: EpollSelector
-2025-11-13 17:20:20,658 - mcp.client.sse - DEBUG - Connecting to SSE endpoint: http://localhost:8000/sse/
-2025-11-13 17:20:20,664 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=8000 local_address=None timeout=5 socket_options=None
-2025-11-13 17:20:20,668 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
