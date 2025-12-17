@@ -1,0 +1,797 @@
+{
+  "Q2XX-AP06-5678": {
+    "ap_serial": "Q2XX-AP06-5678",
+    "history": [
+      {
+        "timestamp": "2025-06-20T16:52:52.015678Z",
+        "risk_score": 35,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_avg_ms": 20,
+          "jitter_avg_ms": 20,
+          "retransmissions_per_min": 20,
+          "snr_avg_db": 25,
+          "client_count": 1,
+          "auth_failures_per_hr": 1,
+          "latency_score": 20,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "note": "Low usage - spare AP"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:53:57.150369",
+        "risk_score": 43,
+        "risk_classification": "Sustained Degradation",
+        "metrics": {
+          "latency_score": 50,
+          "jitter_score": 50,
+          "retrans_score": 50,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "retrans_per_min": null,
+          "snr_db": null,
+          "client_count": 1,
+          "auth_failures_per_hr": 0,
+          "latency_ms": null,
+          "jitter_ms": null
+        }
+      },
+      {
+        "timestamp": "2025-06-20T16:54:24.926Z",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_ms": 0,
+          "latency_score": 20,
+          "jitter_ms": 0,
+          "jitter_score": 20,
+          "retransmissions_per_min": 0,
+          "retrans_score": 20,
+          "snr_db": 0,
+          "snr_score": 20,
+          "client_load": 1,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20,
+          "data_status": "limited_data"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:55:37.239165",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": null,
+          "jitter_ms": null,
+          "retrans_per_min": null,
+          "snr_db": null,
+          "client_count": 1,
+          "auth_failures_per_hr": null,
+          "avg_rssi": null,
+          "channel_utilization": null,
+          "airtime_utilization": null
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:56:16.098463",
+        "risk_score": 38,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_score": 100,
+          "jitter_score": 100,
+          "retrans_score": 20,
+          "snr_score": 100,
+          "load_score": 20,
+          "auth_score": 20,
+          "avg_retransmissions": 0,
+          "avg_snr": 0,
+          "client_count": 1,
+          "note": "No historical data available"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:58:03.773865",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_avg_ms": 25,
+          "latency_score": 20,
+          "jitter_avg_ms": 8,
+          "jitter_score": 20,
+          "retransmissions_per_min": 2,
+          "retrans_score": 20,
+          "snr_avg_db": 35,
+          "snr_score": 20,
+          "client_count": 1,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:58:38.000Z",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retransmissions_per_minute": 0,
+          "snr_score": 20,
+          "snr_db": 25,
+          "load_score": 20,
+          "client_count": 1,
+          "auth_score": 20,
+          "auth_failures_per_hour": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:59:23.007980",
+        "risk_score": 18,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 25,
+          "jitter_score": 20,
+          "jitter_ms": 8,
+          "retrans_score": 20,
+          "retrans_per_min": 10,
+          "snr_score": 20,
+          "snr_db": 30,
+          "load_score": 20,
+          "client_count": 1,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:00:52.492567",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": null,
+          "jitter_ms": null,
+          "retransmissions_per_min": null,
+          "snr_db": null,
+          "client_count": 1,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:01:57.956515",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_avg_ms": 0,
+          "jitter_avg_ms": 0,
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retransmissions_per_min": 0,
+          "retrans_score": 20,
+          "snr_avg_db": 0,
+          "snr_score": 20,
+          "client_count": 1,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20,
+          "channel_utilization": 0,
+          "airtime_utilization": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:03:03.841356",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": "no_data",
+          "jitter_ms": "no_data",
+          "retransmissions_per_min": "no_data",
+          "snr_db": "no_data",
+          "client_count": 1,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:05:04.896649",
+        "risk_score": 8,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 0,
+          "latency_value": 0,
+          "jitter_score": 0,
+          "jitter_value": 0,
+          "retrans_score": 20,
+          "retrans_value": 0,
+          "snr_score": 20,
+          "snr_value": 0,
+          "load_score": 20,
+          "client_count": 1,
+          "auth_score": 0,
+          "auth_failures": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:06:07.647102",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retrans_per_min": 0,
+          "snr_score": 20,
+          "snr_db": 25,
+          "load_score": 20,
+          "client_count": 1,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0,
+          "composite_score": 20
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:07:16.873736",
+        "risk_score": 37,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_score": 50,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "raw_clients": 1,
+          "data_limitation": "insufficient_usage_history_data"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:09:48.819811",
+        "risk_score": 31,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_score": 50,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "retransmissions_per_min": 0,
+          "snr_db": 0,
+          "client_count": 1,
+          "channel_utilization": 0
+        }
+      }
+    ],
+    "current": {
+      "timestamp": "2025-12-17T17:09:48.819811",
+      "risk_score": 31,
+      "risk_classification": "Temporary Degradation",
+      "metrics": {
+        "latency_score": 50,
+        "jitter_score": 50,
+        "retrans_score": 20,
+        "snr_score": 20,
+        "load_score": 20,
+        "auth_score": 20,
+        "retransmissions_per_min": 0,
+        "snr_db": 0,
+        "client_count": 1,
+        "channel_utilization": 0
+      }
+    },
+    "last_updated": "2025-12-17T17:09:48.819811"
+  },
+  "Q2XX-AP01-1111": {
+    "ap_serial": "Q2XX-AP01-1111",
+    "history": [
+      {
+        "timestamp": "2025-06-20T16:52:52.015678Z",
+        "risk_score": 28,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_avg_ms": 20,
+          "jitter_avg_ms": 20,
+          "retransmissions_per_min": 20,
+          "snr_avg_db": 25,
+          "client_count": 3,
+          "auth_failures_per_hr": 1,
+          "latency_score": 20,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "note": "Central lobby - moderate traffic"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:06:17.359545",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retrans_per_min": 0,
+          "snr_score": 20,
+          "snr_db": 25,
+          "load_score": 20,
+          "client_count": 3,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0,
+          "composite_score": 20
+        }
+      }
+    ],
+    "current": {
+      "timestamp": "2025-12-17T17:06:17.359545",
+      "risk_score": 20,
+      "risk_classification": "Stable",
+      "metrics": {
+        "latency_score": 20,
+        "latency_ms": 0,
+        "jitter_score": 20,
+        "jitter_ms": 0,
+        "retrans_score": 20,
+        "retrans_per_min": 0,
+        "snr_score": 20,
+        "snr_db": 25,
+        "load_score": 20,
+        "client_count": 3,
+        "auth_score": 20,
+        "auth_failures_per_hr": 0,
+        "composite_score": 20
+      }
+    },
+    "last_updated": "2025-12-17T17:06:17.359545"
+  },
+  "Q2XX-AP04-4444": {
+    "ap_serial": "Q2XX-AP04-4444",
+    "history": [
+      {
+        "timestamp": "2025-06-20T16:52:52.015678Z",
+        "risk_score": 35,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_avg_ms": 20,
+          "jitter_avg_ms": 20,
+          "retransmissions_per_min": 20,
+          "snr_avg_db": 25,
+          "client_count": 1,
+          "auth_failures_per_hr": 1,
+          "latency_score": 20,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "note": "Conference room - low load"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:06:17.422021",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retrans_per_min": 0,
+          "snr_score": 20,
+          "snr_db": 25,
+          "load_score": 20,
+          "client_count": 1,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0,
+          "composite_score": 20
+        }
+      }
+    ],
+    "current": {
+      "timestamp": "2025-12-17T17:06:17.422021",
+      "risk_score": 20,
+      "risk_classification": "Stable",
+      "metrics": {
+        "latency_score": 20,
+        "latency_ms": 0,
+        "jitter_score": 20,
+        "jitter_ms": 0,
+        "retrans_score": 20,
+        "retrans_per_min": 0,
+        "snr_score": 20,
+        "snr_db": 25,
+        "load_score": 20,
+        "client_count": 1,
+        "auth_score": 20,
+        "auth_failures_per_hr": 0,
+        "composite_score": 20
+      }
+    },
+    "last_updated": "2025-12-17T17:06:17.422021"
+  },
+  "Q2XX-AP08-8888": {
+    "ap_serial": "Q2XX-AP08-8888",
+    "history": [
+      {
+        "timestamp": "2025-06-20T16:52:52.015678Z",
+        "risk_score": 35,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_avg_ms": 20,
+          "jitter_avg_ms": 20,
+          "retransmissions_per_min": 20,
+          "snr_avg_db": 25,
+          "client_count": 2,
+          "auth_failures_per_hr": 1,
+          "latency_score": 20,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 50,
+          "load_score": 20,
+          "auth_score": 20,
+          "note": "Floor 2 - distant but available"
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:06:17.555030",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retrans_per_min": 0,
+          "snr_score": 20,
+          "snr_db": 25,
+          "load_score": 20,
+          "client_count": 2,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0,
+          "composite_score": 20
+        }
+      }
+    ],
+    "current": {
+      "timestamp": "2025-12-17T17:06:17.555030",
+      "risk_score": 20,
+      "risk_classification": "Stable",
+      "metrics": {
+        "latency_score": 20,
+        "latency_ms": 0,
+        "jitter_score": 20,
+        "jitter_ms": 0,
+        "retrans_score": 20,
+        "retrans_per_min": 0,
+        "snr_score": 20,
+        "snr_db": 25,
+        "load_score": 20,
+        "client_count": 2,
+        "auth_score": 20,
+        "auth_failures_per_hr": 0,
+        "composite_score": 20
+      }
+    },
+    "last_updated": "2025-12-17T17:06:17.555030"
+  },
+  "Q2XX-ABCD-1234": {
+    "ap_serial": "Q2XX-ABCD-1234",
+    "history": [
+      {
+        "timestamp": "2025-12-17T16:53:54.037137",
+        "risk_score": 32,
+        "risk_classification": "Temporary Degradation",
+        "metrics": {
+          "latency_score": 50,
+          "jitter_score": 50,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "retrans_per_min": 3.5,
+          "snr_db": 34.2,
+          "client_count": 2,
+          "auth_failures_per_hr": 0,
+          "latency_ms": null,
+          "jitter_ms": null
+        }
+      },
+      {
+        "timestamp": "2025-06-20T16:54:24.926Z",
+        "risk_score": 16.5,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_ms": 0,
+          "latency_score": 20,
+          "jitter_ms": 0,
+          "jitter_score": 20,
+          "retransmissions_per_min": 3.5,
+          "retrans_score": 20,
+          "snr_db": 34.25,
+          "snr_score": 20,
+          "client_load": 2,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20,
+          "avg_channel_utilization": 29.5,
+          "avg_airtime_utilization": 31.7
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:55:15.623030",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": null,
+          "jitter_ms": null,
+          "retrans_per_min": 3.5,
+          "snr_db": 34.25,
+          "client_count": 2,
+          "auth_failures_per_hr": null,
+          "avg_rssi": -52.5,
+          "channel_utilization": 29.5,
+          "airtime_utilization": 31.7
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:56:16.064881",
+        "risk_score": 18.75,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "avg_retransmissions": 3.5,
+          "avg_snr": 34.3,
+          "client_count": 2
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:58:03.744198",
+        "risk_score": 20.5,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_avg_ms": 30,
+          "latency_score": 20,
+          "jitter_avg_ms": 10,
+          "jitter_score": 20,
+          "retransmissions_per_min": 3.5,
+          "retrans_score": 20,
+          "snr_avg_db": 34.2,
+          "snr_score": 20,
+          "client_count": 2,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:58:38.000Z",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retransmissions_per_minute": 3.4,
+          "snr_score": 20,
+          "snr_db": 34.3,
+          "load_score": 20,
+          "client_count": 2,
+          "auth_score": 20,
+          "auth_failures_per_hour": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T16:59:22.966865",
+        "risk_score": 18,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 25,
+          "jitter_score": 20,
+          "jitter_ms": 8,
+          "retrans_score": 20,
+          "retrans_per_min": 3.5,
+          "snr_score": 20,
+          "snr_db": 34.25,
+          "load_score": 20,
+          "client_count": 2,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:00:48.612773",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": null,
+          "jitter_ms": null,
+          "retransmissions_per_min": 3.5,
+          "snr_db": 34.3,
+          "client_count": 2,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:01:57.917797",
+        "risk_score": 17,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_avg_ms": 0,
+          "jitter_avg_ms": 0,
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retransmissions_per_min": 3.5,
+          "retrans_score": 20,
+          "snr_avg_db": 34.25,
+          "snr_score": 20,
+          "client_count": 2,
+          "load_score": 20,
+          "auth_failures_per_hr": 0,
+          "auth_score": 20,
+          "channel_utilization": 29.5,
+          "airtime_utilization": 31.67
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:02:57.928965",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "jitter_score": 20,
+          "retrans_score": 20,
+          "snr_score": 20,
+          "load_score": 20,
+          "auth_score": 20,
+          "latency_ms": "no_data",
+          "jitter_ms": "no_data",
+          "retransmissions_per_min": 3.5,
+          "snr_db": 34.25,
+          "client_count": 2,
+          "auth_failures_per_hr": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:05:00.631101",
+        "risk_score": 8,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 0,
+          "latency_value": 0,
+          "jitter_score": 0,
+          "jitter_value": 0,
+          "retrans_score": 20,
+          "retrans_value": 3.5,
+          "snr_score": 20,
+          "snr_value": 34.25,
+          "load_score": 20,
+          "client_count": 2,
+          "auth_score": 0,
+          "auth_failures": 0
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:06:07.611783",
+        "risk_score": 20,
+        "risk_classification": "Stable",
+        "metrics": {
+          "latency_score": 20,
+          "latency_ms": 0,
+          "jitter_score": 20,
+          "jitter_ms": 0,
+          "retrans_score": 20,
+          "retrans_per_min": 3.5,
+          "snr_score": 20,
+          "snr_db": 34.25,
+          "load_score": 20,
+          "client_count": 13,
+          "auth_score": 20,
+          "auth_failures_per_hr": 0,
+          "composite_score": 20
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:07:12.954339",
+        "risk_score": 98,
+        "risk_classification": "Likely Failure",
+        "metrics": {
+          "latency_score": 100,
+          "jitter_score": 100,
+          "retrans_score": 100,
+          "snr_score": 100,
+          "load_score": 100,
+          "auth_score": 20,
+          "raw_retrans": 60,
+          "raw_snr": 15.7,
+          "raw_clients": 37
+        }
+      },
+      {
+        "timestamp": "2025-12-17T17:09:43.850521",
+        "risk_score": 70,
+        "risk_classification": "Likely Failure",
+        "metrics": {
+          "latency_score": 50,
+          "jitter_score": 50,
+          "retrans_score": 100,
+          "snr_score": 100,
+          "load_score": 80,
+          "auth_score": 20,
+          "retransmissions_per_min": 60,
+          "snr_db": 15.7,
+          "client_count": 37,
+          "channel_utilization": 98.3
+        }
+      }
+    ],
+    "current": {
+      "timestamp": "2025-12-17T17:09:43.850521",
+      "risk_score": 70,
+      "risk_classification": "Likely Failure",
+      "metrics": {
+        "latency_score": 50,
+        "jitter_score": 50,
+        "retrans_score": 100,
+        "snr_score": 100,
+        "load_score": 80,
+        "auth_score": 20,
+        "retransmissions_per_min": 60,
+        "snr_db": 15.7,
+        "client_count": 37,
+        "channel_utilization": 98.3
+      }
+    },
+    "last_updated": "2025-12-17T17:09:43.850521"
+  }
+}

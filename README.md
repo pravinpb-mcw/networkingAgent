@@ -1,6 +1,10 @@
-# 🤖 Intelligent Network Orchestration Agent
+# Network Observability Agent System
 
-An **AI-powered automated network management system** that intelligently monitors, analyzes, and automatically fixes Cisco Meraki network issues using advanced LLM integration and policy-driven decision-making.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
+[![Status](https://img.shields.io/badge/status-production-green.svg)](https://github.com)
+
+Professional AI-powered network monitoring system with predictive failure detection and automated failover recommendations for Cisco Meraki networks.
 
 ## 🚀 **Key Features**
 
@@ -344,7 +348,22 @@ Security improvements will enhance network protection.
 
 ## 🚀 **Getting Started**
 
-### **Quick Start (Uplink Rerouting)**
+### **Quick Start (Multi-Agent System)**
+1. **Install dependencies**: `pip install -r requirements.txt`
+2. **Set API key**: `export ANTHROPIC_API_KEY=your_key`
+3. **Start all agents**: `python main.py`
+4. **Check agent status**: `python scripts/check_agents.py`
+
+### **Individual Agent Control**
+```bash
+python main.py --agent risk      # Agent 1: Risk Score calculation
+python main.py --agent nearest   # Agent 2: Nearest AP recommendations  
+python main.py --agent monitor   # Agent 3: Network monitoring (auto-starts dependencies)
+```
+
+**Note**: When starting the Network Monitoring Agent (Agent 3), it automatically starts the Risk Score Agent (Agent 1) and Nearest AP Agent (Agent 2) if they're not already running. This ensures seamless operation without manual dependency management.
+
+### **Legacy Quick Start (Uplink Rerouting)**
 1. **Install dependencies**: `pip install -r requirements.txt`
 2. **Set API key**: `export GEMINI_API_KEY=your_key`
 3. **Start mock server**: `python server/meraki_server.py`

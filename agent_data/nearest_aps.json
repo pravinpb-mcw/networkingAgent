@@ -1,0 +1,219 @@
+{
+  "Q2XX-AP08-8888": {
+    "ap_serial": "Q2XX-AP08-8888",
+    "last_updated": "2025-12-17T17:06:35.155910",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 28.4,
+        "rssi_dbm": -72,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 71,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 25.9,
+        "rssi_dbm": -66,
+        "client_load": 3,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 69,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 32.6,
+        "rssi_dbm": -70,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 67,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 35.1,
+        "rssi_dbm": -68,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 65,
+        "rank": 4
+      }
+    ]
+  },
+  "Q2XX-ABCD-1234": {
+    "ap_serial": "Q2XX-ABCD-1234",
+    "last_updated": "2025-12-17T17:10:28.597216",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 8.5,
+        "rssi_dbm": -52,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 94,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 12.3,
+        "rssi_dbm": -58,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 85.25,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 18.7,
+        "rssi_dbm": -64,
+        "client_load": 3,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 49,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 28.4,
+        "rssi_dbm": -72,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 43.5,
+        "rank": 4
+      }
+    ]
+  },
+  "Q2XX-AP06-5678": {
+    "ap_serial": "Q2XX-AP06-5678",
+    "last_updated": "2025-12-17T17:10:28.688361",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 12.3,
+        "rssi_dbm": -58,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 83.25,
+        "rank": 1
+      }
+    ]
+  },
+  "Q2XX-AP04-4444": {
+    "ap_serial": "Q2XX-AP04-4444",
+    "last_updated": "2025-12-17T17:06:34.947018",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 8.5,
+        "rssi_dbm": -52,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 100,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 15.2,
+        "rssi_dbm": -58,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 82,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 20.4,
+        "rssi_dbm": -62,
+        "client_load": 3,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 58,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 32.6,
+        "rssi_dbm": -70,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 69,
+        "rank": 4
+      }
+    ]
+  },
+  "Q2XX-AP01-1111": {
+    "ap_serial": "Q2XX-AP01-1111",
+    "last_updated": "2025-12-17T17:06:35.150975",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 18.7,
+        "rssi_dbm": -64,
+        "client_load": 2,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 62,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 20.4,
+        "rssi_dbm": -62,
+        "client_load": 1,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 60,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 22.8,
+        "rssi_dbm": -60,
+        "client_load": 1,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 60,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 25.9,
+        "rssi_dbm": -66,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 65,
+        "rank": 4
+      }
+    ]
+  }
+}

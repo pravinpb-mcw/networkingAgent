@@ -377,6 +377,24 @@ class MerakiAPIClient:
             tool_name="get_organization_networks"
         )
 
+    async def get_organization_devices(
+        self, 
+        organization_id: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get all devices in an organization
+        
+        GET /organizations/{organizationId}/devices
+        """
+        org_id = organization_id or self.organization_id
+        if not org_id:
+            raise ValueError("ORGANIZATION_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/organizations/{org_id}/devices",
+            method="GET",
+            tool_name="get_organization_devices"
+        )
+
     async def create_organization_network(
         self, 
         organization_id: str = None,
@@ -703,5 +721,24 @@ class MerakiAPIClient:
             f"/networks/{net_id}/wireless/apTopology/{serial}",
             method="GET",
             tool_name="get_ap_topology"
+        )
+    
+    # Network Topology Link Layer
+    async def get_network_topology_link_layer(
+        self,
+        network_id: str = None
+    ) -> Dict[str, Any]:
+        """Get network topology link layer with LLDP and CDP information
+        
+        GET /networks/{networkId}/topology/linkLayer
+        """
+        net_id = network_id or self.network_id
+        if not net_id:
+            raise ValueError("NETWORK_ID not found in .env file")
+        
+        return await self._make_request(
+            f"/networks/{net_id}/topology/linkLayer",
+            method="GET",
+            tool_name="get_network_topology_link_layer"
         )
 

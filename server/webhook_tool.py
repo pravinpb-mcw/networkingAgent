@@ -12,8 +12,9 @@ from typing import Any, Dict, Optional
 
 # Add parent directory to path to import webhook_module
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "core"))
 
-from webhook_module import WebhookModule
+from core.webhook_module import WebhookModule
 
 logger = logging.getLogger("webhook-tool")
 

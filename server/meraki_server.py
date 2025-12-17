@@ -48,6 +48,7 @@ from get_network_group_policies import get_network_group_policies
 from create_network_wireless_settings import create_network_wireless_settings
 from update_network_group_policy import update_network_group_policy
 from get_organization_networks import get_organization_networks
+from get_organization_devices import get_organization_devices
 from create_organization_network import create_organization_network
 from get_connectivity_monitoring import get_connectivity_monitoring_destinations
 from get_access_control_lists import get_network_access_control_lists
@@ -64,6 +65,17 @@ from get_wireless_latency_history import get_wireless_latency_history
 from get_wireless_failed_connections import get_wireless_failed_connections
 from get_device_clients import get_device_clients
 from get_ap_topology import get_ap_topology
+from get_network_topology_link_layer import get_network_topology_link_layer
+from get_service_impact_predictions import get_service_impact_predictions
+from json_storage_tools import (
+    update_risk_score,
+    get_risk_scores,
+    get_at_risk_aps,
+    update_nearest_aps,
+    get_nearest_aps,
+    get_failover_recommendation,
+    clear_agent_data
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -268,6 +280,28 @@ async def handle_list_tools() -> List[Tool]:
                     "organization_id": {
                         "type": "string",
                         "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_organization_devices",
+            description="Get all devices in the organization including Access Points, switches, and security appliances. Returns device serials, names, models, network IDs, and filters for wireless APs. Use this to discover ALL available Access Points in the network for risk assessment.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "organization_id": {
+                        "type": "string",
+                        "description": "Optional organization ID (uses .env if not provided)"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "description": "Optional filter: only return devices in this network"
                     },
                     "use_mock": {
                         "type": "boolean",
@@ -615,6 +649,46 @@ async def handle_list_tools() -> List[Tool]:
             }
         ),
         Tool(
+            name="get_network_topology_link_layer",
+            description="Get network topology link layer with LLDP and CDP information showing the exact physical layout of ALL devices (APs, switches, appliances) in the network. Returns nodes (devices), links (connections), and discovery data. Use this to understand the complete network topology and device relationships.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Network ID to query (optional, uses .env if not provided)"
+                    },
+                    "use_mock": {
+                        "type": "boolean",
+                        "description": "Whether to use mock server mode"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_service_impact_predictions",
+            description="""Get comprehensive service impact predictions for a network including:
+- Risk classification and recovery likelihood analysis
+- Trend analysis (channel utilization, SNR, retransmissions progression)
+- Current performance vs critical thresholds
+- RANKED failover candidates with scores and reasons
+- Application impact predictions (Teams, VOIP, SSH, File Transfers)
+- Execution plan for client migration
+- Time-to-failure estimates
+This tool provides the professional data needed for enterprise-grade network health reports.""",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "network_id": {
+                        "type": "string",
+                        "description": "Network ID to get service impact predictions for"
+                    }
+                },
+                "required": ["network_id"]
+            }
+        ),
+        Tool(
             name="send_teams_alert",
             description="Send alert to Microsoft Teams webhook. Use this to notify users about network issues, changes, or important events.",
             inputSchema={
@@ -747,6 +821,149 @@ async def handle_list_tools() -> List[Tool]:
                 },
                 "required": ["analysis", "insights"]
             }
+        ),
+        # ============ JSON Storage Tools for Agent Data ============
+        Tool(
+            name="update_risk_score",
+            description="Update risk score for an AP in the risk_scores.json file. Used by the Risk Calculation Agent to store computed risk scores.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "AP serial number"
+                    },
+                    "risk_score": {
+                        "type": "number",
+                        "description": "Calculated risk score (0-100)"
+                    },
+                    "risk_classification": {
+                        "type": "string",
+                        "description": "Risk classification category: Stable, Temporary Degradation, Sustained Degradation, or Likely Failure"
+                    },
+                    "metrics": {
+                        "type": "object",
+                        "description": "Individual metric scores and values",
+                        "additionalProperties": True
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "description": "ISO timestamp (auto-generated if not provided)"
+                    }
+                },
+                "required": ["ap_serial", "risk_score", "risk_classification", "metrics"]
+            }
+        ),
+        Tool(
+            name="get_risk_scores",
+            description="Get risk scores from the risk_scores.json file. Used by the Network Monitoring Agent to check AP health status.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "Specific AP serial (optional, gets all if not provided)"
+                    },
+                    "include_history": {
+                        "type": "boolean",
+                        "description": "Whether to include historical data"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_at_risk_aps",
+            description="Get all APs with risk score above threshold. Used by the Network Monitoring Agent to identify failing APs.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "min_risk_score": {
+                        "type": "number",
+                        "description": "Minimum risk score to include (default 40 = Sustained Degradation)"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="update_nearest_aps",
+            description="Update nearest AP recommendations for an AP. Used by the Nearest AP Agent to store topology-based failover candidates.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "Source AP serial number"
+                    },
+                    "nearest_aps": {
+                        "type": "array",
+                        "description": "List of nearby APs with ranking data",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ap_serial": {"type": "string"},
+                                "ap_name": {"type": "string"},
+                                "distance_meters": {"type": "number"},
+                                "rssi_dbm": {"type": "number"},
+                                "client_load": {"type": "integer"},
+                                "channel_overlap": {"type": "boolean"},
+                                "same_floor": {"type": "boolean"},
+                                "composite_score": {"type": "number"},
+                                "rank": {"type": "integer"}
+                            }
+                        }
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "description": "ISO timestamp (auto-generated if not provided)"
+                    }
+                },
+                "required": ["ap_serial", "nearest_aps"]
+            }
+        ),
+        Tool(
+            name="get_nearest_aps",
+            description="Get nearest AP recommendations from the nearest_aps.json file. Used by the Network Monitoring Agent for failover recommendations.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "Specific AP serial (optional, gets all if not provided)"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="get_failover_recommendation",
+            description="Get the best failover AP recommendation for a source AP. Returns top 3 ranked nearby APs for client migration.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "source_ap_serial": {
+                        "type": "string",
+                        "description": "The AP that needs failover"
+                    }
+                },
+                "required": ["source_ap_serial"]
+            }
+        ),
+        Tool(
+            name="clear_agent_data",
+            description="Clear agent data files. Use with caution - removes all stored risk scores and/or nearest AP data.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "data_type": {
+                        "type": "string",
+                        "enum": ["risk_scores", "nearest_aps", "all"],
+                        "description": "Type of data to clear"
+                    }
+                },
+                "required": ["data_type"]
+            }
         )
     ]
 
@@ -799,6 +1016,10 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
         elif name == "get_organization_networks":
             organization_id = arguments.get("organization_id", None)
             return await get_organization_networks(organization_id, use_mock=USE_MOCK)
+        elif name == "get_organization_devices":
+            organization_id = arguments.get("organization_id", None)
+            network_id = arguments.get("network_id", None)
+            return await get_organization_devices(organization_id, network_id, use_mock=USE_MOCK)
         elif name == "create_organization_network":
             network_data = arguments.get("network_data", "")
             organization_id = arguments.get("organization_id", None)
@@ -858,6 +1079,12 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             network_id = arguments.get("network_id", "")
             ap_serial = arguments.get("ap_serial", "")
             return await get_ap_topology(network_id, ap_serial)
+        elif name == "get_network_topology_link_layer":
+            network_id = arguments.get("network_id", None)
+            return await get_network_topology_link_layer(network_id, use_mock=USE_MOCK)
+        elif name == "get_service_impact_predictions":
+            network_id = arguments.get("network_id", "")
+            return await get_service_impact_predictions(network_id, use_mock=USE_MOCK)
         elif name == "send_teams_alert":
             title = arguments.get("title", "")
             message = arguments.get("message", "")
@@ -887,6 +1114,42 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             insights = arguments.get("insights", "")
             result = send_network_insights(analysis, insights)
             return [{"type": "text", "text": json.dumps(result, indent=2)}]
+        
+        # ============ JSON Storage Tools ============
+        elif name == "update_risk_score":
+            ap_serial = arguments.get("ap_serial", "")
+            risk_score = arguments.get("risk_score", 0)
+            risk_classification = arguments.get("risk_classification", "Unknown")
+            metrics = arguments.get("metrics", {})
+            timestamp = arguments.get("timestamp", None)
+            return await update_risk_score(ap_serial, risk_score, risk_classification, metrics, timestamp)
+        
+        elif name == "get_risk_scores":
+            ap_serial = arguments.get("ap_serial", None)
+            include_history = arguments.get("include_history", False)
+            return await get_risk_scores(ap_serial, include_history)
+        
+        elif name == "get_at_risk_aps":
+            min_risk_score = arguments.get("min_risk_score", 40.0)
+            return await get_at_risk_aps(min_risk_score)
+        
+        elif name == "update_nearest_aps":
+            ap_serial = arguments.get("ap_serial", "")
+            nearest_aps = arguments.get("nearest_aps", [])
+            timestamp = arguments.get("timestamp", None)
+            return await update_nearest_aps(ap_serial, nearest_aps, timestamp)
+        
+        elif name == "get_nearest_aps":
+            ap_serial = arguments.get("ap_serial", None)
+            return await get_nearest_aps(ap_serial)
+        
+        elif name == "get_failover_recommendation":
+            source_ap_serial = arguments.get("source_ap_serial", "")
+            return await get_failover_recommendation(source_ap_serial)
+        
+        elif name == "clear_agent_data":
+            data_type = arguments.get("data_type", "all")
+            return await clear_agent_data(data_type)
 
         else:
             return [{"type": "text", "text": f"Unknown tool: {name}"}]
