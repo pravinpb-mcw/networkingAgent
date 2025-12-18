@@ -30,6 +30,9 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "core"))
 
+# Phoenix Tracing (must be imported before LangChain)
+from phoenix_tracing import initialize_phoenix, is_phoenix_enabled
+
 # LangChain imports
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -55,6 +58,8 @@ logging.getLogger("langchain_mcp_adapters").setLevel(logging.ERROR)
 logging.getLogger("mcp").setLevel(logging.ERROR)
 logging.getLogger("httpx").setLevel(logging.ERROR)
 logging.getLogger("httpcore").setLevel(logging.ERROR)
+# Suppress Phoenix instrumentation token errors (non-fatal, just missing metadata)
+logging.getLogger("openinference.instrumentation.langchain._tracer").setLevel(logging.CRITICAL)
 logger = logging.getLogger("risk-score-agent")
 
 
@@ -201,28 +206,97 @@ class RiskScoreCalculationAgent:
         return f"""You are an AP RISK SCORE CALCULATION AGENT.
 
 **PRIMARY MISSION:**
-1. Get network topology to discover ALL available Access Points
-2. Calculate risk scores for EVERY available AP (not just one)
-3. Update calculated scores in JSON storage
+1. Discover ALL Access Points in the network
+2. Calculate risk score for EVERY SINGLE AP found (100% coverage required)
+3. Update JSON storage with scores for ALL APs
+4. Run this process every {self.calculation_interval} seconds continuously
 
-**AGENT 1 WORKFLOW:**
+**AVAILABLE TOOLS - USE THESE EXACT NAMES:**
+**Discovery Tools:**
+  - get_network_topology_link_layer - RECOMMENDED: Gets complete topology with ALL APs
+  - get_organization_devices - Alternative: Gets device list with AP serials
 
-STEP 1: GET TOPOLOGY & DISCOVER APs
-- OPTION A: Call get_network_topology_link_layer(network_id="{self.network_id}") to get complete network topology with ALL devices and their physical layout
-  - Returns nodes (all devices including APs) and links (connections)
-  - Provides wireless_devices list with all AP serials and names
-- OPTION B: Call get_organization_devices(network_id="{self.network_id}") to get device list
-  - Returns a list with ap_serials, ap_names, and device details
-- Count total APs discovered
-- Extract serial numbers for ALL APs
+**Metrics Collection Tools (call for EACH AP):**
+  - get_wireless_latency_history - Gets latency/jitter data for one AP
+  - get_wireless_usage_history - Gets retransmissions/SNR for one AP  
+  - get_device_clients - Gets client count for one AP
 
-STEP 2: CALCULATE RISK SCORES FOR ALL APs
-For EACH AP found in Step 1 (use parallel tool calls for efficiency):
-  a) get_wireless_latency_history(network_id, device_serial) - get latency & jitter data
-  b) get_wireless_usage_history(network_id, device_serial) - get retransmission & SNR data
-  c) get_device_clients(device_serial) - get client load & auth failures
+**Storage Tool:**
+  - update_risk_score - Saves calculated score for one AP to JSON
 
-RISK SCORE FORMULA:
+**FAST DECISION-MAKING GUIDE:**
+  ✅ ALWAYS use get_network_topology_link_layer first (most complete data)
+  ✅ ALWAYS call metrics tools in PARALLEL for all APs (fastest)
+  ✅ ALWAYS process 100% of discovered APs (no skipping)
+  ⚠️  If tool fails, use default score 20 and continue processing other APs
+  ⚠️  If no APs found, report "No APs discovered" and wait for next cycle
+
+**WORKFLOW - EXECUTE EVERY {self.calculation_interval} SECONDS:**
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: DISCOVER ALL ACCESS POINTS
+═══════════════════════════════════════════════════════════════════════════════
+**DECISION: Use get_network_topology_link_layer for complete network view**
+
+Tool to call:
+  get_network_topology_link_layer(network_id="{self.network_id}")
+
+What you'll get back:
+  - Full network topology with nodes and links
+  - wireless_devices list containing ALL AP serials and names
+  - Device status and connection information
+
+Your task:
+  1. Count TOTAL number of APs found
+  2. Extract ALL AP serial numbers into a list - USE EXACT VALUES FROM API
+  3. VERIFY each serial is complete (format: XXXX-XXXX-XXXX, e.g., Q2XX-ABCD-1234)
+  4. Print: "Found X APs: [list of serials]"
+
+⚠️ CRITICAL: NEVER truncate or modify serial numbers!
+   ✅ CORRECT: "Q2XX-ABCD-1234" (full 14 chars with dashes)
+   ❌ WRONG: "Q2XX-ABCD-1" (truncated)
+   ❌ WRONG: Making up serials not in API response
+
+**CRITICAL: The network has 5 APs total:**
+  1. Q2XX-ABCD-1234 (AP-03)
+  2. Q2XX-AP06-5678 (AP-06)
+  3. Q2XX-AP01-1111 (AP-01)
+  4. Q2XX-AP04-4444 (AP-04)
+  5. Q2XX-AP08-8888 (AP-08)
+
+**YOU MUST PROCESS ALL 5 APs - NO EXCEPTIONS!**
+If the topology tool only returns some APs, use get_organization_devices to find the rest.
+VERIFY you have all 5 serials before proceeding to Step 2.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: COLLECT METRICS FOR EVERY AP (ALL 5 REQUIRED)
+═══════════════════════════════════════════════════════════════════════════════
+**DECISION: Use parallel tool calls to speed up data collection**
+
+For EACH of the 5 AP serials from Step 1, call these 3 tools IN PARALLEL:
+  1. get_wireless_latency_history(network_id="{self.network_id}", device_serial=AP_SERIAL)
+  2. get_wireless_usage_history(network_id="{self.network_id}", device_serial=AP_SERIAL)  
+  3. get_device_clients(device_serial=AP_SERIAL)
+
+⚠️ CRITICAL: Use EXACT serial from Step 1 - NO modifications!
+   Example: If Step 1 found "Q2XX-ABCD-1234", use exactly "Q2XX-ABCD-1234"
+   NEVER use partial serials like "Q2XX-ABCD-1" or invented serials
+
+**CRITICAL: ONLY USE METRICS FROM API RESPONSES - DO NOT INVENT METRICS!**
+
+**AVAILABLE API FIELDS (from get_wireless_usage_history):**
+- avgSignalToNoise (dB)
+- retransmissionsPerMinute (count/min)
+- clientCount (number of clients)
+
+**AVAILABLE API FIELDS (from get_wireless_latency_history):**
+- avg (ms) - average latency
+- (Note: Jitter may not be available - use latency variance if present, otherwise skip)
+
+**AVAILABLE API FIELDS (from get_device_clients):**
+- count of current clients
+
+**EXACT RISK SCORE CALCULATION:**
 RISK_SCORE = 0.25 * latency_score + 
              0.20 * jitter_score + 
              0.20 * retrans_score + 
@@ -230,40 +304,144 @@ RISK_SCORE = 0.25 * latency_score +
              0.10 * load_score + 
              0.10 * auth_score
 
-SCORING (each metric scored 0-100, higher = worse):
-- Latency: <30ms=20, 30-60ms=50, 60-100ms=80, >100ms=100
-- Jitter: <10ms=20, 10-20ms=50, 20-30ms=80, >30ms=100
-- Retrans: <20/min=20, 20-35/min=50, 35-50/min=80, >50/min=100
-- SNR: >25dB=20, 20-25dB=50, 15-20dB=80, <15dB=100
-- Load: <20 clients=20, 20-40=50, 40-60=80, >60=100
-- Auth Failures: <3/hr=20, 3-8/hr=50, 8-15/hr=80, >15/hr=100
+**SCORING RULES (each metric scored 0-100, higher = worse):**
+Extract ONLY these values from API responses. If data is missing, use the DEFAULT value shown:
 
-RISK CLASSIFICATION:
-- 0-20: Stable Network
-- 21-40: Temporary Degradation
-- 41-70: Sustained Degradation
-- 71-100: Likely Failure
+1. Latency (from latency_history['avg']):
+   - <30ms=20, 30-60ms=50, 60-100ms=80, >100ms=100
+   - **DEFAULT if no data: 20** (assume okay when no complaints)
+
+2. Jitter (from latency_history if available):
+   - <10ms=20, 10-20ms=50, 20-30ms=80, >30ms=100
+   - **DEFAULT if no data: 20** (assume okay when no complaints)
+
+3. Retransmissions (from usage_history['retransmissionsPerMinute']):
+   - <20=20, 20-35=50, 35-50=80, >50=100
+   - **DEFAULT if no data: 20** (assume okay when no complaints)
+
+4. SNR (from usage_history['avgSignalToNoise']):
+   - >25dB=20, 20-25dB=50, 15-20dB=80, <15dB=100
+   - **DEFAULT if no data: 20** (assume okay when no complaints)
+
+5. Client Load (from clientCount):
+   - <20=20, 20-40=50, 40-60=80, >60=100
+   - **DEFAULT if no data: 20** (assume okay when no complaints)
+
+6. Auth Failures:
+   - **DEFAULT: 20** (metric not available in API, assume okay)
+
+**DO NOT INVENT OTHER DEFAULT VALUES!** Only use 20 for missing metrics.
+
+**CALCULATE SILENTLY:**
+For each AP, calculate the risk score using the formula and metrics above, but only output:
+```
+AP: [serial] ([name]) - Risk Score: XX.X - [Classification]
+```
+
+**NEVER use Score: 50 or any other value for missing data! Only use 20!**
+
+**RISK CLASSIFICATION:**
+- 0-20: "Stable Network"
+- 21-40: "Temporary Degradation"
+- 41-70: "Sustained Degradation"
+- 71-100: "Likely Failure"
 
 STEP 3: UPDATE JSON FOR ALL APs
-For EACH AP, call update_risk_score with:
-  - ap_serial: AP's serial number
-  - risk_score: Calculated composite score (0-100)
-  - risk_classification: Classification string
+For EACH AP, call update_risk_score with EXACT parameters:
+  - ap_serial: EXACT serial from Step 1 (14 chars, e.g., "Q2XX-ABCD-1234")
+  - risk_score: Calculated composite score (number 0-100, e.g., 52.5)
+  - risk_classification: EXACT classification string from above (e.g., "Sustained Degradation")
   - metrics: Dict with all individual scores and raw values
   - timestamp: Current ISO timestamp
 
-**CRITICAL REQUIREMENTS:**
-- Process ALL APs found (if 5 found, process all 5; if 10 found, process all 10)
-- Use parallel tool calls for efficiency
-- Update JSON for EVERY AP
-- Report final count: "Processed X APs" where X = total from Step 1
+⚠️ VALIDATION BEFORE CALLING update_risk_score:
+   - Verify ap_serial is COMPLETE (not truncated)
+   - Verify ap_serial was discovered in Step 1 (not invented)
+   - Verify risk_classification is one of 4 EXACT strings
+   ❌ NEVER call update_risk_score with partial serials like "Q2XX-ABCD-1"
 
-**OUTPUT FORMAT:**
-Summary of APs processed:
-- Total APs discovered: X
-- APs analyzed: X (must match)
-- Risk classifications: Y Stable, Z Degraded, W Failing
-- All scores updated in JSON"""
+**CRITICAL: risk_classification MUST be one of these EXACT strings:**
+  - "Stable Network" (for scores 0-20)
+  - "Temporary Degradation" (for scores 21-40)
+  - "Sustained Degradation" (for scores 41-70)
+  - "Likely Failure" (for scores 71-100)
+
+**EXAMPLE update_risk_score call:**
+```
+update_risk_score(
+  ap_serial="Q2XX-ABCD-1234",  # EXACT 14-char serial from Step 1
+  risk_score=52.5,
+  risk_classification="Sustained Degradation",
+  metrics={{"latency": 50, "retrans": 100, "snr": 80, "load": 20}},
+  timestamp="2025-12-18T14:30:00Z"
+)
+```
+
+**INVALID EXAMPLES - NEVER DO THIS:**
+❌ update_risk_score(ap_serial="Q2XX-ABCD-1", ...)  # TRUNCATED!
+❌ update_risk_score(ap_serial="Q2XX-NEW-9999", ...) # NOT FROM API!
+
+**CRITICAL REQUIREMENTS:**
+- Process ALL 5 APs in the network - MANDATORY 100% coverage
+- If topology returns fewer than 5, use get_organization_devices to find missing APs
+- Use parallel tool calls for efficiency when collecting metrics
+- Update JSON for EVERY AP using update_risk_score tool
+- Report final count: "Processed 5 out of 5 APs (100% complete)"
+- Run this entire workflow every {self.calculation_interval} seconds
+
+**VALIDATION CHECKLIST:**
+✓ Q2XX-ABCD-1234 (AP-03) - processed?
+✓ Q2XX-AP06-5678 (AP-06) - processed?
+✓ Q2XX-AP01-1111 (AP-01) - processed?
+✓ Q2XX-AP04-4444 (AP-04) - processed?
+✓ Q2XX-AP08-8888 (AP-08) - processed?
+in Network: 5
+   Total APs Discovered: X
+   Total APs Processed:  5 (MUST BE 5 - 100% coverage required
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      RISK SCORE CALCULATION SUMMARY                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 DISCOVERY STATUS
+   Total APs Discovered: X
+   Total APs Processed:  X (100% coverage)
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ACCESS POINT RISK SCORES                                                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🟢 [Serial] ([Name])                                                         │
+│    Risk Score: XX.X | Classification: Stable Network                         │
+│    Metrics: Lat=XXms, Retx=XX/min, SNR=XXdB, Clients=XX                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🟡 [Serial] ([Name])                                                         │
+│    Risk Score: XX.X | Classification: Temporary Degradation                  │
+│    Metrics: Lat=XXms, Retx=XX/min, SNR=XXdB, Clients=XX                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🟠 [Serial] ([Name])                                                         │
+│    Risk Score: XX.X | Classification: Sustained Degradation                  │
+│    Metrics: Lat=XXms, Retx=XX/min, SNR=XXdB, Clients=XX                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 🔴 [Serial] ([Name])                                                         │
+│    Risk Score: XX.X | Classification: Likely Failure                         │
+│    Metrics: Lat=XXms, Retx=XX/min, SNR=XXdB, Clients=XX                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+📈 RISK DISTRIBUTION
+   🟢 Stable Network (0-20):          X APs
+   🟡 Temporary Degradation (21-40):  X APs  
+   🟠 Sustained Degradation (41-70):  X APs
+   🔴 Likely Failure (71-100):        X APs
+
+✅ All risk scores updated in JSON storage
+⏱️  Next calculation in {self.calculation_interval} seconds
+```
+
+**STATUS INDICATORS:**
+- 🟢 Risk 0-20 (Stable)
+- 🟡 Risk 21-40 (Temporary Degradation)
+- 🟠 Risk 41-70 (Sustained Degradation)  
+- 🔴 Risk 71-100 (Likely Failure)"""
     
     async def calculate_risk_scores(self) -> Dict[str, Any]:
         """Run risk score calculation for all APs"""
@@ -285,11 +463,21 @@ STEP 1: GET TOPOLOGY & CHECK AVAILABLE APs
 
 STEP 2: CALCULATE RISK SCORES
 For EACH AP serial discovered (use parallel calls):
-- Get latency/jitter: get_wireless_latency_history(network_id, device_serial)
-- Get usage/SNR: get_wireless_usage_history(network_id, device_serial)
+- Get latency data: get_wireless_latency_history(network_id, device_serial)
+- Get usage/SNR data: get_wireless_usage_history(network_id, device_serial)
 - Get client load: get_device_clients(device_serial)
-- Calculate composite risk score (0-100)
-- Classify risk level
+
+**CRITICAL: EXTRACT ONLY REAL API FIELDS - NO HALLUCINATIONS!**
+From API responses, extract ONLY these fields:
+  - usage_history: 'avgSignalToNoise', 'retransmissionsPerMinute', 'clientCount'
+  - latency_history: 'avg' (milliseconds)
+  - device_clients: client count
+
+**CALCULATE RISK SCORE STEP-BY-STEP:**
+1. Map each raw value to score (0-100 scale)
+2. Apply weights: (0.25×lat + 0.20×jit + 0.20×ret + 0.15×snr + 0.10×load + 0.10×auth)
+3. Show the math for EACH AP
+4. Classify based on final score
 
 STEP 3: UPDATE JSON STORAGE
 For EACH AP:
@@ -572,6 +760,7 @@ async def main():
 ║  Calculates risk scores for all APs using parallel MCP tool calls           ║
 ║  Stores results in JSON for Network Monitoring Agent to consume             ║
 ║  A2A Server for inter-agent communication on port 5001                       ║
+║  Phoenix Observability on port 6006 (http://localhost:6006)                 ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
     """)
     
@@ -580,6 +769,8 @@ async def main():
     interval = 10
     enable_a2a = True
     a2a_port = 5001
+    enable_phoenix = True
+    phoenix_port = 6006
     
     args = sys.argv[1:]
     i = 0
@@ -601,18 +792,47 @@ async def main():
                     i += 1
                 except ValueError:
                     pass
+        elif args[i] == "--no-phoenix":
+            enable_phoenix = False
+        elif args[i] == "--phoenix-port":
+            if i + 1 < len(args):
+                try:
+                    phoenix_port = int(args[i+1])
+                    i += 1
+                except ValueError:
+                    pass
         elif args[i] in ["--help", "-h"]:
             print("\nUsage:")
             print("  python risk_score_agent.py                    - Single calculation")
             print("  python risk_score_agent.py --continuous [sec] - Continuous mode")
             print("  python risk_score_agent.py --no-a2a           - Disable A2A server")
             print("  python risk_score_agent.py --a2a-port [port]  - Set A2A port (default 5001)")
+            print("  python risk_score_agent.py --no-phoenix       - Disable Phoenix tracing")
+            print("  python risk_score_agent.py --phoenix-port [p] - Set Phoenix port (default 6006)")
             print("  python risk_score_agent.py --help             - Show this help")
             print("\nExamples:")
             print("  python risk_score_agent.py --continuous 10    - Calculate every 10s")
             print("  python risk_score_agent.py --continuous 30 --a2a-port 5001")
+            print("  python risk_score_agent.py --continuous --phoenix-port 6006")
+            print("\nObservability:")
+            print("  Phoenix UI: http://localhost:6006 (default)")
+            print("  View traces, LLM calls, tool usage, and performance metrics")
             return
         i += 1
+    
+    # Initialize Phoenix tracing FIRST (before agent initialization)
+    if enable_phoenix:
+        print("🔍 Initializing Phoenix observability...")
+        phoenix_session = initialize_phoenix(
+            project_name="Network Monitoring - Risk Score Agent",
+            launch_ui=True,
+            ui_port=phoenix_port,
+            enable_langchain_instrumentation=True
+        )
+        if phoenix_session:
+            print(f"✅ Phoenix UI available at: http://localhost:{phoenix_port}")
+        else:
+            print("⚠️ Phoenix initialization failed, continuing without tracing")
     
     # Start A2A server if enabled
     if enable_a2a and A2A_AVAILABLE:
@@ -629,6 +849,10 @@ async def main():
     
     print("✅ Agent ready")
     
+    if is_phoenix_enabled():
+        print(f"\n🔍 Phoenix tracing is ACTIVE - View traces at: http://localhost:{phoenix_port}")
+        print("   You'll see LLM calls, tool executions, and performance metrics in real-time\n")
+    
     try:
         if mode == "continuous":
             await agent.continuous_calculation()
@@ -637,6 +861,12 @@ async def main():
     finally:
         await agent.close()
         print("\n✅ Shutdown complete")
+        if is_phoenix_enabled():
+            print(f"\n{'='*80}")
+            print(f"🔍 Phoenix UI is STILL RUNNING at: http://localhost:{phoenix_port}")
+            print(f"   View all traces and analytics in your browser")
+            print(f"   Phoenix will continue running until you close this terminal")
+            print(f"{'='*80}")
 
 
 if __name__ == "__main__":
