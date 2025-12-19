@@ -32,13 +32,64 @@ Professional AI-powered network monitoring system with predictive failure detect
 
 ```
 networkingAgent/
-├── 📁 client/                    # AI Client Components
-│   └── mcp_client.py             # 🎯 Main orchestration agent with LLM integration
-├── 📁 server/                    # MCP Server Components & Tools
-│   ├── meraki_server.py          # 🖥️ Mock Meraki API server
-│   ├── update_uplink.py          # 🔄 Device rerouting tool (CORE)
-│   ├── get_network_settings.py   # 📊 WAN status monitoring
-│   ├── get_organization_uplinks_statuses.py # 📱 Device data collection
+├── main.py                       # Main application entry point
+├── start_phoenix.bat             # Start Phoenix observability server
+├── README.md                     # This file
+├── requirements.txt              # Python dependencies
+├── pyproject.toml               # Project configuration
+│
+├── 📁 phoenix/                   # Phoenix Observability System
+│   ├── server.py                 # Phoenix server with auto-evaluation
+│   ├── README.md                 # Phoenix documentation
+│   ├── VALIDATION_GUIDE.md       # Client-facing validation guide
+│   ├── validators/               # 5 deterministic validators (μ 1.00)
+│   │   ├── tool_validators.py
+│   │   ├── comprehensive_validators.py
+│   │   └── input_output_validators.py
+│   ├── utils/                    # Debug utilities
+│   │   ├── check_math_failures.py
+│   │   ├── check_risk_math.py
+│   │   ├── check_tool_params.py
+│   │   └── check_traces.py
+│   └── .phoenix_data/            # SQLite database
+│
+├── 📁 agents/                    # AI Agent Modules
+│   ├── agent_1_risk_calculation.py    # Risk score calculator
+│   ├── agent_2_nearest_ap.py          # Nearest AP finder
+│   └── agent_3_failover_suggestion.py # Failover decision maker
+│
+├── 📁 client/                    # MCP Client
+│   └── mcp_client.py             # AI orchestration client
+│
+├── 📁 server/                    # MCP Server & Tools (100+ tools)
+│   ├── get_wireless_health.py
+│   ├── get_network_topology_link_layer.py
+│   ├── update_risk_score.py
+│   └── ... (100+ Meraki API tools)
+│
+├── 📁 scripts/                   # Utility Scripts
+│   ├── batch/                    # Batch files (organized)
+│   │   ├── run_all_agents.bat
+│   │   ├── run_agent1_risk.bat
+│   │   ├── run_agent2_nearest.bat
+│   │   ├── run_agent3_failover.bat
+│   │   ├── start_mock_server.bat
+│   │   └── check_status.bat
+│   └── (Python utility scripts)
+│
+├── 📁 agent_data/                # Agent Data Storage
+│   ├── risk_scores.json          # Risk calculations
+│   └── nearest_aps.json          # Nearest AP data
+│
+├── 📁 mock_data/                 # Test Data
+│   └── comprehensive_api_data.json  # Network topology & metrics
+│
+├── 📁 policies/                  # Business Rules
+│   └── network_policy.json       # Thresholds & rules
+│
+├── 📁 eval/                      # Original evaluation modules
+└── 📁 core/                      # Core utilities
+```
 │   ├── update_appliance_settings.py # ⚙️ WAN creation tool
 │   └── [other tools...]          # Additional network management tools
 ├── 📁 mock_data/                # Test Data & Configuration

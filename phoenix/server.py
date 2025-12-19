@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-PROJECT_DIR = Path(__file__).parent
-DB_DIR = PROJECT_DIR / ".phoenix"
+PROJECT_DIR = Path(__file__).parent.parent  # Go up one level from phoenix/ to networkingAgent/
+DB_DIR = Path(__file__).parent / ".phoenix_data"  # Store in phoenix/.phoenix_data/
 DB_DIR.mkdir(exist_ok=True)
 DB_FILE = DB_DIR / "phoenix_traces.db"
 OLLAMA_ENDPOINT = "http://192.168.13.162:11434"
@@ -57,8 +57,8 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
         from pathlib import Path
         
         # Import deterministic validators
-        sys.path.insert(0, str(Path(__file__).parent / "eval"))
-        from phoenix_tool_validators import evaluate_tool_parameters, evaluate_llm_decision_completeness
+        sys.path.insert(0, str(Path(__file__).parent / "validators"))
+        from tool_validators import evaluate_tool_parameters, evaluate_llm_decision_completeness
         from comprehensive_validators import (
             validate_risk_calculation_math,
             validate_ap_exists_in_topology,
