@@ -1,0 +1,61 @@
+{
+  "policy_version": "1.0",
+  "policy_name": "Wireless Network Failover Policy",
+  "description": "Defines thresholds and rules for automated failover suggestions in wireless networks",
+  
+  "risk_thresholds": {
+    "stable": {
+      "max_score": 20,
+      "action": "monitor",
+      "description": "Network is stable, no action required"
+    },
+    "temporary_degradation": {
+      "min_score": 21,
+      "max_score": 40,
+      "action": "alert",
+      "description": "Temporary degradation detected, send alert and monitor closely"
+    },
+    "sustained_degradation": {
+      "min_score": 41,
+      "max_score": 70,
+      "action": "failover_recommendation",
+      "description": "Sustained degradation - recommend failover to nearest healthy AP"
+    },
+    "likely_failure": {
+      "min_score": 71,
+      "max_score": 100,
+      "action": "urgent_failover",
+      "description": "Critical failure imminent - urgent failover required"
+    }
+  },
+  
+  "failover_criteria": {
+    "minimum_risk_score_for_failover": 41,
+    "minimum_risk_improvement_required": 15,
+    "maximum_distance_meters": 50,
+    "minimum_rssi_dbm": -75,
+    "prefer_same_floor": true,
+    "avoid_channel_overlap": true
+  },
+  
+  "alert_rules": {
+    "sustained_degradation": {
+      "severity": "warning",
+      "notification_channels": ["email", "webhook"],
+      "escalation_time_minutes": 15
+    },
+    "likely_failure": {
+      "severity": "critical",
+      "notification_channels": ["email", "webhook", "sms"],
+      "escalation_time_minutes": 5
+    }
+  },
+  
+  "decision_logic": {
+    "description": "Agent 3 provides suggestions only - no automated failover execution",
+    "operator_approval_required": true,
+    "provide_reasoning": true,
+    "include_impact_analysis": true,
+    "fallback_strategy": "If no suitable failover AP found, recommend manual investigation"
+  }
+}

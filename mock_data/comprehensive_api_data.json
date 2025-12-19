@@ -462,6 +462,66 @@
         "uplinkSpeedMbps": 237,
         "downlinkSpeedMbps": 156,
         "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-17T17:01:05Z",
+        "bucketEnd": "2025-12-17T17:06:05Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 28.5,
+        "airtimeUtilizationPercent": 30.2,
+        "retransmissionsPerMinute": 5,
+        "avgSignalToNoise": 34.5,
+        "avgRssi": -52,
+        "clientCount": 12,
+        "uplinkSpeedMbps": 920,
+        "downlinkSpeedMbps": 890,
+        "note": "HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-17T17:01:05Z",
+        "bucketEnd": "2025-12-17T17:06:05Z",
+        "deviceSerial": "Q2XX-AP01-1111",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 32.1,
+        "airtimeUtilizationPercent": 34.8,
+        "retransmissionsPerMinute": 8,
+        "avgSignalToNoise": 32.8,
+        "avgRssi": -54,
+        "clientCount": 15,
+        "uplinkSpeedMbps": 905,
+        "downlinkSpeedMbps": 875,
+        "note": "HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-17T17:01:05Z",
+        "bucketEnd": "2025-12-17T17:06:05Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 45.3,
+        "airtimeUtilizationPercent": 48.5,
+        "retransmissionsPerMinute": 22,
+        "avgSignalToNoise": 28.2,
+        "avgRssi": -59,
+        "clientCount": 18,
+        "uplinkSpeedMbps": 780,
+        "downlinkSpeedMbps": 720,
+        "note": "MINOR_DEGRADATION"
+      },
+      {
+        "bucketStart": "2025-12-17T17:01:05Z",
+        "bucketEnd": "2025-12-17T17:06:05Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 52.7,
+        "airtimeUtilizationPercent": 55.8,
+        "retransmissionsPerMinute": 28,
+        "avgSignalToNoise": 24.5,
+        "avgRssi": -62,
+        "clientCount": 22,
+        "uplinkSpeedMbps": 680,
+        "downlinkSpeedMbps": 620,
+        "note": "MODERATE_DEGRADATION"
       }
     ]
   },
@@ -2585,6 +2645,63 @@
     }
   },
   "network_topology_link_layer": {
+    "L_04156e88aca94215": {
+      "nodes": [
+        {
+          "type": "wireless",
+          "id": "Q2XX-ABCD-1234",
+          "name": "AP-03",
+          "floorPlanId": "FP-FLR1",
+          "status": "failing"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP06-5678",
+          "name": "AP-06",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP01-1111",
+          "name": "AP-01",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP04-4444",
+          "name": "AP-04",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP08-8888",
+          "name": "AP-08",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        }
+      ],
+      "links": [
+        {
+          "source": "Q2XX-ABCD-1234",
+          "target": "Q2XX-AP06-5678",
+          "linkType": "wireless-mesh",
+          "status": "critical",
+          "latencyMs": 35,
+          "lossPercent": 3.2
+        },
+        {
+          "source": "Q2XX-AP01-1111",
+          "target": "Q2XX-AP04-4444",
+          "linkType": "wireless-mesh",
+          "status": "ok",
+          "latencyMs": 8,
+          "lossPercent": 0.2
+        }
+      ]
+    },
     "L_3947405073390239794": {
       "nodes": [
         {
@@ -2607,6 +2724,27 @@
           "name": "AP-06",
           "floorPlanId": "FP-FLR1",
           "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP01-1111",
+          "name": "AP-01",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP04-4444",
+          "name": "AP-04",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
+        },
+        {
+          "type": "wireless",
+          "id": "Q2XX-AP08-8888",
+          "name": "AP-08",
+          "floorPlanId": "FP-FLR1",
+          "status": "healthy"
         }
       ],
       "links": [
@@ -2625,6 +2763,30 @@
           "status": "ok",
           "latencyMs": 4,
           "lossPercent": 0.05
+        },
+        {
+          "source": "Q2MN-Q3J9-YJHW",
+          "target": "Q2XX-AP01-1111",
+          "linkType": "wired",
+          "status": "ok",
+          "latencyMs": 3,
+          "lossPercent": 0.05
+        },
+        {
+          "source": "Q2MN-Q3J9-YJHW",
+          "target": "Q2XX-AP04-4444",
+          "linkType": "wired",
+          "status": "ok",
+          "latencyMs": 5,
+          "lossPercent": 0.1
+        },
+        {
+          "source": "Q2MN-Q3J9-YJHW",
+          "target": "Q2XX-AP08-8888",
+          "linkType": "wired",
+          "status": "ok",
+          "latencyMs": 4,
+          "lossPercent": 0.08
         },
         {
           "source": "Q2XX-ABCD-1234",

@@ -1,0 +1,109 @@
+{
+  "success": true,
+  "total_aps": 3,
+  "timestamp": "2025-12-19T05:23:58.460225Z",
+  "results": {
+    "Q2XX-ABCD-1234": {
+      "success": true,
+      "ap_serial": "Q2XX-ABCD-1234",
+      "ap_name": "AP-01",
+      "risk_score": 44.0,
+      "risk_classification": "Sustained Degradation",
+      "risk_indicator": "\ud83d\udfe0",
+      "timestamp": "2025-12-19T05:23:58.460225Z",
+      "metrics": {
+        "latency_ms": 45.5,
+        "latency_score": 50.0,
+        "jitter_ms": 15.2,
+        "jitter_score": 50.0,
+        "retrans_per_min": 30,
+        "retrans_score": 50.0,
+        "snr_db": 22.5,
+        "snr_score": 50.0,
+        "client_count": 15,
+        "load_score": 20.0,
+        "auth_failures_per_hour": 2,
+        "auth_score": 20.0
+      },
+      "calculation": {
+        "formula": "0.25\u00d7lat + 0.20\u00d7jit + 0.20\u00d7ret + 0.15\u00d7snr + 0.10\u00d7load + 0.10\u00d7auth",
+        "breakdown": {
+          "latency_contribution": 12.5,
+          "jitter_contribution": 10.0,
+          "retrans_contribution": 10.0,
+          "snr_contribution": 7.5,
+          "load_contribution": 2.0,
+          "auth_contribution": 2.0
+        }
+      }
+    },
+    "Q2XX-EFGH-5678": {
+      "success": true,
+      "ap_serial": "Q2XX-EFGH-5678",
+      "ap_name": "AP-02",
+      "risk_score": 84.0,
+      "risk_classification": "Likely Failure",
+      "risk_indicator": "\ud83d\udd34",
+      "timestamp": "2025-12-19T05:23:58.460225Z",
+      "metrics": {
+        "latency_ms": 85.0,
+        "latency_score": 80.0,
+        "jitter_ms": 25.0,
+        "jitter_score": 80.0,
+        "retrans_per_min": 55,
+        "retrans_score": 100.0,
+        "snr_db": 18.0,
+        "snr_score": 80.0,
+        "client_count": 45,
+        "load_score": 80.0,
+        "auth_failures_per_hour": 10,
+        "auth_score": 80.0
+      },
+      "calculation": {
+        "formula": "0.25\u00d7lat + 0.20\u00d7jit + 0.20\u00d7ret + 0.15\u00d7snr + 0.10\u00d7load + 0.10\u00d7auth",
+        "breakdown": {
+          "latency_contribution": 20.0,
+          "jitter_contribution": 16.0,
+          "retrans_contribution": 20.0,
+          "snr_contribution": 12.0,
+          "load_contribution": 8.0,
+          "auth_contribution": 8.0
+        }
+      }
+    },
+    "Q2XX-IJKL-9012": {
+      "success": true,
+      "ap_serial": "Q2XX-IJKL-9012",
+      "ap_name": "AP-03",
+      "risk_score": 20.0,
+      "risk_classification": "Stable Network",
+      "risk_indicator": "\ud83d\udfe2",
+      "timestamp": "2025-12-19T05:23:58.460225Z",
+      "metrics": {
+        "latency_ms": 25.0,
+        "latency_score": 20.0,
+        "jitter_ms": null,
+        "jitter_score": 20.0,
+        "retrans_per_min": 15,
+        "retrans_score": 20.0,
+        "snr_db": 28.0,
+        "snr_score": 20.0,
+        "client_count": 8,
+        "load_score": 20.0,
+        "auth_failures_per_hour": null,
+        "auth_score": 20.0
+      },
+      "calculation": {
+        "formula": "0.25\u00d7lat + 0.20\u00d7jit + 0.20\u00d7ret + 0.15\u00d7snr + 0.10\u00d7load + 0.10\u00d7auth",
+        "breakdown": {
+          "latency_contribution": 5.0,
+          "jitter_contribution": 4.0,
+          "retrans_contribution": 4.0,
+          "snr_contribution": 3.0,
+          "load_contribution": 2.0,
+          "auth_contribution": 2.0
+        }
+      }
+    }
+  }
+}

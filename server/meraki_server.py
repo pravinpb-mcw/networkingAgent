@@ -67,6 +67,11 @@ from get_device_clients import get_device_clients
 from get_ap_topology import get_ap_topology
 from get_network_topology_link_layer import get_network_topology_link_layer
 from get_service_impact_predictions import get_service_impact_predictions
+from calculate_risk_score_tool import calculate_risk_score
+from calculate_nearest_aps_tool import calculate_nearest_aps
+from read_risk_scores_tool import read_risk_scores_tool
+from read_nearest_aps_tool import read_nearest_aps_tool
+from read_network_policy_tool import read_network_policy_tool
 from json_storage_tools import (
     update_risk_score,
     get_risk_scores,
@@ -822,6 +827,167 @@ This tool provides the professional data needed for enterprise-grade network hea
                 "required": ["analysis", "insights"]
             }
         ),
+        # ============ RISK CALCULATION TOOL ============
+        Tool(
+            name="calculate_risk_score",
+            description="Calculate risk score for an AP using the standalone calculation script. LLM passes all 7 parameters - the script does ALL the math! Returns risk_score (0-100), risk_classification, individual metric scores, and calculation breakdown.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "AP serial number (REQUIRED - EXACT 14 chars with dashes, e.g., Q2XX-ABCD-1234)"
+                    },
+                    "ap_name": {
+                        "type": "string",
+                        "description": "AP name (REQUIRED, e.g., AP-03)"
+                    },
+                    "latency_ms": {
+                        "type": "number",
+                        "description": "Average latency in milliseconds (optional - omit or pass 0 if not available, script will use default score 20)"
+                    },
+                    "jitter_ms": {
+                        "type": "number",
+                        "description": "Jitter in milliseconds (optional - omit or pass 0 if not available)"
+                    },
+                    "retrans_per_min": {
+                        "type": "number",
+                        "description": "Retransmissions per minute (optional - omit or pass 0 if not available)"
+                    },
+                    "snr_db": {
+                        "type": "number",
+                        "description": "Signal-to-noise ratio in dB (optional - omit or pass 0 if not available)"
+                    },
+                    "client_count": {
+                        "type": "integer",
+                        "description": "Number of connected clients (optional - omit or pass 0 if not available)"
+                    }
+                },
+                "required": ["ap_serial", "ap_name"]
+            }
+        ),
+        # ============ NEAREST AP CALCULATION TOOL ============
+        Tool(
+            name="calculate_nearest_aps",
+            description="Calculate nearest APs for a source AP using distance and topology analysis. LLM passes all parameters - the script does ALL the distance/ranking calculations! Returns ranked list of nearest APs with distance, RSSI estimates, and failover recommendations.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "source_ap_serial": {
+                        "type": "string",
+                        "description": "Source AP serial number (REQUIRED)"
+                    },
+                    "source_ap_name": {
+                        "type": "string",
+                        "description": "Source AP name (REQUIRED)"
+                    },
+                    "source_ap_lat": {
+                        "type": "number",
+                        "description": "Source AP latitude (REQUIRED)"
+                    },
+                    "source_ap_lng": {
+                        "type": "number",
+                        "description": "Source AP longitude (REQUIRED)"
+                    },
+                    "source_ap_floor": {
+                        "type": "integer",
+                        "description": "Source AP floor number (REQUIRED)"
+                    },
+                    "source_ap_channel": {
+                        "type": "integer",
+                        "description": "Source AP WiFi channel (REQUIRED)"
+                    },
+                    "all_aps": {
+                        "type": "array",
+                        "description": "List of all APs with location/channel data (REQUIRED). Each AP should have: serial, name, lat, lng, floor, channel, client_count",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "serial": {"type": "string"},
+                                "name": {"type": "string"},
+                                "lat": {"type": "number"},
+                                "lng": {"type": "number"},
+                                "floor": {"type": "integer"},
+                                "channel": {"type": "integer"},
+                                "client_count": {"type": "integer"}
+                            }
+                        }
+                    },
+                    "max_candidates": {
+                        "type": "integer",
+                        "description": "Maximum number of nearest APs to return (default: 5)"
+                    }
+                },
+                "required": ["source_ap_serial", "source_ap_name", "source_ap_lat", "source_ap_lng", "source_ap_floor", "source_ap_channel", "all_aps"]
+            }
+        ),
+        # ============ AGENT 3 DATA READING TOOLS ============
+        Tool(
+            name="read_risk_scores",
+            description="Read risk scores from Agent 1 output (agent_data/risk_scores.json). Returns all AP risk scores with optional filtering by threshold and categorization.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "Custom path to risk_scores.json (optional, uses default if not provided)"
+                    },
+                    "min_threshold": {
+                        "type": "number",
+                        "description": "Minimum risk score to filter (e.g., 41 for failover candidates)"
+                    },
+                    "categorize": {
+                        "type": "boolean",
+                        "description": "Return categorized by severity (stable, temporary, sustained, critical)"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="read_nearest_aps",
+            description="Read nearest APs data from Agent 2 output (agent_data/nearest_aps.json). Returns failover candidates for specified AP or all APs.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "Custom path to nearest_aps.json (optional)"
+                    },
+                    "ap_serial": {
+                        "type": "string",
+                        "description": "Get candidates for specific AP serial (optional, gets all if not provided)"
+                    },
+                    "min_rssi": {
+                        "type": "number",
+                        "description": "Minimum acceptable RSSI in dBm (default -75)"
+                    },
+                    "max_distance": {
+                        "type": "number",
+                        "description": "Maximum distance in meters (default 50)"
+                    },
+                    "prefer_same_floor": {
+                        "type": "boolean",
+                        "description": "Prioritize same floor candidates (default true)"
+                    }
+                },
+                "required": []
+            }
+        ),
+        Tool(
+            name="read_network_policy",
+            description="Read network policy configuration (policies/network_policy.json). Returns thresholds, failover criteria, and decision rules.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "Custom path to policy file (optional)"
+                    }
+                },
+                "required": []
+            }
+        ),
         # ============ JSON Storage Tools for Agent Data ============
         Tool(
             name="update_risk_score",
@@ -1114,6 +1280,52 @@ async def handle_call_tool(name: str, arguments: dict) -> List:
             insights = arguments.get("insights", "")
             result = send_network_insights(analysis, insights)
             return [{"type": "text", "text": json.dumps(result, indent=2)}]
+        
+        # ============ RISK CALCULATION TOOL ============
+        elif name == "calculate_risk_score":
+            ap_serial = arguments.get("ap_serial", "")
+            ap_name = arguments.get("ap_name", "")
+            # Treat 0 or missing values as None for the calculation script
+            latency_ms = arguments.get("latency_ms") or None
+            jitter_ms = arguments.get("jitter_ms") or None
+            retrans_per_min = arguments.get("retrans_per_min") or None
+            snr_db = arguments.get("snr_db") or None
+            client_count = arguments.get("client_count") or None
+            return await calculate_risk_score(ap_serial, ap_name, latency_ms, jitter_ms, retrans_per_min, snr_db, client_count)
+        
+        # ============ NEAREST AP CALCULATION TOOL ============
+        elif name == "calculate_nearest_aps":
+            source_ap_serial = arguments.get("source_ap_serial", "")
+            source_ap_name = arguments.get("source_ap_name", "")
+            source_ap_lat = arguments.get("source_ap_lat", 0.0)
+            source_ap_lng = arguments.get("source_ap_lng", 0.0)
+            source_ap_floor = arguments.get("source_ap_floor", 0)
+            source_ap_channel = arguments.get("source_ap_channel", 0)
+            all_aps = arguments.get("all_aps", [])
+            max_candidates = arguments.get("max_candidates", 5)
+            return await calculate_nearest_aps(
+                source_ap_serial, source_ap_name, source_ap_lat, source_ap_lng,
+                source_ap_floor, source_ap_channel, all_aps, max_candidates
+            )
+        
+        # ============ AGENT 3 DATA READING TOOLS ============
+        elif name == "read_risk_scores":
+            file_path = arguments.get("file_path", None)
+            min_threshold = arguments.get("min_threshold", None)
+            categorize = arguments.get("categorize", False)
+            return await read_risk_scores_tool(file_path, min_threshold, categorize)
+        
+        elif name == "read_nearest_aps":
+            file_path = arguments.get("file_path", None)
+            ap_serial = arguments.get("ap_serial", None)
+            min_rssi = arguments.get("min_rssi", -75.0)
+            max_distance = arguments.get("max_distance", 50.0)
+            prefer_same_floor = arguments.get("prefer_same_floor", True)
+            return await read_nearest_aps_tool(file_path, ap_serial, min_rssi, max_distance, prefer_same_floor)
+        
+        elif name == "read_network_policy":
+            file_path = arguments.get("file_path", None)
+            return await read_network_policy_tool(file_path)
         
         # ============ JSON Storage Tools ============
         elif name == "update_risk_score":

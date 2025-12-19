@@ -1,0 +1,30 @@
+[
+  {
+    "ap_serial": "Q2XX-ABCD-1234",
+    "ap_name": "AP-01",
+    "latency_ms": 45.5,
+    "jitter_ms": 15.2,
+    "retrans_per_min": 30,
+    "snr_db": 22.5,
+    "client_count": 15,
+    "auth_failures_per_hour": 2
+  },
+  {
+    "ap_serial": "Q2XX-EFGH-5678",
+    "ap_name": "AP-02",
+    "latency_ms": 85.0,
+    "jitter_ms": 25.0,
+    "retrans_per_min": 55,
+    "snr_db": 18.0,
+    "client_count": 45,
+    "auth_failures_per_hour": 10
+  },
+  {
+    "ap_serial": "Q2XX-IJKL-9012",
+    "ap_name": "AP-03",
+    "latency_ms": 25.0,
+    "retrans_per_min": 15,
+    "snr_db": 28.0,
+    "client_count": 8
+  }
+]
