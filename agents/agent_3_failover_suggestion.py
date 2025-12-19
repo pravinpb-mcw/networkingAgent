@@ -103,7 +103,14 @@ WORKFLOW:
 2. Call read_risk_scores with min_threshold - find failing APs
 3. Call read_nearest_aps for each failing AP - get candidates
 
-OUTPUT FORMAT (Use actual data from tool responses):
+OUTPUT FORMAT (Use actual data from tool responses - NO TABLES):
+
+### AFFECTED AP:
+**AP Serial:** [Serial from data]
+**AP Name:** [Name from data]
+**Risk Score:** [Score]/100 exceeds threshold [threshold from policy]
+
+[3-line explanation why this AP is failing based on actual metrics from data - mention specific retransmission rate, SNR, latency values]
 
 ## PREDICTIVE ANALYSIS COMPLETE - [AP_NAME]
 
@@ -111,30 +118,41 @@ OUTPUT FORMAT (Use actual data from tool responses):
 ### RISK SCORE: [Actual score]/100
 
 ### CLIENT IMPACT:
-CONNECTED CLIENTS: [Number from data]
+**CONNECTED CLIENTS:** [Number from data]
 - [Client details if available]
 
 ### RANKED FAILOVER CANDIDATES:
 
-TOP RECOMMENDATION: [AP Serial] ([AP Name])
-- Score: [Composite score from data]/100
-- Distance: [Actual meters]m
-- RSSI: [Actual dBm]dBm  
-- Current Load: [Client count] clients
-- Same Floor: [Yes/No]
-- Risk Score: [Risk score of candidate AP]
+🥇 **TOP RECOMMENDATION: [AP Serial] ([AP Name])**
+- **Score:** [Composite score from data]/100
+- **Distance:** [Actual meters]m
+- **RSSI:** [Actual dBm]dBm  
+- **Current Load:** [Client count] clients
+- **Same Floor:** [Yes/No]
+- **Risk Improvement:** [current risk] → [candidate risk]
 
-SECONDARY: [2nd best AP with metrics]
+🥈 **SECONDARY: [AP Serial] ([AP Name])**
+- **Distance:** [meters]m
+- **RSSI:** [dBm]dBm
+- **Current Load:** [clients] clients
+- **Same Floor:** [Yes/No]
+- **Risk Improvement:** [current] → [candidate]
 
-TERTIARY: [3rd best AP with metrics]
+🥉 **TERTIARY: [AP Serial] ([AP Name])**
+- **Distance:** [meters]m
+- **RSSI:** [dBm]dBm
+- **Current Load:** [clients] clients
+- **Same Floor:** [Yes/No]
+- **Risk Improvement:** [current] → [candidate]
 
-### IMMEDIATE ACTION REQUIRED:
-EXECUTION PLAN:
-1. Switch clients from [failing AP] to [recommended AP]
-2. Monitor load increase
-3. Fallback plan if needed
+### SUGGESTIVE AND IMMEDIATE:
+**SWITCHING TIMELINE:** Within [X] minutes
+**EXECUTION PLAN:**
+1. Switch [X] clients from [failing AP] to [recommended AP]
+2. Monitor load increase from [current]→[new] clients on target AP
+3. Fallback: If issues arise, use [secondary AP] as backup
 
-Use ONLY actual numbers from tool responses. No invented data."""
+CRITICAL: Use ONLY actual numbers from tool responses. DO NOT create tables."""
 
         # Create agent
         agent = create_agent(

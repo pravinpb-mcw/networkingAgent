@@ -15,11 +15,11 @@
       "action": "alert",
       "description": "Temporary degradation detected, send alert and monitor closely"
     },
-    "sustained_degradation": {
+    "degrading": {
       "min_score": 41,
       "max_score": 70,
-      "action": "failover_recommendation",
-      "description": "Sustained degradation - recommend failover to nearest healthy AP"
+      "action": "failover_required",
+      "description": "Network degrading - failover required to nearest healthy AP"
     },
     "likely_failure": {
       "min_score": 71,

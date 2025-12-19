@@ -27,6 +27,9 @@ from dotenv import load_dotenv
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+# Phoenix tracing import
+from core.phoenix_tracing import initialize_phoenix
+
 # LangChain imports
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -462,6 +465,28 @@ Where X = number of APs discovered in Step 1
 
 async def main():
     """Main entry point"""
+    
+    # Check if Phoenix server is running before enabling tracing
+    phoenix_session = None
+    try:
+        import requests
+        response = requests.get("http://localhost:6006", timeout=1)
+        if response.status_code == 200:
+            print("\n🔍 Phoenix server detected, enabling tracing...")
+            from core.phoenix_tracing import initialize_phoenix
+            phoenix_session = initialize_phoenix(
+                project_name="Agent 1: Risk Calculation",
+                launch_ui=False,
+                ui_port=6006,
+                enable_langchain_instrumentation=True
+            )
+            if phoenix_session:
+                print("✅ Phoenix tracing enabled: http://localhost:6006")
+                print("📁 Traces saved to: .phoenix/phoenix_traces.db\n")
+    except:
+        # Phoenix server not running - continue without tracing
+        pass
+    
     print("""
 ===============================================================================
             RISK SCORE ORCHESTRATOR AGENT (Agent 1 - Simplified)

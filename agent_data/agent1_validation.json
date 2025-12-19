@@ -1,0 +1,146 @@
+{
+  "valid": false,
+  "total_aps": 5,
+  "checks": [
+    {
+      "ap_serial": "unknown",
+      "ap_name": null,
+      "risk_score": 20,
+      "risk_classification": "Stable",
+      "checks": [
+        {
+          "check": "risk_score_classification_match",
+          "valid": true,
+          "message": "Risk score matches classification"
+        },
+        {
+          "check": "contribution_breakdown_sum",
+          "valid": true,
+          "message": "Risk score calculation verified"
+        },
+        {
+          "check": "required_fields_present",
+          "valid": false,
+          "message": "Missing required field: ap_serial"
+        },
+        {
+          "check": "numeric_ranges_valid",
+          "valid": true,
+          "message": "All numeric values in valid ranges"
+        }
+      ]
+    },
+    {
+      "ap_serial": "unknown",
+      "ap_name": null,
+      "risk_score": 33.5,
+      "risk_classification": "Temporary Degradation",
+      "checks": [
+        {
+          "check": "risk_score_classification_match",
+          "valid": true,
+          "message": "Risk score matches classification"
+        },
+        {
+          "check": "contribution_breakdown_sum",
+          "valid": true,
+          "message": "Risk score calculation verified"
+        },
+        {
+          "check": "required_fields_present",
+          "valid": false,
+          "message": "Missing required field: ap_serial"
+        },
+        {
+          "check": "numeric_ranges_valid",
+          "valid": true,
+          "message": "All numeric values in valid ranges"
+        }
+      ]
+    },
+    {
+      "ap_serial": "unknown",
+      "ap_name": null,
+      "risk_score": 20,
+      "risk_classification": "Stable",
+      "checks": [
+        {
+          "check": "risk_score_classification_match",
+          "valid": true,
+          "message": "Risk score matches classification"
+        },
+        {
+          "check": "contribution_breakdown_sum",
+          "valid": true,
+          "message": "Risk score calculation verified"
+        },
+        {
+          "check": "required_fields_present",
+          "valid": false,
+          "message": "Missing required field: ap_serial"
+        },
+        {
+          "check": "numeric_ranges_valid",
+          "valid": true,
+          "message": "All numeric values in valid ranges"
+        }
+      ]
+    },
+    {
+      "ap_serial": "unknown",
+      "ap_name": null,
+      "risk_score": 26,
+      "risk_classification": "Temporary Degradation",
+      "checks": [
+        {
+          "check": "risk_score_classification_match",
+          "valid": true,
+          "message": "Risk score matches classification"
+        },
+        {
+          "check": "contribution_breakdown_sum",
+          "valid": true,
+          "message": "Risk score calculation verified"
+        },
+        {
+          "check": "required_fields_present",
+          "valid": false,
+          "message": "Missing required field: ap_serial"
+        },
+        {
+          "check": "numeric_ranges_valid",
+          "valid": true,
+          "message": "All numeric values in valid ranges"
+        }
+      ]
+    },
+    {
+      "ap_serial": "unknown",
+      "ap_name": null,
+      "risk_score": 48,
+      "risk_classification": "Sustained Degradation",
+      "checks": [
+        {
+          "check": "risk_score_classification_match",
+          "valid": true,
+          "message": "Risk score matches classification"
+        },
+        {
+          "check": "contribution_breakdown_sum",
+          "valid": true,
+          "message": "Risk score calculation verified"
+        },
+        {
+          "check": "required_fields_present",
+          "valid": false,
+          "message": "Missing required field: ap_serial"
+        },
+        {
+          "check": "numeric_ranges_valid",
+          "valid": true,
+          "message": "All numeric values in valid ranges"
+        }
+      ]
+    }
+  ]
+}
