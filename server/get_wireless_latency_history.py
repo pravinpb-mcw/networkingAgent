@@ -50,7 +50,23 @@ async def get_wireless_latency_history(
         else:
             # Filter by device if specified and data is a list
             if device_serial and isinstance(data, list):
-                data = [entry for entry in data if entry.get("deviceMac") == device_serial or entry.get("deviceSerial") == device_serial]
+                # If device_serial looks like a serial (not a MAC), convert it to MAC
+                device_mac = None
+                if device_serial and ':' not in device_serial:
+                    # It's a serial, need to look up the MAC
+                    devices = await client.get_organization_devices(network_id=network_id or client.network_id)
+                    for device in devices:
+                        if device.get('serial') == device_serial:
+                            device_mac = device.get('mac')
+                            logger.info(f"Resolved serial {device_serial} to MAC {device_mac}")
+                            break
+                
+                # Filter by either serial or MAC
+                if device_mac:
+                    data = [entry for entry in data if entry.get("deviceMac") == device_mac]
+                else:
+                    # Assume it's a MAC or filter by both
+                    data = [entry for entry in data if entry.get("deviceMac") == device_serial or entry.get("deviceSerial") == device_serial]
             
             result = {
                 "success": True,

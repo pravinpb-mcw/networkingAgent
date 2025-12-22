@@ -26,7 +26,7 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2025-12-17T17:06:05.684468",
+          "updated_at": "2025-12-22T17:13:35.011094",
           "latencyMs": 350.0,
           "packetLossPct": 12.0,
           "jitterMs": 55.0,
@@ -78,21 +78,6 @@
           "enabled": false
         }
       }
-    },
-    "L_04156e88aca94215": {
-      "name": "default network",
-      "productTypes": [
-        "appliance",
-        "wireless"
-      ],
-      "timeZone": "America/Los_Angeles",
-      "tags": [],
-      "enrollmentString": null,
-      "notes": "",
-      "isBoundToConfigTemplate": false,
-      "isVirtual": false,
-      "id": "L_04156e88aca94215",
-      "organizationId": "999781"
     }
   },
   "organizations": [
@@ -374,154 +359,454 @@
   "network_wireless_usage_history": {
     "L_3947405073390239794": [
       {
-        "bucketStart": "2025-12-17T16:36:05Z",
-        "bucketEnd": "2025-12-17T16:41:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 48.9,
-        "airtimeUtilizationPercent": 49.5,
-        "retransmissionsPerMinute": 12,
-        "avgSignalToNoise": 31.0,
-        "avgRssi": -57,
-        "clientCount": 21,
-        "uplinkSpeedMbps": 835,
-        "downlinkSpeedMbps": 768,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T16:41:05Z",
-        "bucketEnd": "2025-12-17T16:46:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 65.4,
-        "airtimeUtilizationPercent": 68.5,
-        "retransmissionsPerMinute": 24,
-        "avgSignalToNoise": 27.3,
-        "avgRssi": -63,
-        "clientCount": 26,
-        "uplinkSpeedMbps": 673,
-        "downlinkSpeedMbps": 568,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T16:46:05Z",
-        "bucketEnd": "2025-12-17T16:51:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 77.5,
-        "airtimeUtilizationPercent": 81.4,
-        "retransmissionsPerMinute": 32,
-        "avgSignalToNoise": 23.3,
-        "avgRssi": -64,
-        "clientCount": 27,
-        "uplinkSpeedMbps": 524,
-        "downlinkSpeedMbps": 400,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T16:51:05Z",
-        "bucketEnd": "2025-12-17T16:56:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 89.8,
-        "airtimeUtilizationPercent": 90.5,
-        "retransmissionsPerMinute": 43,
-        "avgSignalToNoise": 20.3,
-        "avgRssi": -69,
-        "clientCount": 33,
-        "uplinkSpeedMbps": 405,
-        "downlinkSpeedMbps": 319,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T16:56:05Z",
-        "bucketEnd": "2025-12-17T17:01:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 95.5,
-        "airtimeUtilizationPercent": 95.4,
-        "retransmissionsPerMinute": 54,
-        "avgSignalToNoise": 17.1,
-        "avgRssi": -71,
-        "clientCount": 34,
-        "uplinkSpeedMbps": 294,
-        "downlinkSpeedMbps": 251,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T17:01:05Z",
-        "bucketEnd": "2025-12-17T17:06:05Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 98.3,
-        "airtimeUtilizationPercent": 100.0,
-        "retransmissionsPerMinute": 60,
-        "avgSignalToNoise": 15.7,
-        "avgRssi": -73,
-        "clientCount": 37,
-        "uplinkSpeedMbps": 237,
-        "downlinkSpeedMbps": 156,
-        "note": "SCENARIO_4_FULL_FAILURE"
-      },
-      {
-        "bucketStart": "2025-12-17T17:01:05Z",
-        "bucketEnd": "2025-12-17T17:06:05Z",
+        "bucketStart": "2025-12-22T16:43:35Z",
+        "bucketEnd": "2025-12-22T16:48:35Z",
         "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 21.1,
+        "airtimeUtilizationPercent": 24.7,
+        "retransmissionsPerMinute": 3,
+        "avgSignalToNoise": 37.1,
+        "avgRssi": -54,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 934,
+        "downlinkSpeedMbps": 831,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:48:35Z",
+        "bucketEnd": "2025-12-22T16:53:35Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 22.8,
+        "airtimeUtilizationPercent": 24.6,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 37.1,
+        "avgRssi": -54,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 921,
+        "downlinkSpeedMbps": 863,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:53:35Z",
+        "bucketEnd": "2025-12-22T16:58:35Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 23.0,
+        "airtimeUtilizationPercent": 24.5,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 36.8,
+        "avgRssi": -54,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 937,
+        "downlinkSpeedMbps": 840,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:58:35Z",
+        "bucketEnd": "2025-12-22T17:03:35Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 21.2,
+        "airtimeUtilizationPercent": 24.1,
+        "retransmissionsPerMinute": 3,
+        "avgSignalToNoise": 37.3,
+        "avgRssi": -55,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 925,
+        "downlinkSpeedMbps": 830,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:03:35Z",
+        "bucketEnd": "2025-12-22T17:08:35Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 21.5,
+        "airtimeUtilizationPercent": 23.0,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 36.8,
+        "avgRssi": -54,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 934,
+        "downlinkSpeedMbps": 839,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:08:35Z",
+        "bucketEnd": "2025-12-22T17:13:35Z",
+        "deviceSerial": "Q2XX-AP06-5678",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 22.2,
+        "airtimeUtilizationPercent": 23.5,
+        "retransmissionsPerMinute": 1,
+        "avgSignalToNoise": 36.8,
+        "avgRssi": -54,
+        "clientCount": 5,
+        "uplinkSpeedMbps": 923,
+        "downlinkSpeedMbps": 866,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:43:35Z",
+        "bucketEnd": "2025-12-22T16:48:35Z",
+        "deviceSerial": "Q2XX-AP01-1111",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 28.2,
+        "airtimeUtilizationPercent": 29.3,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 35.5,
+        "avgRssi": -55,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 905,
+        "downlinkSpeedMbps": 846,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:48:35Z",
+        "bucketEnd": "2025-12-22T16:53:35Z",
+        "deviceSerial": "Q2XX-AP01-1111",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 28.3,
+        "airtimeUtilizationPercent": 30.8,
+        "retransmissionsPerMinute": 4,
+        "avgSignalToNoise": 35.5,
+        "avgRssi": -56,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 900,
+        "downlinkSpeedMbps": 864,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:53:35Z",
+        "bucketEnd": "2025-12-22T16:58:35Z",
+        "deviceSerial": "Q2XX-AP01-1111",
         "ssid": "MCW-SanJose",
         "channelUtilizationPercent": 28.5,
         "airtimeUtilizationPercent": 30.2,
-        "retransmissionsPerMinute": 5,
-        "avgSignalToNoise": 34.5,
-        "avgRssi": -52,
-        "clientCount": 12,
-        "uplinkSpeedMbps": 920,
-        "downlinkSpeedMbps": 890,
-        "note": "HEALTHY"
+        "retransmissionsPerMinute": 3,
+        "avgSignalToNoise": 35.4,
+        "avgRssi": -55,
+        "clientCount": 5,
+        "uplinkSpeedMbps": 902,
+        "downlinkSpeedMbps": 871,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
       },
       {
-        "bucketStart": "2025-12-17T17:01:05Z",
-        "bucketEnd": "2025-12-17T17:06:05Z",
+        "bucketStart": "2025-12-22T16:58:35Z",
+        "bucketEnd": "2025-12-22T17:03:35Z",
         "deviceSerial": "Q2XX-AP01-1111",
         "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 32.1,
-        "airtimeUtilizationPercent": 34.8,
-        "retransmissionsPerMinute": 8,
-        "avgSignalToNoise": 32.8,
-        "avgRssi": -54,
-        "clientCount": 15,
-        "uplinkSpeedMbps": 905,
-        "downlinkSpeedMbps": 875,
-        "note": "HEALTHY"
+        "channelUtilizationPercent": 27.0,
+        "airtimeUtilizationPercent": 30.6,
+        "retransmissionsPerMinute": 4,
+        "avgSignalToNoise": 35.3,
+        "avgRssi": -55,
+        "clientCount": 2,
+        "uplinkSpeedMbps": 912,
+        "downlinkSpeedMbps": 841,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
       },
       {
-        "bucketStart": "2025-12-17T17:01:05Z",
-        "bucketEnd": "2025-12-17T17:06:05Z",
+        "bucketStart": "2025-12-22T17:03:35Z",
+        "bucketEnd": "2025-12-22T17:08:35Z",
+        "deviceSerial": "Q2XX-AP01-1111",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 28.7,
+        "airtimeUtilizationPercent": 29.9,
+        "retransmissionsPerMinute": 3,
+        "avgSignalToNoise": 35.6,
+        "avgRssi": -56,
+        "clientCount": 2,
+        "uplinkSpeedMbps": 923,
+        "downlinkSpeedMbps": 869,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:08:35Z",
+        "bucketEnd": "2025-12-22T17:13:35Z",
+        "deviceSerial": "Q2XX-AP01-1111",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 27.2,
+        "airtimeUtilizationPercent": 29.0,
+        "retransmissionsPerMinute": 4,
+        "avgSignalToNoise": 35.3,
+        "avgRssi": -57,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 909,
+        "downlinkSpeedMbps": 834,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:43:35Z",
+        "bucketEnd": "2025-12-22T16:48:35Z",
         "deviceSerial": "Q2XX-AP04-4444",
         "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 45.3,
-        "airtimeUtilizationPercent": 48.5,
-        "retransmissionsPerMinute": 22,
-        "avgSignalToNoise": 28.2,
-        "avgRssi": -59,
-        "clientCount": 18,
-        "uplinkSpeedMbps": 780,
-        "downlinkSpeedMbps": 720,
-        "note": "MINOR_DEGRADATION"
+        "channelUtilizationPercent": 33.2,
+        "airtimeUtilizationPercent": 35.1,
+        "retransmissionsPerMinute": 5,
+        "avgSignalToNoise": 33.8,
+        "avgRssi": -57,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 904,
+        "downlinkSpeedMbps": 846,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
       },
       {
-        "bucketStart": "2025-12-17T17:01:05Z",
-        "bucketEnd": "2025-12-17T17:06:05Z",
+        "bucketStart": "2025-12-22T16:48:35Z",
+        "bucketEnd": "2025-12-22T16:53:35Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 34.1,
+        "airtimeUtilizationPercent": 36.6,
+        "retransmissionsPerMinute": 5,
+        "avgSignalToNoise": 34.2,
+        "avgRssi": -57,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 917,
+        "downlinkSpeedMbps": 853,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:53:35Z",
+        "bucketEnd": "2025-12-22T16:58:35Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 34.8,
+        "airtimeUtilizationPercent": 35.4,
+        "retransmissionsPerMinute": 5,
+        "avgSignalToNoise": 33.8,
+        "avgRssi": -59,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 943,
+        "downlinkSpeedMbps": 835,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:58:35Z",
+        "bucketEnd": "2025-12-22T17:03:35Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 33.5,
+        "airtimeUtilizationPercent": 36.9,
+        "retransmissionsPerMinute": 5,
+        "avgSignalToNoise": 33.7,
+        "avgRssi": -58,
+        "clientCount": 5,
+        "uplinkSpeedMbps": 928,
+        "downlinkSpeedMbps": 858,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:03:35Z",
+        "bucketEnd": "2025-12-22T17:08:35Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 34.7,
+        "airtimeUtilizationPercent": 36.2,
+        "retransmissionsPerMinute": 4,
+        "avgSignalToNoise": 34.0,
+        "avgRssi": -59,
+        "clientCount": 2,
+        "uplinkSpeedMbps": 930,
+        "downlinkSpeedMbps": 861,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:08:35Z",
+        "bucketEnd": "2025-12-22T17:13:35Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 34.4,
+        "airtimeUtilizationPercent": 35.8,
+        "retransmissionsPerMinute": 4,
+        "avgSignalToNoise": 34.0,
+        "avgRssi": -59,
+        "clientCount": 2,
+        "uplinkSpeedMbps": 938,
+        "downlinkSpeedMbps": 847,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:43:35Z",
+        "bucketEnd": "2025-12-22T16:48:35Z",
         "deviceSerial": "Q2XX-AP08-8888",
         "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 52.7,
-        "airtimeUtilizationPercent": 55.8,
-        "retransmissionsPerMinute": 28,
-        "avgSignalToNoise": 24.5,
-        "avgRssi": -62,
+        "channelUtilizationPercent": 37.7,
+        "airtimeUtilizationPercent": 39.8,
+        "retransmissionsPerMinute": 7,
+        "avgSignalToNoise": 32.5,
+        "avgRssi": -59,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 908,
+        "downlinkSpeedMbps": 858,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:48:35Z",
+        "bucketEnd": "2025-12-22T16:53:35Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 37.5,
+        "airtimeUtilizationPercent": 40.0,
+        "retransmissionsPerMinute": 7,
+        "avgSignalToNoise": 32.3,
+        "avgRssi": -60,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 924,
+        "downlinkSpeedMbps": 840,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:53:35Z",
+        "bucketEnd": "2025-12-22T16:58:35Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 37.7,
+        "airtimeUtilizationPercent": 39.5,
+        "retransmissionsPerMinute": 6,
+        "avgSignalToNoise": 32.5,
+        "avgRssi": -61,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 901,
+        "downlinkSpeedMbps": 857,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:58:35Z",
+        "bucketEnd": "2025-12-22T17:03:35Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 37.8,
+        "airtimeUtilizationPercent": 39.6,
+        "retransmissionsPerMinute": 8,
+        "avgSignalToNoise": 32.6,
+        "avgRssi": -61,
+        "clientCount": 3,
+        "uplinkSpeedMbps": 912,
+        "downlinkSpeedMbps": 832,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:03:35Z",
+        "bucketEnd": "2025-12-22T17:08:35Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 38.1,
+        "airtimeUtilizationPercent": 40.6,
+        "retransmissionsPerMinute": 6,
+        "avgSignalToNoise": 32.2,
+        "avgRssi": -61,
+        "clientCount": 4,
+        "uplinkSpeedMbps": 910,
+        "downlinkSpeedMbps": 869,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T17:08:35Z",
+        "bucketEnd": "2025-12-22T17:13:35Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 38.6,
+        "airtimeUtilizationPercent": 40.5,
+        "retransmissionsPerMinute": 7,
+        "avgSignalToNoise": 32.6,
+        "avgRssi": -61,
+        "clientCount": 2,
+        "uplinkSpeedMbps": 935,
+        "downlinkSpeedMbps": 854,
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "bucketStart": "2025-12-22T16:43:35Z",
+        "bucketEnd": "2025-12-22T16:48:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 48.4,
+        "airtimeUtilizationPercent": 49.3,
+        "retransmissionsPerMinute": 16,
+        "avgSignalToNoise": 30.7,
+        "avgRssi": -59,
         "clientCount": 22,
-        "uplinkSpeedMbps": 680,
-        "downlinkSpeedMbps": 620,
-        "note": "MODERATE_DEGRADATION"
+        "uplinkSpeedMbps": 862,
+        "downlinkSpeedMbps": 760,
+        "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-22T16:48:35Z",
+        "bucketEnd": "2025-12-22T16:53:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 66.1,
+        "airtimeUtilizationPercent": 68.5,
+        "retransmissionsPerMinute": 24,
+        "avgSignalToNoise": 27.4,
+        "avgRssi": -62,
+        "clientCount": 24,
+        "uplinkSpeedMbps": 672,
+        "downlinkSpeedMbps": 577,
+        "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-22T16:53:35Z",
+        "bucketEnd": "2025-12-22T16:58:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 79.7,
+        "airtimeUtilizationPercent": 79.0,
+        "retransmissionsPerMinute": 33,
+        "avgSignalToNoise": 23.1,
+        "avgRssi": -65,
+        "clientCount": 30,
+        "uplinkSpeedMbps": 499,
+        "downlinkSpeedMbps": 417,
+        "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-22T16:58:35Z",
+        "bucketEnd": "2025-12-22T17:03:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 89.3,
+        "airtimeUtilizationPercent": 91.6,
+        "retransmissionsPerMinute": 42,
+        "avgSignalToNoise": 20.4,
+        "avgRssi": -69,
+        "clientCount": 31,
+        "uplinkSpeedMbps": 419,
+        "downlinkSpeedMbps": 309,
+        "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-22T17:03:35Z",
+        "bucketEnd": "2025-12-22T17:08:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 93.1,
+        "airtimeUtilizationPercent": 96.0,
+        "retransmissionsPerMinute": 51,
+        "avgSignalToNoise": 17.7,
+        "avgRssi": -69,
+        "clientCount": 35,
+        "uplinkSpeedMbps": 336,
+        "downlinkSpeedMbps": 234,
+        "note": "SCENARIO_4_FULL_FAILURE"
+      },
+      {
+        "bucketStart": "2025-12-22T17:08:35Z",
+        "bucketEnd": "2025-12-22T17:13:35Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 97.7,
+        "airtimeUtilizationPercent": 99.1,
+        "retransmissionsPerMinute": 62,
+        "avgSignalToNoise": 16.4,
+        "avgRssi": -72,
+        "clientCount": 38,
+        "uplinkSpeedMbps": 244,
+        "downlinkSpeedMbps": 160,
+        "note": "SCENARIO_4_FULL_FAILURE"
       }
     ]
   },
@@ -575,8 +860,8 @@
   },
   "network_wireless_health": {
     "L_3947405073390239794": {
-      "windowStart": "2025-12-17T16:06:05Z",
-      "windowEnd": "2025-12-17T17:06:05Z",
+      "windowStart": "2025-12-22T16:13:35Z",
+      "windowEnd": "2025-12-22T17:13:35Z",
       "overallHealthScore": 28,
       "coverage": {
         "clientsBelowSNRThreshold": 12,
@@ -597,70 +882,278 @@
         "dhcpFailures": 8,
         "authFailures": 12,
         "healthScore": 24
-      },
-      "bestApRecommendation": {
-        "sourceAp": "AP-03",
-        "recommendedAp": "AP-06",
-        "reason": "CRITICAL: Immediate failover required",
-        "expectedRssi": -58,
-        "expectedChannelUtilization": 24.0
-      },
-      "note": "SCENARIO_4_FULL_FAILURE"
+      }
     }
   },
   "network_wireless_latency_history": {
     "L_3947405073390239794": [
       {
-        "timeslotStart": "2025-12-17T16:36:05Z",
-        "timeslotEnd": "2025-12-17T16:41:05Z",
-        "latencyMs": 37,
+        "timeslotStart": "2025-12-22T16:43:35Z",
+        "timeslotEnd": "2025-12-22T16:48:35Z",
+        "latencyMs": 6,
+        "jitterMs": 3,
+        "packetLossPercent": 0.39,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:48:35Z",
+        "timeslotEnd": "2025-12-22T16:53:35Z",
+        "latencyMs": 7,
+        "jitterMs": 3,
+        "packetLossPercent": 0.28,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:53:35Z",
+        "timeslotEnd": "2025-12-22T16:58:35Z",
+        "latencyMs": 6,
+        "jitterMs": 3,
+        "packetLossPercent": 0.39,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:58:35Z",
+        "timeslotEnd": "2025-12-22T17:03:35Z",
+        "latencyMs": 6,
+        "jitterMs": 1,
+        "packetLossPercent": 0.27,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:03:35Z",
+        "timeslotEnd": "2025-12-22T17:08:35Z",
+        "latencyMs": 7,
+        "jitterMs": 1,
+        "packetLossPercent": 0.29,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:08:35Z",
+        "timeslotEnd": "2025-12-22T17:13:35Z",
+        "latencyMs": 8,
+        "jitterMs": 1,
+        "packetLossPercent": 0.32,
+        "deviceMac": "00:11:22:33:44:99",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:43:35Z",
+        "timeslotEnd": "2025-12-22T16:48:35Z",
+        "latencyMs": 12,
+        "jitterMs": 3,
+        "packetLossPercent": 0.45,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:48:35Z",
+        "timeslotEnd": "2025-12-22T16:53:35Z",
+        "latencyMs": 10,
         "jitterMs": 4,
-        "packetLossPercent": 1.51,
+        "packetLossPercent": 0.5,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:53:35Z",
+        "timeslotEnd": "2025-12-22T16:58:35Z",
+        "latencyMs": 10,
+        "jitterMs": 2,
+        "packetLossPercent": 0.53,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:58:35Z",
+        "timeslotEnd": "2025-12-22T17:03:35Z",
+        "latencyMs": 9,
+        "jitterMs": 4,
+        "packetLossPercent": 0.47,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:03:35Z",
+        "timeslotEnd": "2025-12-22T17:08:35Z",
+        "latencyMs": 9,
+        "jitterMs": 4,
+        "packetLossPercent": 0.6,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:08:35Z",
+        "timeslotEnd": "2025-12-22T17:13:35Z",
+        "latencyMs": 8,
+        "jitterMs": 4,
+        "packetLossPercent": 0.56,
+        "deviceMac": "00:11:22:33:44:11",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:43:35Z",
+        "timeslotEnd": "2025-12-22T16:48:35Z",
+        "latencyMs": 11,
+        "jitterMs": 5,
+        "packetLossPercent": 0.62,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:48:35Z",
+        "timeslotEnd": "2025-12-22T16:53:35Z",
+        "latencyMs": 14,
+        "jitterMs": 4,
+        "packetLossPercent": 0.72,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:53:35Z",
+        "timeslotEnd": "2025-12-22T16:58:35Z",
+        "latencyMs": 13,
+        "jitterMs": 4,
+        "packetLossPercent": 0.66,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:58:35Z",
+        "timeslotEnd": "2025-12-22T17:03:35Z",
+        "latencyMs": 13,
+        "jitterMs": 3,
+        "packetLossPercent": 0.7,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:03:35Z",
+        "timeslotEnd": "2025-12-22T17:08:35Z",
+        "latencyMs": 10,
+        "jitterMs": 5,
+        "packetLossPercent": 0.79,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:08:35Z",
+        "timeslotEnd": "2025-12-22T17:13:35Z",
+        "latencyMs": 11,
+        "jitterMs": 5,
+        "packetLossPercent": 0.63,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:43:35Z",
+        "timeslotEnd": "2025-12-22T16:48:35Z",
+        "latencyMs": 14,
+        "jitterMs": 4,
+        "packetLossPercent": 0.93,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:48:35Z",
+        "timeslotEnd": "2025-12-22T16:53:35Z",
+        "latencyMs": 12,
+        "jitterMs": 6,
+        "packetLossPercent": 0.9,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:53:35Z",
+        "timeslotEnd": "2025-12-22T16:58:35Z",
+        "latencyMs": 13,
+        "jitterMs": 5,
+        "packetLossPercent": 0.82,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:58:35Z",
+        "timeslotEnd": "2025-12-22T17:03:35Z",
+        "latencyMs": 13,
+        "jitterMs": 4,
+        "packetLossPercent": 0.92,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:03:35Z",
+        "timeslotEnd": "2025-12-22T17:08:35Z",
+        "latencyMs": 15,
+        "jitterMs": 4,
+        "packetLossPercent": 0.87,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T17:08:35Z",
+        "timeslotEnd": "2025-12-22T17:13:35Z",
+        "latencyMs": 15,
+        "jitterMs": 4,
+        "packetLossPercent": 0.84,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+      },
+      {
+        "timeslotStart": "2025-12-22T16:43:35Z",
+        "timeslotEnd": "2025-12-22T16:48:35Z",
+        "latencyMs": 33,
+        "jitterMs": 8,
+        "packetLossPercent": 1.18,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       },
       {
-        "timeslotStart": "2025-12-17T16:41:05Z",
-        "timeslotEnd": "2025-12-17T16:46:05Z",
-        "latencyMs": 57,
-        "jitterMs": 13,
-        "packetLossPercent": 2.98,
+        "timeslotStart": "2025-12-22T16:48:35Z",
+        "timeslotEnd": "2025-12-22T16:53:35Z",
+        "latencyMs": 58,
+        "jitterMs": 17,
+        "packetLossPercent": 1.72,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       },
       {
-        "timeslotStart": "2025-12-17T16:46:05Z",
-        "timeslotEnd": "2025-12-17T16:51:05Z",
-        "latencyMs": 76,
-        "jitterMs": 28,
-        "packetLossPercent": 4.98,
+        "timeslotStart": "2025-12-22T16:53:35Z",
+        "timeslotEnd": "2025-12-22T16:58:35Z",
+        "latencyMs": 72,
+        "jitterMs": 26,
+        "packetLossPercent": 4.59,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       },
       {
-        "timeslotStart": "2025-12-17T16:51:05Z",
-        "timeslotEnd": "2025-12-17T16:56:05Z",
-        "latencyMs": 107,
-        "jitterMs": 36,
-        "packetLossPercent": 6.54,
+        "timeslotStart": "2025-12-22T16:58:35Z",
+        "timeslotEnd": "2025-12-22T17:03:35Z",
+        "latencyMs": 97,
+        "jitterMs": 33,
+        "packetLossPercent": 7.05,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       },
       {
-        "timeslotStart": "2025-12-17T16:56:05Z",
-        "timeslotEnd": "2025-12-17T17:01:05Z",
-        "latencyMs": 126,
+        "timeslotStart": "2025-12-22T17:03:35Z",
+        "timeslotEnd": "2025-12-22T17:08:35Z",
+        "latencyMs": 135,
         "jitterMs": 50,
-        "packetLossPercent": 9.48,
+        "packetLossPercent": 9.69,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       },
       {
-        "timeslotStart": "2025-12-17T17:01:05Z",
-        "timeslotEnd": "2025-12-17T17:06:05Z",
-        "latencyMs": 157,
+        "timeslotStart": "2025-12-22T17:08:35Z",
+        "timeslotEnd": "2025-12-22T17:13:35Z",
+        "latencyMs": 164,
         "jitterMs": 61,
-        "packetLossPercent": 11.96,
+        "packetLossPercent": 12.49,
         "deviceMac": "00:11:22:33:44:55",
         "note": "SCENARIO_4_FULL_FAILURE"
       }
@@ -669,7 +1162,7 @@
   "network_wireless_failed_connections": {
     "L_3947405073390239794": [
       {
-        "eventTime": "2025-12-17T16:51:05Z",
+        "eventTime": "2025-12-22T16:58:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:01",
         "failureReason": "auth_failure",
@@ -677,7 +1170,7 @@
         "apMac": "00:11:22:33:44:55"
       },
       {
-        "eventTime": "2025-12-17T16:54:05Z",
+        "eventTime": "2025-12-22T17:01:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:02",
         "failureReason": "dhcp_timeout",
@@ -685,7 +1178,7 @@
         "apMac": "00:11:22:33:44:55"
       },
       {
-        "eventTime": "2025-12-17T16:56:05Z",
+        "eventTime": "2025-12-22T17:03:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:03",
         "failureReason": "association_rejected",
@@ -693,7 +1186,7 @@
         "apMac": "00:11:22:33:44:55"
       },
       {
-        "eventTime": "2025-12-17T16:58:05Z",
+        "eventTime": "2025-12-22T17:05:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:04",
         "failureReason": "auth_failure",
@@ -701,7 +1194,7 @@
         "apMac": "00:11:22:33:44:55"
       },
       {
-        "eventTime": "2025-12-17T17:01:05Z",
+        "eventTime": "2025-12-22T17:08:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:05",
         "failureReason": "dhcp_timeout",
@@ -709,7 +1202,7 @@
         "apMac": "00:11:22:33:44:55"
       },
       {
-        "eventTime": "2025-12-17T17:04:05Z",
+        "eventTime": "2025-12-22T17:11:35Z",
         "deviceSerial": "Q2XX-ABCD-1234",
         "clientMac": "AA:BB:CC:DD:EE:06",
         "failureReason": "deauthentication",
@@ -813,7 +1306,7 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2025-12-17T17:06:05.687535",
+        "lastSeen": "2025-12-22T17:13:35.011094",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
@@ -853,7 +1346,7 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2025-12-17T17:06:05.687535",
+        "lastSeen": "2025-12-22T17:13:35.011094",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
@@ -893,7 +1386,7 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2025-12-17T17:06:05.687535",
+        "lastSeen": "2025-12-22T17:13:35.011094",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -933,7 +1426,7 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2025-12-17T17:06:05.687535",
+        "lastSeen": "2025-12-22T17:13:35.011094",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -973,7 +1466,7 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2025-12-17T17:06:05.687535",
+        "lastSeen": "2025-12-22T17:13:35.011094",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
@@ -1440,7 +1933,7 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2025-12-17T17:06:05.687535",
+        "lastReportedAt": "2025-12-22T17:13:35.011094",
         "uplinks": [
           {
             "uplink": "wan1",
@@ -2446,123 +2939,123 @@
   "device_loss_and_latency_history": {
     "Q2MN-Q3J9-YJHW": [
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 52.86,
-        "lossPercent": 1.9,
-        "jitter": 14.09,
-        "goodput": 82.7,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 63.73,
+        "lossPercent": 1.71,
+        "jitter": 15.03,
+        "goodput": 84.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 87.99,
-        "lossPercent": 3.5,
-        "jitter": 19.56,
-        "goodput": 80.1,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 72.06,
+        "lossPercent": 2.7,
+        "jitter": 18.25,
+        "goodput": 79.4,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 85.23,
-        "lossPercent": 3.66,
-        "jitter": 24.12,
-        "goodput": 77.2,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 107.29,
+        "lossPercent": 3.27,
+        "jitter": 18.79,
+        "goodput": 80.8,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 120.8,
-        "lossPercent": 3.89,
-        "jitter": 24.32,
-        "goodput": 77.4,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 112.71,
+        "lossPercent": 4.27,
+        "jitter": 21.73,
+        "goodput": 72.8,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 126.7,
-        "lossPercent": 4.95,
-        "jitter": 25.12,
-        "goodput": 72.1,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 151.59,
+        "lossPercent": 4.8,
+        "jitter": 24.96,
+        "goodput": 69.9,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.684468",
-        "latencyMs": 152.26,
-        "lossPercent": 6.54,
-        "jitter": 28.14,
-        "goodput": 71.4,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 175.07,
+        "lossPercent": 5.99,
+        "jitter": 30.5,
+        "goodput": 67.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 196.1,
-        "lossPercent": 5.79,
-        "jitter": 34.27,
-        "goodput": 65.2,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 184.39,
+        "lossPercent": 6.03,
+        "jitter": 33.04,
+        "goodput": 66.3,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 200.47,
-        "lossPercent": 7.6,
-        "jitter": 34.86,
-        "goodput": 61.1,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 204.95,
+        "lossPercent": 6.59,
+        "jitter": 38.64,
+        "goodput": 64.8,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 224.72,
-        "lossPercent": 7.84,
-        "jitter": 36.9,
-        "goodput": 57.7,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 214.34,
+        "lossPercent": 8.55,
+        "jitter": 39.62,
+        "goodput": 57.8,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 245.14,
-        "lossPercent": 8.0,
-        "jitter": 43.14,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 261.87,
+        "lossPercent": 8.69,
+        "jitter": 43.85,
         "goodput": 57.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 267.99,
-        "lossPercent": 9.2,
-        "jitter": 44.89,
-        "goodput": 51.9,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 256.37,
+        "lossPercent": 9.56,
+        "jitter": 48.51,
+        "goodput": 55.6,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 298.3,
-        "lossPercent": 10.54,
-        "jitter": 48.61,
-        "goodput": 49.0,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 295.16,
+        "lossPercent": 9.69,
+        "jitter": 46.61,
+        "goodput": 51.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 316.15,
-        "lossPercent": 11.36,
-        "jitter": 52.93,
-        "goodput": 46.5,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 314.63,
+        "lossPercent": 10.26,
+        "jitter": 47.49,
+        "goodput": 49.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 334.88,
-        "lossPercent": 11.46,
-        "jitter": 53.86,
-        "goodput": 44.6,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 334.86,
+        "lossPercent": 10.88,
+        "jitter": 52.12,
+        "goodput": 43.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2025-12-17T17:06:05.687535",
-        "latencyMs": 359.47,
-        "lossPercent": 12.35,
-        "jitter": 55.75,
-        "goodput": 39.9,
+        "ts": "2025-12-22T17:13:35.011094",
+        "latencyMs": 366.34,
+        "lossPercent": 11.51,
+        "jitter": 59.39,
+        "goodput": 40.2,
         "destinationIp": "8.8.8.8"
       }
     ]
@@ -2645,63 +3138,6 @@
     }
   },
   "network_topology_link_layer": {
-    "L_04156e88aca94215": {
-      "nodes": [
-        {
-          "type": "wireless",
-          "id": "Q2XX-ABCD-1234",
-          "name": "AP-03",
-          "floorPlanId": "FP-FLR1",
-          "status": "failing"
-        },
-        {
-          "type": "wireless",
-          "id": "Q2XX-AP06-5678",
-          "name": "AP-06",
-          "floorPlanId": "FP-FLR1",
-          "status": "healthy"
-        },
-        {
-          "type": "wireless",
-          "id": "Q2XX-AP01-1111",
-          "name": "AP-01",
-          "floorPlanId": "FP-FLR1",
-          "status": "healthy"
-        },
-        {
-          "type": "wireless",
-          "id": "Q2XX-AP04-4444",
-          "name": "AP-04",
-          "floorPlanId": "FP-FLR1",
-          "status": "healthy"
-        },
-        {
-          "type": "wireless",
-          "id": "Q2XX-AP08-8888",
-          "name": "AP-08",
-          "floorPlanId": "FP-FLR1",
-          "status": "healthy"
-        }
-      ],
-      "links": [
-        {
-          "source": "Q2XX-ABCD-1234",
-          "target": "Q2XX-AP06-5678",
-          "linkType": "wireless-mesh",
-          "status": "critical",
-          "latencyMs": 35,
-          "lossPercent": 3.2
-        },
-        {
-          "source": "Q2XX-AP01-1111",
-          "target": "Q2XX-AP04-4444",
-          "linkType": "wireless-mesh",
-          "status": "ok",
-          "latencyMs": 8,
-          "lossPercent": 0.2
-        }
-      ]
-    },
     "L_3947405073390239794": {
       "nodes": [
         {
@@ -2761,7 +3197,7 @@
           "target": "Q2XX-AP06-5678",
           "linkType": "wired",
           "status": "ok",
-          "latencyMs": 4,
+          "latencyMs": 3,
           "lossPercent": 0.05
         },
         {
@@ -2777,16 +3213,16 @@
           "target": "Q2XX-AP04-4444",
           "linkType": "wired",
           "status": "ok",
-          "latencyMs": 5,
-          "lossPercent": 0.1
+          "latencyMs": 3,
+          "lossPercent": 0.05
         },
         {
           "source": "Q2MN-Q3J9-YJHW",
           "target": "Q2XX-AP08-8888",
           "linkType": "wired",
           "status": "ok",
-          "latencyMs": 4,
-          "lossPercent": 0.08
+          "latencyMs": 3,
+          "lossPercent": 0.05
         },
         {
           "source": "Q2XX-ABCD-1234",
@@ -2795,6 +3231,30 @@
           "status": "critical",
           "latencyMs": 35,
           "lossPercent": 3.2
+        },
+        {
+          "source": "Q2XX-AP06-5678",
+          "target": "Q2XX-AP01-1111",
+          "linkType": "wireless-mesh",
+          "status": "ok",
+          "latencyMs": 5,
+          "lossPercent": 0.1
+        },
+        {
+          "source": "Q2XX-AP01-1111",
+          "target": "Q2XX-AP04-4444",
+          "linkType": "wireless-mesh",
+          "status": "ok",
+          "latencyMs": 5,
+          "lossPercent": 0.1
+        },
+        {
+          "source": "Q2XX-AP04-4444",
+          "target": "Q2XX-AP08-8888",
+          "linkType": "wireless-mesh",
+          "status": "ok",
+          "latencyMs": 5,
+          "lossPercent": 0.1
         }
       ]
     }
@@ -2822,8 +3282,30 @@
             "y": 8.7,
             "rfCoverageMeters": 25,
             "historicalStabilityScore": 92
+          },
+          {
+            "deviceSerial": "Q2XX-AP01-1111",
+            "x": 45.2,
+            "y": 11.7,
+            "rfCoverageMeters": 25,
+            "historicalStabilityScore": 89
+          },
+          {
+            "deviceSerial": "Q2XX-AP04-4444",
+            "x": 55.2,
+            "y": 6.7,
+            "rfCoverageMeters": 25,
+            "historicalStabilityScore": 91
+          },
+          {
+            "deviceSerial": "Q2XX-AP08-8888",
+            "x": 65.2,
+            "y": 11.7,
+            "rfCoverageMeters": 25,
+            "historicalStabilityScore": 88
           }
-        ]
+        ],
+        "note": "SCENARIO_4_FULL_FAILURE"
       }
     ]
   },
@@ -2831,7 +3313,7 @@
     "L_3947405073390239794": {
       "sourceAp": "AP-03",
       "sourceApSerial": "Q2XX-ABCD-1234",
-      "window": "2025-12-17T16:36:05Z/2025-12-17T17:06:05Z",
+      "window": "2025-12-22T16:43:35Z/2025-12-22T17:13:35Z",
       "usersImpacted": 22,
       "failureProbability": 0.92,
       "recoveryLikelihood": "NONE",
@@ -2959,46 +3441,9 @@
           "apName": "AP-04",
           "apSerial": "Q2XX-AP04-4444",
           "score": 89,
-          "reason": "EXCELLENT SIGNAL (-52dBm), LOW LOAD (1 client)",
-          "distance": 8.5,
-          "channelOverlap": false,
-          "sameFloor": true
-        },
-        {
-          "rank": 3,
-          "apName": "AP-01",
-          "apSerial": "Q2XX-AP01-1111",
-          "score": 75,
-          "reason": "MEDIUM LOAD (3 clients), CHANNEL OVERLAP"
+          "reason": "EXCELLENT SIGNAL (-52dBm), LOW LOAD (1 client)"
         }
-      ],
-      "executionPlan": [
-        {
-          "step": 1,
-          "action": "IMMEDIATE",
-          "target": "Anton-Laptop",
-          "targetAp": "AP-06",
-          "expectedRssi": "-58dBm"
-        },
-        {
-          "step": 2,
-          "action": "IMMEDIATE",
-          "target": "Teams-Room",
-          "targetAp": "AP-06",
-          "expectedRssi": "-58dBm"
-        },
-        {
-          "step": 3,
-          "action": "MONITOR",
-          "description": "AP-06 load increase from 1\u21923 clients"
-        },
-        {
-          "step": 4,
-          "action": "FALLBACK",
-          "description": "If AP-06 issues, use AP-04 as backup"
-        }
-      ],
-      "note": "SCENARIO_4_FULL_FAILURE"
+      ]
     }
   }
 }

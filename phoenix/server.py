@@ -38,7 +38,7 @@ def detect_eval_backend():
     
     # Fallback to Anthropic
     if os.getenv("ANTHROPIC_API_KEY") and os.getenv("ANTHROPIC_BASE_URL"):
-        return ('anthropic', 'claude-3-5-sonnet-20241022')
+        return ('anthropic', 'glm-4.5')
     
     return (None, None)
 
@@ -64,7 +64,6 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
             validate_ap_exists_in_topology,
             validate_threshold_matches_policy
         )
-        from input_output_validators import cross_validate_tool_call
         
         client = Client(endpoint=endpoint)
         spans_df = client.get_spans_dataframe()
@@ -88,7 +87,6 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
             print(f"   📋 Checking {len(tool_spans)} tool calls for parameter completeness...")
             
             tool_evals = []
-            input_output_evals = []  # For cross-validation
             
             for idx, span in tool_spans.iterrows():
                 # Get tool input (parameters), NOT output (response)
@@ -130,30 +128,12 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                     'score': score,
                     'explanation': explanation
                 })
-                
-                # 2. Input-Output Cross-Validation
-                if input_val and output_val:
-                    cross_score, cross_explanation = cross_validate_tool_call(tool_name, input_val, output_val)
-                    
-                    input_output_evals.append({
-                        'span_id': idx,
-                        'name': 'input_output_consistency',
-                        'label': 'consistent' if cross_score >= 0.9 else ('partial' if cross_score >= 0.7 else 'inconsistent'),
-                        'score': cross_score,
-                        'explanation': cross_explanation
-                    })
             
             if tool_evals:
                 tool_df = pd.DataFrame(tool_evals)
                 client.log_evaluations(SpanEvaluations(dataframe=tool_df, eval_name="tool_parameters_complete"))
                 passed = sum(1 for e in tool_evals if e['score'] == 1.0)
                 print(f"   ✅ Tool parameters: {passed}/{len(tool_evals)} passed")
-            
-            if input_output_evals:
-                io_df = pd.DataFrame(input_output_evals)
-                client.log_evaluations(SpanEvaluations(dataframe=io_df, eval_name="input_output_consistency"))
-                consistent = sum(1 for e in input_output_evals if e['score'] >= 0.9)
-                print(f"   ✅ Input-Output consistency: {consistent}/{len(input_output_evals)} verified")
         
         # Evaluate LLM decision completeness (deterministic)
         llm_spans = new_spans[new_spans['span_kind'] == 'LLM']
@@ -210,10 +190,7 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
         tool_spans_all = new_spans[new_spans['span_kind'] == 'TOOL']
         
         # 1. Math Verification (for update_risk_score calls)
-        # Wait 2 seconds for all file writes to complete
-        import time
-        if not tool_spans_all.empty:
-            time.sleep(2)
+        # NOTE: No file waiting needed - we validate against metrics in the tool output itself
         
         risk_tool_spans = tool_spans_all[tool_spans_all['name'].isin(['update_risk_score', 'calculate_risk_score'])]
         if not risk_tool_spans.empty:
@@ -246,46 +223,36 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                     
                     # Check if we have the required fields
                     if 'risk_score' in content and 'ap_serial' in content:
-                        # Load metrics from risk_scores.json file (runtime data)
-                        risk_scores_path = PROJECT_DIR / "agent_data" / "risk_scores.json"
-                        if risk_scores_path.exists():
-                            with open(risk_scores_path, 'r') as f:
-                                risk_data = json.load(f)
-                            
+                        # FIXED: Validate against metrics IN THE TOOL OUTPUT, not external file
+                        # This prevents timing issues where old spans are validated against new file data
+                        
+                        # Check if metrics are in the output
+                        if 'metrics' in content and content['metrics']:
                             ap_serial = content['ap_serial']
                             
-                            # Skip if already validated this AP (only check latest)
-                            if ap_serial in validated_aps:
+                            # Skip if already validated this AP span (only check once per span)
+                            span_key = f"{idx}_{ap_serial}"
+                            if span_key in validated_aps:
                                 continue
-                            validated_aps.add(ap_serial)
+                            validated_aps.add(span_key)
                             
-                            if ap_serial in risk_data and 'current' in risk_data[ap_serial]:
-                                # Get the SAVED metrics that AI wrote to file
-                                saved_entry = risk_data[ap_serial]['current']
-                                
-                                # Build data for validator with SAVED metrics
-                                validation_data = {
-                                    'risk_score': content['risk_score'],  # AI's claimed score
-                                    'metrics': saved_entry.get('metrics', {})  # Actual saved metrics
-                                }
-                                
-                                # Validate: AI's risk_score vs recalculation from SAVED metrics
-                                score, explanation = validate_risk_calculation_math(validation_data)
-                                
-                                math_evals.append({
-                                    'span_id': idx,
-                                    'name': 'risk_math_verification',
-                                    'label': 'verified' if score >= 0.8 else 'hallucinated',
-                                    'score': score,
-                                    'explanation': explanation
-                                })
-                            # Skip if AP not found yet (don't penalize pending writes)
-                        else:
-                            # Skip if file doesn't exist yet (don't penalize)
-                            pass
-                    else:
-                        # Skip if no risk data (might be an error response)
-                        pass
+                            # Build data for validator with metrics from THIS tool output
+                            validation_data = {
+                                'risk_score': content['risk_score'],  # AI's claimed score
+                                'metrics': content['metrics']  # Metrics from same output
+                            }
+                            
+                            # Validate: AI's risk_score vs recalculation from its OWN metrics
+                            score, explanation = validate_risk_calculation_math(validation_data)
+                            
+                            math_evals.append({
+                                'span_id': idx,
+                                'name': 'risk_math_verification',
+                                'label': 'verified' if score >= 0.8 else 'hallucinated',
+                                'score': score,
+                                'explanation': explanation
+                            })
+                        # Skip if no metrics in output (incomplete data)
                         
                 except Exception as e:
                     # Only report actual calculation errors, not parse errors

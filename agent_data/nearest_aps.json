@@ -1,175 +1,175 @@
 {
   "Q2XX-ABCD-1234": {
     "ap_serial": "Q2XX-ABCD-1234",
-    "last_updated": "2025-12-19T12:54:14.696042",
+    "last_updated": "2025-12-22T20:09:49.737246",
     "nearest_aps": [
       {
-        "ap_serial": "Q2XX-AP06-5678",
-        "ap_name": "AP-06",
-        "distance_meters": 28.4,
-        "rssi_dbm": -69,
-        "client_load": 1,
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 14.2,
+        "rssi_dbm": -63,
+        "client_load": 2,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 70,
+        "composite_score": 80,
         "rank": 1
-      },
-      {
-        "ap_serial": "Q2XX-AP01-1111",
-        "ap_name": "AP-01",
-        "distance_meters": 20.9,
-        "rssi_dbm": -66,
-        "client_load": 3,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 70,
-        "rank": 2
       },
       {
         "ap_serial": "Q2XX-AP04-4444",
         "ap_name": "AP-04",
-        "distance_meters": 34.5,
-        "rssi_dbm": -70,
+        "distance_meters": 28.4,
+        "rssi_dbm": -69,
+        "client_load": 1,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 208.7,
+        "rssi_dbm": -86,
         "client_load": 1,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 50,
+        "composite_score": 45,
         "rank": 3
       },
       {
-        "ap_serial": "Q2XX-AP08-8888",
-        "ap_name": "AP-08",
-        "distance_meters": 37.1,
-        "rssi_dbm": -71,
-        "client_load": 2,
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 104.4,
+        "rssi_dbm": -80,
+        "client_load": 3,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 50,
+        "composite_score": 45,
         "rank": 4
       }
     ]
   },
   "Q2XX-AP06-5678": {
     "ap_serial": "Q2XX-AP06-5678",
-    "last_updated": "2025-12-19T12:54:26.333293",
+    "last_updated": "2025-12-22T20:09:49.725709",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
         "ap_name": "AP-03",
-        "distance_meters": 28.4,
-        "rssi_dbm": -69,
+        "distance_meters": 208.7,
+        "rssi_dbm": -86,
         "client_load": 2,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 70,
+        "composite_score": 45,
         "rank": 1
-      },
-      {
-        "ap_serial": "Q2XX-AP04-4444",
-        "ap_name": "AP-04",
-        "distance_meters": 28.8,
-        "rssi_dbm": -69,
-        "client_load": 1,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 70,
-        "rank": 2
       },
       {
         "ap_serial": "Q2XX-AP01-1111",
         "ap_name": "AP-01",
-        "distance_meters": 48.6,
-        "rssi_dbm": -73,
+        "distance_meters": 104.4,
+        "rssi_dbm": -80,
         "client_load": 3,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 50,
+        "composite_score": 45,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 182.2,
+        "rssi_dbm": -85,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 45,
         "rank": 3
       },
       {
         "ap_serial": "Q2XX-AP08-8888",
         "ap_name": "AP-08",
-        "distance_meters": 54.2,
-        "rssi_dbm": -74,
+        "distance_meters": 222.2,
+        "rssi_dbm": -86,
         "client_load": 2,
         "channel_overlap": true,
         "same_floor": true,
-        "composite_score": 30,
+        "composite_score": 25,
         "rank": 4
       }
     ]
   },
   "Q2XX-AP01-1111": {
     "ap_serial": "Q2XX-AP01-1111",
-    "last_updated": "2025-12-19T12:54:37.760212",
+    "last_updated": "2025-12-22T20:09:49.889244",
     "nearest_aps": [
       {
-        "ap_serial": "Q2XX-ABCD-1234",
-        "ap_name": "AP-03",
-        "distance_meters": 20.9,
-        "rssi_dbm": -66,
-        "client_load": 2,
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 78.1,
+        "rssi_dbm": -77,
+        "client_load": 1,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 70,
+        "composite_score": 50,
         "rank": 1
       },
       {
-        "ap_serial": "Q2XX-AP08-8888",
-        "ap_name": "AP-08",
-        "distance_meters": 28.4,
-        "rssi_dbm": -69,
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 104.4,
+        "rssi_dbm": -80,
         "client_load": 2,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 70,
+        "composite_score": 45,
         "rank": 2
       },
       {
         "ap_serial": "Q2XX-AP06-5678",
         "ap_name": "AP-06",
-        "distance_meters": 48.6,
-        "rssi_dbm": -73,
+        "distance_meters": 104.4,
+        "rssi_dbm": -80,
         "client_load": 1,
         "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 50,
+        "composite_score": 45,
         "rank": 3
       },
       {
-        "ap_serial": "Q2XX-AP04-4444",
-        "ap_name": "AP-04",
-        "distance_meters": 45.3,
-        "rssi_dbm": -73,
-        "client_load": 1,
-        "channel_overlap": true,
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 117.8,
+        "rssi_dbm": -81,
+        "client_load": 2,
+        "channel_overlap": false,
         "same_floor": true,
-        "composite_score": 30,
+        "composite_score": 45,
         "rank": 4
       }
     ]
   },
   "Q2XX-AP04-4444": {
     "ap_serial": "Q2XX-AP04-4444",
-    "last_updated": "2025-12-19T12:55:43.976748",
+    "last_updated": "2025-12-22T20:09:49.855367",
     "nearest_aps": [
-      {
-        "ap_serial": "Q2XX-AP06-5678",
-        "ap_name": "AP-06",
-        "distance_meters": 28.8,
-        "rssi_dbm": -69,
-        "client_load": 1,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 70,
-        "rank": 1
-      },
       {
         "ap_serial": "Q2XX-ABCD-1234",
         "ap_name": "AP-03",
-        "distance_meters": 34.5,
-        "rssi_dbm": -70,
+        "distance_meters": 28.4,
+        "rssi_dbm": -69,
         "client_load": 2,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 78.1,
+        "rssi_dbm": -77,
+        "client_load": 3,
         "channel_overlap": false,
         "same_floor": true,
         "composite_score": 50,
@@ -178,59 +178,9 @@
       {
         "ap_serial": "Q2XX-AP08-8888",
         "ap_name": "AP-08",
-        "distance_meters": 34.6,
-        "rssi_dbm": -70,
+        "distance_meters": 42.6,
+        "rssi_dbm": -72,
         "client_load": 2,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 50,
-        "rank": 3
-      },
-      {
-        "ap_serial": "Q2XX-AP01-1111",
-        "ap_name": "AP-01",
-        "distance_meters": 45.3,
-        "rssi_dbm": -73,
-        "client_load": 3,
-        "channel_overlap": true,
-        "same_floor": true,
-        "composite_score": 30,
-        "rank": 4
-      }
-    ]
-  },
-  "Q2XX-AP08-8888": {
-    "ap_serial": "Q2XX-AP08-8888",
-    "last_updated": "2025-12-19T12:55:57.471963",
-    "nearest_aps": [
-      {
-        "ap_serial": "Q2XX-AP01-1111",
-        "ap_name": "AP-01",
-        "distance_meters": 28.4,
-        "rssi_dbm": -69,
-        "client_load": 3,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 70,
-        "rank": 1
-      },
-      {
-        "ap_serial": "Q2XX-ABCD-1234",
-        "ap_name": "AP-03",
-        "distance_meters": 37.1,
-        "rssi_dbm": -71,
-        "client_load": 2,
-        "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 50,
-        "rank": 2
-      },
-      {
-        "ap_serial": "Q2XX-AP04-4444",
-        "ap_name": "AP-04",
-        "distance_meters": 34.6,
-        "rssi_dbm": -70,
-        "client_load": 1,
         "channel_overlap": false,
         "same_floor": true,
         "composite_score": 50,
@@ -239,12 +189,62 @@
       {
         "ap_serial": "Q2XX-AP06-5678",
         "ap_name": "AP-06",
-        "distance_meters": 54.2,
-        "rssi_dbm": -74,
+        "distance_meters": 182.2,
+        "rssi_dbm": -85,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 45,
+        "rank": 4
+      }
+    ]
+  },
+  "Q2XX-AP08-8888": {
+    "ap_serial": "Q2XX-AP08-8888",
+    "last_updated": "2025-12-22T20:09:49.792935",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 14.2,
+        "rssi_dbm": -63,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 80,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 42.6,
+        "rssi_dbm": -72,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 117.8,
+        "rssi_dbm": -81,
+        "client_load": 3,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 45,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 222.2,
+        "rssi_dbm": -86,
         "client_load": 1,
         "channel_overlap": true,
         "same_floor": true,
-        "composite_score": 30,
+        "composite_score": 25,
         "rank": 4
       }
     ]

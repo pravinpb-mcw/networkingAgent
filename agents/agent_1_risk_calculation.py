@@ -22,6 +22,15 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from pathlib import Path
 from dotenv import load_dotenv
+from python_a2a import A2AServer, run_server, Message, MessageRole, TextContent
+import threading
+
+# OpenTelemetry imports for Phoenix tracing
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk import trace as trace_sdk
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -191,9 +200,10 @@ class RiskScoreOrchestrator:
     - Collects metrics
     - Calls calculation script via MCP tool
     - Stores results
+    - Serves results via A2A protocol
     """
     
-    def __init__(self, calculation_interval: int = 10):
+    def __init__(self, calculation_interval: int = 10, a2a_port: int = 5001):
         self.mcp_client: Optional[MultiServerMCPClient] = None
         self.agent = None
         self.tools = None
@@ -204,6 +214,14 @@ class RiskScoreOrchestrator:
         self.session_id = f"risk-agent-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
         self.user_id = "risk-orchestrator"
         self.network_id = "L_3947405073390239794"
+        
+        # A2A server
+        self.a2a_port = a2a_port
+        self.a2a_server = None
+        self.latest_risk_data = {}
+        
+        # OpenTelemetry tracer for A2A tracing
+        self.tracer = trace.get_tracer("agent-1-risk-a2a")
         
     async def initialize(self) -> bool:
         """Initialize the MCP client and agent"""
@@ -236,7 +254,7 @@ class RiskScoreOrchestrator:
             
             # Initialize model
             model = init_chat_model(
-                model="claude-sonnet-4-20250514",
+                model="glm-4.5",
                 model_provider="anthropic",
                 temperature=0,
                 max_tokens=2048,
@@ -267,6 +285,106 @@ class RiskScoreOrchestrator:
         """Close the MCP client"""
         if self.mcp_client:
             self.mcp_client = None
+    
+    def handle_a2a_message(self, text: str) -> str:
+        """Handle incoming A2A requests for risk scores"""
+        with self.tracer.start_as_current_span("Agent1_receives_A2A_request") as span:
+            span.set_attribute("source_agent", "unknown")
+            span.set_attribute("target_agent", "Agent-1-RiskScores")
+            span.set_attribute("agent", "agent-1")
+            span.set_attribute("request_type", "a2a")
+            span.set_attribute("communication.direction", "incoming")
+            span.set_attribute("communication.protocol", "A2A")
+            span.set_attribute("input.value", text)
+            span.add_event("A2A Request Received", {"query": text})
+            
+            print(f"\n[A2A REQUEST] {text}")
+            
+            # Load current risk scores
+            risk_file = project_root / "agent_data" / "risk_scores.json"
+            if not risk_file.exists():
+                return "No risk score data available yet. Please wait for calculation."
+            
+            with open(risk_file, 'r') as f:
+                data = json.load(f)
+            
+            # Check for threshold queries
+            if "threshold" in text.lower() or "at risk" in text.lower():
+                import re
+                threshold_match = re.search(r'threshold[:\s]*(\d+)', text, re.IGNORECASE)
+                threshold = int(threshold_match.group(1)) if threshold_match else 41
+                
+                at_risk = []
+                for ap_serial, ap_data in data.items():
+                    risk_score = ap_data.get('risk_score', 0)
+                    if risk_score > threshold:
+                        at_risk.append({
+                            "ap_serial": ap_serial,
+                            "ap_name": ap_data.get('ap_name', 'Unknown'),
+                            "risk_score": risk_score,
+                            "risk_classification": ap_data.get('risk_classification', 'Unknown')
+                        })
+                
+                response = f"Found {len(at_risk)} APs exceeding threshold {threshold}:\n"
+                for ap in at_risk:
+                    response += f"  - {ap['ap_serial']} ({ap['ap_name']}): Risk {ap['risk_score']} - {ap['risk_classification']}\n"
+                
+                span.set_attribute("at_risk_count", len(at_risk))
+                span.set_attribute("threshold", threshold)
+                span.set_attribute("output.value", response)
+                span.add_event("A2A Response Sent", {"response": response, "at_risk_count": len(at_risk)})
+                print(f"[A2A RESPONSE] {len(at_risk)} at-risk APs")
+                return response
+            else:
+                # Return all risk scores
+                response = f"All Risk Scores ({len(data)} APs):\n"
+                for ap_serial, ap_data in data.items():
+                    response += f"  - {ap_serial}: Risk {ap_data.get('risk_score', 0)} - {ap_data.get('risk_classification', 'Unknown')}\n"
+                
+                span.set_attribute("total_aps", len(data))
+                span.set_attribute("output.value", response)
+                span.add_event("A2A Response Sent", {"response": response, "total_aps": len(data)})
+                print(f"[A2A RESPONSE] {len(data)} total APs")
+                return response
+    
+    def start_a2a_server(self):
+        """Start A2A server in background thread"""
+        class RiskA2AServer(A2AServer):
+            def __init__(self, port, handler):
+                super().__init__(url=f"http://localhost:{port}")
+                self.port = port
+                self.handler = handler
+                self.request_count = 0
+            
+            def handle_message(self, message) -> Message:
+                self.request_count += 1
+                # Get text from message
+                if hasattr(message.content, 'text'):
+                    text = message.content.text
+                else:
+                    text = str(message.content)
+                
+                # Get response
+                response_text = self.handler(text)
+                
+                # Return Message object
+                return Message(
+                    content=TextContent(text=response_text),
+                    role=MessageRole.AGENT,
+                    parent_message_id=message.message_id,
+                    conversation_id=message.conversation_id
+                )
+        
+        self.a2a_server = RiskA2AServer(self.a2a_port, self.handle_a2a_message)
+        print(f"\n[A2A] Starting server on port {self.a2a_port}...")
+        thread = threading.Thread(
+            target=lambda: run_server(self.a2a_server, port=self.a2a_port),
+            daemon=True
+        )
+        thread.start()
+        import time
+        time.sleep(2)  # Give server time to start
+        print(f"[A2A] Server ready: http://localhost:{self.a2a_port}\n")
     
     def get_system_prompt(self) -> str:
         """Get the system prompt for risk score orchestration"""
@@ -466,6 +584,15 @@ Where X = number of APs discovered in Step 1
 async def main():
     """Main entry point"""
     
+    # Initialize Phoenix tracing for A2A
+    resource = Resource.create({"service.name": "agent-1-risk-a2a"})
+    tracer_provider = trace_sdk.TracerProvider(resource=resource)
+    otlp_exporter = OTLPSpanExporter(endpoint="http://127.0.0.1:6006/v1/traces")
+    span_processor = BatchSpanProcessor(otlp_exporter)
+    tracer_provider.add_span_processor(span_processor)
+    trace.set_tracer_provider(tracer_provider)
+    print("✅ Phoenix tracing enabled for A2A: http://localhost:6006\n")
+    
     # Check if Phoenix server is running before enabling tracing
     phoenix_session = None
     try:
@@ -523,13 +650,16 @@ async def main():
         i += 1
     
     # Initialize agent
-    agent = RiskScoreOrchestrator(calculation_interval=interval)
+    agent = RiskScoreOrchestrator(calculation_interval=interval, a2a_port=5001)
     
     if not await agent.initialize():
         print("❌ Failed to initialize agent")
         return
     
     print("✅ Agent ready\n")
+    
+    # Start A2A server
+    agent.start_a2a_server()
     
     try:
         if mode == "continuous":

@@ -196,8 +196,8 @@ def _find_device_by_serial(serial: str, organizations: Dict[str, List[Dict[str, 
                 return device
     return None
 
-# Data directory for JSON files
-DATA_DIR = "mock_data"
+# Data directory for JSON files - use absolute path relative to this file
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "mock_data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def save_to_json_file(filename: str, data: Dict[str, Any]):

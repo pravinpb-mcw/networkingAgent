@@ -1,11 +1,7 @@
 # Network Observability Agent System
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
-[![Status](https://img.shields.io/badge/status-production-green.svg)](https://github.com)
 
 Professional AI-powered network monitoring system with predictive failure detection and automated failover recommendations for Cisco Meraki networks.
-
 ## 🚀 **Key Features**
 
 ### 🧠 **Intelligent Uplink Rerouting**

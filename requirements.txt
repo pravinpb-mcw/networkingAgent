@@ -22,8 +22,8 @@ numpy>=1.24.0
 
 # Observability
 langfuse>=2.0.0
-arize-phoenix>=4.0.0
-openinference-instrumentation-langchain>=0.1.0
+arize-phoenix>=5.0.0
+openinference-instrumentation-langchain>=0.1.32
 opentelemetry-sdk>=1.20.0
 opentelemetry-exporter-otlp>=1.20.0
 requests>=2.31.0

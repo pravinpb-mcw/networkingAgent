@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 SCENARIO 4: FULL FAILURE - Everything Degraded
 Simulates complete network failure with critical metrics across all dimensions.
 This scenario represents imminent or active failure requiring immediate action.
-
-Metrics:
-- Latency: 150-500ms (critical)
-- Packet Loss: 8-15% (severe)
-- Jitter: 40-60ms (critical)
-- Goodput: 35-50%
-- Channel Utilization: 92-98% (saturated)
-- SNR: 15-18dB (critical - below threshold)
-- Uplinks: failed or flapping
-- Clients: 50%+ offline or unreachable
-
-This scenario demonstrates "LIKELY FAILURE" requiring immediate intervention.
 """
+
+import sys
+import os
+
+# Fix Windows console encoding for emojis
+if os.name == 'nt':  # Windows
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except:
+        pass
 
 import asyncio
 import json
@@ -150,10 +149,52 @@ class FullFailureScenario:
             
             data["device_loss_and_latency_history"][DEVICE_SERIAL] = failure_history
             
-            # Update wireless usage history (KEY FOR PREDICTIVE AGENT - shows critical degradation)
+            # Update wireless usage history - ONLY AP-03 shows failure, preserve others
+            if "network_wireless_usage_history" not in data:
+                data["network_wireless_usage_history"] = {}
+            if NETWORK_ID not in data["network_wireless_usage_history"]:
+                data["network_wireless_usage_history"][NETWORK_ID] = []
+            
+            # Remove only AP-03's old entries
+            existing_history = data["network_wireless_usage_history"][NETWORK_ID]
+            other_aps_history = [entry for entry in existing_history if entry.get("deviceSerial") != AP_SERIAL]
+            
+            # Define healthy APs with varied metrics (scores will range 15-19)
+            healthy_aps = [
+                {"serial": "Q2XX-AP06-5678", "name": "AP-06", "util": 22, "snr": 37.0, "retrans": 2, "rssi": -54},  # Score ~15
+                {"serial": "Q2XX-AP01-1111", "name": "AP-01", "util": 28, "snr": 35.5, "retrans": 3, "rssi": -56},  # Score ~17
+                {"serial": "Q2XX-AP04-4444", "name": "AP-04", "util": 34, "snr": 34.0, "retrans": 5, "rssi": -58},  # Score ~18
+                {"serial": "Q2XX-AP08-8888", "name": "AP-08", "util": 38, "snr": 32.5, "retrans": 7, "rssi": -60}   # Score ~19
+            ]
+            
+            # Create healthy metrics for other 4 APs
             base_time = datetime.now() - timedelta(minutes=30)
             wireless_history = []
-            # Progressive failure pattern
+            
+            for ap in healthy_aps:
+                for i in range(6):
+                    bucket_start = base_time + timedelta(minutes=i*5)
+                    bucket_end = bucket_start + timedelta(minutes=5)
+                    entry = {
+                        "bucketStart": bucket_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "bucketEnd": bucket_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "deviceSerial": ap["serial"],
+                        "ssid": "MCW-SanJose",
+                        "channelUtilizationPercent": round(ap["util"] + random.uniform(-1, 1), 1),
+                        "airtimeUtilizationPercent": round(ap["util"] + 2 + random.uniform(-1, 1), 1),
+                        "retransmissionsPerMinute": ap["retrans"] + random.randint(-1, 1),
+                        "avgSignalToNoise": round(ap["snr"] + random.uniform(-0.3, 0.3), 1),
+                        "avgRssi": ap["rssi"] + random.randint(-1, 1),
+                        "clientCount": 3 + random.randint(-1, 2),
+                        "uplinkSpeedMbps": 920 + random.randint(-20, 30),
+                        "downlinkSpeedMbps": 850 + random.randint(-20, 30),
+                        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+                    }
+                    wireless_history.append(entry)
+            
+            # Create failure progression for AP-03 ONLY
+            # Note: wireless_history already contains healthy APs data, we're adding AP-03 to it
+            # Progressive failure pattern for AP-03
             channel_util_progression = [48.0, 65.0, 78.0, 88.0, 94.0, 96.5]
             snr_progression = [31.0, 27.0, 23.0, 20.0, 17.5, 16.0]
             retrans_progression = [12, 22, 34, 44, 52, 58]
@@ -180,10 +221,44 @@ class FullFailureScenario:
                     "note": "SCENARIO_4_FULL_FAILURE"
                 }
                 wireless_history.append(entry)
-            data["network_wireless_usage_history"] = {NETWORK_ID: wireless_history}
             
-            # Update wireless latency history (shows critical degradation)
+            # Combine: healthy APs + AP-03 failure
+            data["network_wireless_usage_history"][NETWORK_ID] = wireless_history
+            
+            # Update wireless latency history - Add healthy latency for other APs, failure for AP-03
+            if "network_wireless_latency_history" not in data:
+                data["network_wireless_latency_history"] = {}
+            if NETWORK_ID not in data["network_wireless_latency_history"]:
+                data["network_wireless_latency_history"][NETWORK_ID] = []
+            
+            # Healthy APs MAC addresses (must match organization_devices)
+            healthy_ap_macs = [
+                {"mac": "00:11:22:33:44:99", "latency": 8, "jitter": 2, "loss": 0.3},   # AP-06
+                {"mac": "00:11:22:33:44:11", "latency": 10, "jitter": 3, "loss": 0.5},  # AP-01
+                {"mac": "00:11:22:33:44:44", "latency": 12, "jitter": 4, "loss": 0.7},  # AP-04
+                {"mac": "00:11:22:33:44:88", "latency": 14, "jitter": 5, "loss": 0.9}   # AP-08
+            ]
+            
             latency_history = []
+            
+            # Add healthy latency for other 4 APs
+            for ap_mac in healthy_ap_macs:
+                for i in range(6):
+                    slot_start = base_time + timedelta(minutes=i*5)
+                    slot_end = slot_start + timedelta(minutes=5)
+                    entry = {
+                        "timeslotStart": slot_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "timeslotEnd": slot_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "latencyMs": ap_mac["latency"] + random.randint(-2, 2),
+                        "jitterMs": ap_mac["jitter"] + random.randint(-1, 1),
+                        "packetLossPercent": round(ap_mac["loss"] + random.uniform(-0.1, 0.1), 2),
+                        "deviceMac": ap_mac["mac"],
+                        "note": "SCENARIO_4_FULL_FAILURE_HEALTHY"
+                    }
+                    latency_history.append(entry)
+            
+            # Create failure latency for AP-03 only
+            # Note: latency_history already contains healthy APs data, we're adding AP-03 to it
             latency_progression = [28, 48, 72, 98, 125, 155]
             jitter_progression = [6, 14, 24, 36, 48, 58]
             loss_progression = [0.8, 2.2, 4.0, 6.5, 9.0, 12.0]
@@ -201,7 +276,9 @@ class FullFailureScenario:
                     "note": "SCENARIO_4_FULL_FAILURE"
                 }
                 latency_history.append(entry)
-            data["network_wireless_latency_history"] = {NETWORK_ID: latency_history}
+            
+            # Combine: healthy APs + AP-03 failure
+            data["network_wireless_latency_history"][NETWORK_ID] = latency_history
             
             # Update wireless health - CRITICAL
             data["network_wireless_health"] = {
@@ -228,29 +305,33 @@ class FullFailureScenario:
                         "dhcpFailures": 8,
                         "authFailures": 12,
                         "healthScore": 24
-                    },
-                    "bestApRecommendation": {
-                        "sourceAp": "AP-03",
-                        "recommendedAp": "AP-06",
-                        "reason": "CRITICAL: Immediate failover required",
-                        "expectedRssi": -58,
-                        "expectedChannelUtilization": 24.0
-                    },
-                    "note": "SCENARIO_4_FULL_FAILURE"
+                    }
                 }
             }
             
-            # Add multiple failed connections
-            data["network_wireless_failed_connections"] = {
-                NETWORK_ID: [
-                    {"eventTime": (datetime.now() - timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:01", "failureReason": "auth_failure", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
-                    {"eventTime": (datetime.now() - timedelta(minutes=12)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:02", "failureReason": "dhcp_timeout", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
-                    {"eventTime": (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:03", "failureReason": "association_rejected", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
-                    {"eventTime": (datetime.now() - timedelta(minutes=8)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:04", "failureReason": "auth_failure", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
-                    {"eventTime": (datetime.now() - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:05", "failureReason": "dhcp_timeout", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
-                    {"eventTime": (datetime.now() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:06", "failureReason": "deauthentication", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"}
-                ]
-            }
+            # Update failed connections for AP-03 ONLY
+            
+            # Update failed connections for AP-03 ONLY
+            if "network_wireless_failed_connections" not in data:
+                data["network_wireless_failed_connections"] = {}
+            if NETWORK_ID not in data["network_wireless_failed_connections"]:
+                data["network_wireless_failed_connections"][NETWORK_ID] = []
+            
+            # Remove old AP-03 failures, keep others
+            existing_failures = data["network_wireless_failed_connections"][NETWORK_ID]
+            other_failures = [f for f in existing_failures if f.get("deviceSerial") != AP_SERIAL]
+            
+            # Add new failures for AP-03
+            ap03_failures = [
+                {"eventTime": (datetime.now() - timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:01", "failureReason": "auth_failure", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
+                {"eventTime": (datetime.now() - timedelta(minutes=12)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:02", "failureReason": "dhcp_timeout", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
+                {"eventTime": (datetime.now() - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:03", "failureReason": "association_rejected", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
+                {"eventTime": (datetime.now() - timedelta(minutes=8)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:04", "failureReason": "auth_failure", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
+                {"eventTime": (datetime.now() - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:05", "failureReason": "dhcp_timeout", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"},
+                {"eventTime": (datetime.now() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"), "deviceSerial": AP_SERIAL, "clientMac": "AA:BB:CC:DD:EE:06", "failureReason": "deauthentication", "ssid": "MCW-SanJose", "apMac": "00:11:22:33:44:55"}
+            ]
+            
+            data["network_wireless_failed_connections"][NETWORK_ID] = other_failures + ap03_failures
             
             # Update service impact predictions - CRITICAL
             data["service_impact_predictions"] = {
@@ -305,57 +386,72 @@ class FullFailureScenario:
                             "apName": "AP-04",
                             "apSerial": "Q2XX-AP04-4444",
                             "score": 89,
-                            "reason": "EXCELLENT SIGNAL (-52dBm), LOW LOAD (1 client)",
-                            "distance": 8.5,
-                            "channelOverlap": False,
-                            "sameFloor": True
-                        },
-                        {
-                            "rank": 3,
-                            "apName": "AP-01",
-                            "apSerial": "Q2XX-AP01-1111",
-                            "score": 75,
-                            "reason": "MEDIUM LOAD (3 clients), CHANNEL OVERLAP"
+                            "reason": "EXCELLENT SIGNAL (-52dBm), LOW LOAD (1 client)"
                         }
-                    ],
-                    "executionPlan": [
-                        {"step": 1, "action": "IMMEDIATE", "target": "Anton-Laptop", "targetAp": "AP-06", "expectedRssi": "-58dBm"},
-                        {"step": 2, "action": "IMMEDIATE", "target": "Teams-Room", "targetAp": "AP-06", "expectedRssi": "-58dBm"},
-                        {"step": 3, "action": "MONITOR", "description": "AP-06 load increase from 1→3 clients"},
-                        {"step": 4, "action": "FALLBACK", "description": "If AP-06 issues, use AP-04 as backup"}
-                    ],
-                    "note": "SCENARIO_4_FULL_FAILURE"
-                }
-            }
-            
-            # Update topology - FAILURE
-            data["network_topology_link_layer"] = {
-                NETWORK_ID: {
-                    "nodes": [
-                        {"type": "appliance", "id": DEVICE_SERIAL, "name": "San Jose MX64", "uplink": "wan1", "status": "degraded"},
-                        {"type": "wireless", "id": AP_SERIAL, "name": "AP-03", "floorPlanId": "FP-FLR1", "status": "failing"},
-                        {"type": "wireless", "id": "Q2XX-AP06-5678", "name": "AP-06", "floorPlanId": "FP-FLR1", "status": "healthy"}
-                    ],
-                    "links": [
-                        {"source": DEVICE_SERIAL, "target": AP_SERIAL, "linkType": "wired", "status": "critical", "latencyMs": 45, "lossPercent": 4.5},
-                        {"source": DEVICE_SERIAL, "target": "Q2XX-AP06-5678", "linkType": "wired", "status": "ok", "latencyMs": 4, "lossPercent": 0.05},
-                        {"source": AP_SERIAL, "target": "Q2XX-AP06-5678", "linkType": "wireless-mesh", "status": "critical", "latencyMs": 35, "lossPercent": 3.2}
                     ]
                 }
             }
             
-            # Update floor plans stability score - CRITICAL
+            # Update topology - Show ALL 5 APs, only AP-03 is failing
+            all_aps = [
+                {"serial": "Q2XX-ABCD-1234", "name": "AP-03"},
+                {"serial": "Q2XX-AP06-5678", "name": "AP-06"},
+                {"serial": "Q2XX-AP01-1111", "name": "AP-01"},
+                {"serial": "Q2XX-AP04-4444", "name": "AP-04"},
+                {"serial": "Q2XX-AP08-8888", "name": "AP-08"}
+            ]
+            
+            nodes = [{"type": "appliance", "id": DEVICE_SERIAL, "name": "San Jose MX64", "uplink": "wan1", "status": "degraded"}]
+            links = []
+            
+            for ap in all_aps:
+                status = "failing" if ap["serial"] == AP_SERIAL else "healthy"
+                nodes.append({"type": "wireless", "id": ap["serial"], "name": ap["name"], "floorPlanId": "FP-FLR1", "status": status})
+                
+                # Links from appliance
+                link_status = "critical" if ap["serial"] == AP_SERIAL else "ok"
+                latency = 45 if ap["serial"] == AP_SERIAL else 3
+                loss = 4.5 if ap["serial"] == AP_SERIAL else 0.05
+                links.append({"source": DEVICE_SERIAL, "target": ap["serial"], "linkType": "wired", "status": link_status, "latencyMs": latency, "lossPercent": loss})
+            
+            # Mesh links between APs
+            for i in range(len(all_aps) - 1):
+                link_status = "critical" if all_aps[i]["serial"] == AP_SERIAL or all_aps[i+1]["serial"] == AP_SERIAL else "ok"
+                latency = 35 if link_status == "critical" else 5
+                loss = 3.2 if link_status == "critical" else 0.1
+                links.append({"source": all_aps[i]["serial"], "target": all_aps[i+1]["serial"], "linkType": "wireless-mesh", "status": link_status, "latencyMs": latency, "lossPercent": loss})
+            
+            data["network_topology_link_layer"] = {
+                NETWORK_ID: {
+                    "nodes": nodes,
+                    "links": links
+                }
+            }
+            
+            # Update floor plans - AP-03 critical, others healthy
             data["network_floor_plans"] = {
                 NETWORK_ID: [{
                     "floorPlanId": "FP-FLR1",
                     "name": "San Jose HQ - Floor 1",
                     "center": {"lat": 37.4232, "lng": -122.0841},
                     "apCoordinates": [
-                        {"deviceSerial": AP_SERIAL, "x": 12.4, "y": 6.1, "rfCoverageMeters": 15, "historicalStabilityScore": 18},
-                        {"deviceSerial": "Q2XX-AP06-5678", "x": 35.2, "y": 8.7, "rfCoverageMeters": 25, "historicalStabilityScore": 92}
-                    ]
+                        {"deviceSerial": "Q2XX-ABCD-1234", "x": 12.4, "y": 6.1, "rfCoverageMeters": 15, "historicalStabilityScore": 18},
+                        {"deviceSerial": "Q2XX-AP06-5678", "x": 35.2, "y": 8.7, "rfCoverageMeters": 25, "historicalStabilityScore": 92},
+                        {"deviceSerial": "Q2XX-AP01-1111", "x": 45.2, "y": 11.7, "rfCoverageMeters": 25, "historicalStabilityScore": 89},
+                        {"deviceSerial": "Q2XX-AP04-4444", "x": 55.2, "y": 6.7, "rfCoverageMeters": 25, "historicalStabilityScore": 91},
+                        {"deviceSerial": "Q2XX-AP08-8888", "x": 65.2, "y": 11.7, "rfCoverageMeters": 25, "historicalStabilityScore": 88}
+                    ],
+                    "note": "SCENARIO_4_FULL_FAILURE"
                 }]
             }
+            
+            print(f"🔴 WIRELESS TELEMETRY: AP-03 CRITICAL FAILURE (Other APs Healthy)")
+            print(f"   └─ AP-03: Channel Util: 48% → 96.5% ❌ SATURATED")
+            print(f"   └─ AP-03: SNR: 31dB → 16dB ❌ BELOW THRESHOLD")
+            print(f"   └─ AP-03: Retransmissions: 12/min → 58/min ❌ CRITICAL")
+            print(f"   └─ AP-03: Latency: 28ms → 155ms ❌ CRITICAL")
+            print(f"   └─ AP-03: Packet Loss: 0.8% → 12% ❌ SEVERE")
+            print(f"   └─ Other 4 APs: Remain Healthy ✓")
             
             # Set most clients to offline
             online_count = 0
@@ -383,12 +479,6 @@ class FullFailureScenario:
             with open(mock_file, 'w') as f:
                 json.dump(data, f, indent=2)
             
-            print(f"🔴 WIRELESS TELEMETRY: CRITICAL FAILURE")
-            print(f"   └─ Channel Util: 48% → 96.5% ❌ SATURATED")
-            print(f"   └─ SNR: 31dB → 16dB ❌ BELOW THRESHOLD")
-            print(f"   └─ Retransmissions: 12/min → 58/min ❌ CRITICAL")
-            print(f"   └─ Latency: 28ms → 155ms ❌ CRITICAL")
-            print(f"   └─ Packet Loss: 0.8% → 12% ❌ SEVERE")
             print(f"🔴 CLIENT STATUS:")
             print(f"   └─ {online_count} online, {offline_count} OFFLINE ❌")
             print(f"🔴 UPLINKS: ALL FAILED ❌")
@@ -454,23 +544,23 @@ async def main():
 
 if __name__ == "__main__":
     print("""
-╔══════════════════════════════════════════════════════════════╗
-║           SCENARIO 4: FULL NETWORK FAILURE                   ║
-║                                                              ║
-║  This script simulates complete network failure:            ║
-║    • Latency: ~350ms (CRITICAL)                             ║
-║    • Packet Loss: ~12% (SEVERE)                             ║
-║    • Jitter: ~55ms (CRITICAL)                               ║
-║    • Goodput: ~42% (FAILED)                                 ║
-║    • Channel Utilization: 96%+ (SATURATED)                  ║
-║    • SNR: ~16dB (BELOW THRESHOLD)                           ║
-║    • Both uplinks: FAILED                                   ║
-║    • 60% clients: OFFLINE                                   ║
-║                                                              ║
-║  Expected Agent Classification: LIKELY FAILURE              ║
-║  → Risk Score: 85-100                                       ║
-║  → Requires IMMEDIATE intervention                          ║
-╚══════════════════════════════════════════════════════════════╝
+============================================================
+           SCENARIO 4: FULL NETWORK FAILURE                   
+                                                              
+  This script simulates complete network failure:            
+    - Latency: ~350ms (CRITICAL)                             
+    - Packet Loss: ~12% (SEVERE)                             
+    - Jitter: ~55ms (CRITICAL)                               
+    - Goodput: ~42% (FAILED)                                 
+    - Channel Utilization: 96%+ (SATURATED)                  
+    - SNR: ~16dB (BELOW THRESHOLD)                           
+    - Both uplinks: FAILED                                   
+    - 60% clients: OFFLINE                                   
+                                                              
+  Expected Agent Classification: LIKELY FAILURE              
+  -> Risk Score: 85-100                                       
+  -> Requires IMMEDIATE intervention                          
+============================================================
     """)
     
     asyncio.run(main())
