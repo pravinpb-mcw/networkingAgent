@@ -174,7 +174,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # System Status Bar
-col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
+col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 2, 2, 2])
 
 agent1_status = check_agent_status(5001)
 agent2_status = check_agent_status(5002)
@@ -202,6 +202,18 @@ with col4:
         st.markdown('<span class="status-stopped">📊 Phoenix: Offline</span>', unsafe_allow_html=True)
 
 with col5:
+    import subprocess
+    if st.button("▶️ Start All Agents", use_container_width=True, key="btn_start_agents"):
+        try:
+            # Run the batch file
+            subprocess.Popen([str(project_root / "start_agents_with_a2a.bat")], shell=True, cwd=str(project_root))
+            st.success("✅ Starting all agents...")
+            time.sleep(2)
+            st.rerun()
+        except Exception as e:
+            st.error(f"❌ Failed to start agents: {e}")
+
+with col6:
     auto_refresh = st.checkbox("🔄 Auto-refresh", value=True)
 
 st.divider()
@@ -214,81 +226,97 @@ with tab1:
     st.markdown("### 💬 Failover Analysis Chat")
     st.caption("Real-time analysis from Agent 3 using A2A protocol")
     
-    # Load history
-    analysis_history = load_analysis_history()
-    
-    if analysis_history:
-        # Show ONLY the latest analysis
-        entry = analysis_history[-1]
-        timestamp = entry.get('timestamp', 'Unknown')
-        iteration = entry.get('iteration', '?')
-        analysis = entry.get('analysis', 'No analysis available')
+    # Check if agents are running before showing chat
+    if agent1_status["status"] != "running" and agent2_status["status"] != "running":
+        st.warning("⚠️ Agents are not running. Please start the agents to see analysis.")
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            if st.button("▶️ Start All Agents", use_container_width=True, key="btn_start_agents_tab"):
+                try:
+                    subprocess.Popen([str(project_root / "start_agents_with_a2a.bat")], shell=True, cwd=str(project_root))
+                    st.success("✅ Starting all agents... Please wait 10 seconds")
+                    time.sleep(3)
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ Failed to start agents: {e}")
+        with col2:
+            st.info("💡 Agents will start in separate windows. Wait ~10 seconds for initialization.")
+    else:
+        # Load history
+        analysis_history = load_analysis_history()
         
-        # Parse timestamp
-        try:
-            dt = datetime.fromisoformat(timestamp)
-            time_str = dt.strftime('%H:%M:%S')
-            date_str = dt.strftime('%b %d, %Y')
-        except:
-            time_str = timestamp
-            date_str = ""
+        if analysis_history:
+            # Show ONLY the latest analysis
+            entry = analysis_history[-1]
+            timestamp = entry.get('timestamp', 'Unknown')
+            iteration = entry.get('iteration', '?')
+            analysis = entry.get('analysis', 'No analysis available')
         
-        # Display latest message - render markdown tables properly
-        import re
+            # Parse timestamp
+            try:
+                dt = datetime.fromisoformat(timestamp)
+                time_str = dt.strftime('%H:%M:%S')
+                date_str = dt.strftime('%b %d, %Y')
+            except:
+                time_str = timestamp
+                date_str = ""
         
-        # Convert markdown to HTML for proper table display
-        def convert_markdown_tables(md_text):
-            """Convert markdown tables to HTML tables"""
-            lines = md_text.split('\n')
-            result = []
-            in_table = False
-            table_headers = []
+            # Display latest message - render markdown tables properly
+            import re
+        
+            # Convert markdown to HTML for proper table display
+            def convert_markdown_tables(md_text):
+                """Convert markdown tables to HTML tables"""
+                lines = md_text.split('\n')
+                result = []
+                in_table = False
+                table_headers = []
             
-            i = 0
-            while i < len(lines):
-                line = lines[i].strip()
+                i = 0
+                while i < len(lines):
+                    line = lines[i].strip()
                 
-                # Check if this is a table header row
-                if '|' in line and i + 1 < len(lines) and '---' in lines[i + 1]:
-                    # Start table
-                    in_table = True
-                    table_headers = [cell.strip() for cell in line.split('|')[1:-1]]
-                    result.append('<table style="width:100%; border-collapse: collapse; margin: 15px 0;">')
-                    result.append('<thead><tr>')
-                    for header in table_headers:
-                        result.append(f'<th style="border: 1px solid #444; padding: 10px; background: #2a2a2a; text-align: left;">{header}</th>')
-                    result.append('</tr></thead><tbody>')
-                    i += 2  # Skip separator line
-                    continue
+                    # Check if this is a table header row
+                    if '|' in line and i + 1 < len(lines) and '---' in lines[i + 1]:
+                        # Start table
+                        in_table = True
+                        table_headers = [cell.strip() for cell in line.split('|')[1:-1]]
+                        result.append('<table style="width:100%; border-collapse: collapse; margin: 15px 0;">')
+                        result.append('<thead><tr>')
+                        for header in table_headers:
+                            result.append(f'<th style="border: 1px solid #444; padding: 10px; background: #2a2a2a; text-align: left;">{header}</th>')
+                        result.append('</tr></thead><tbody>')
+                        i += 2  # Skip separator line
+                        continue
                 
-                # Check if this is a table row
-                elif in_table and '|' in line and line.strip():
-                    cells = [cell.strip() for cell in line.split('|')[1:-1]]
-                    result.append('<tr>')
-                    for cell in cells:
-                        result.append(f'<td style="border: 1px solid #444; padding: 10px;">{cell}</td>')
-                    result.append('</tr>')
+                    # Check if this is a table row
+                    elif in_table and '|' in line and line.strip():
+                        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+                        result.append('<tr>')
+                        for cell in cells:
+                            result.append(f'<td style="border: 1px solid #444; padding: 10px;">{cell}</td>')
+                        result.append('</tr>')
+                        i += 1
+                        continue
+                
+                    # End table if we hit a non-table line
+                    elif in_table and '|' not in line:
+                        result.append('</tbody></table>')
+                        in_table = False
+                
+                    # Regular line
+                    result.append(line)
                     i += 1
-                    continue
-                
-                # End table if we hit a non-table line
-                elif in_table and '|' not in line:
+            
+                # Close table if still open
+                if in_table:
                     result.append('</tbody></table>')
-                    in_table = False
-                
-                # Regular line
-                result.append(line)
-                i += 1
             
-            # Close table if still open
-            if in_table:
-                result.append('</tbody></table>')
-            
-            return '\n'.join(result)
+                return '\n'.join(result)
         
-        formatted_analysis = convert_markdown_tables(analysis)
+            formatted_analysis = convert_markdown_tables(analysis)
         
-        st.markdown(f"""
+            st.markdown(f"""
 <div class="analysis-message">
     <div class="analysis-header">
         <span class="analysis-title">Analysis #{iteration}</span>
@@ -300,77 +328,77 @@ with tab1:
 </div>
         """, unsafe_allow_html=True)
         
-        st.divider()
+            st.divider()
         
-        # Download button for HTML report with proper markdown rendering
-        # Simple conversion without external library
-        def markdown_to_html(md_text):
-            """Convert markdown to HTML (tables and basic formatting)"""
-            import re
+            # Download button for HTML report with proper markdown rendering
+            # Simple conversion without external library
+            def markdown_to_html(md_text):
+                """Convert markdown to HTML (tables and basic formatting)"""
+                import re
             
-            html = md_text
+                html = md_text
             
-            # Convert markdown tables to HTML tables
-            lines = html.split('\n')
-            result = []
-            in_table = False
+                # Convert markdown tables to HTML tables
+                lines = html.split('\n')
+                result = []
+                in_table = False
             
-            for i, line in enumerate(lines):
-                # Detect table start (line with |---|---|)
-                if '|' in line and '---' in line:
-                    if not in_table:
-                        # Start table
-                        result.append('<table>')
-                        # Previous line is header
-                        if i > 0 and '|' in lines[i-1]:
-                            header_cells = [cell.strip() for cell in lines[i-1].split('|')[1:-1]]
-                            result[-1] = '<table>\n<thead>\n<tr>'
-                            for cell in header_cells:
-                                result.append(f'<th>{cell}</th>')
-                            result.append('</tr>\n</thead>\n<tbody>')
-                        in_table = True
-                    continue
-                elif in_table and '|' in line and line.strip():
-                    # Table row
-                    cells = [cell.strip() for cell in line.split('|')[1:-1]]
-                    result.append('<tr>')
-                    for cell in cells:
-                        result.append(f'<td>{cell}</td>')
-                    result.append('</tr>')
-                elif in_table and '|' not in line:
-                    # End table
+                for i, line in enumerate(lines):
+                    # Detect table start (line with |---|---|)
+                    if '|' in line and '---' in line:
+                        if not in_table:
+                            # Start table
+                            result.append('<table>')
+                            # Previous line is header
+                            if i > 0 and '|' in lines[i-1]:
+                                header_cells = [cell.strip() for cell in lines[i-1].split('|')[1:-1]]
+                                result[-1] = '<table>\n<thead>\n<tr>'
+                                for cell in header_cells:
+                                    result.append(f'<th>{cell}</th>')
+                                result.append('</tr>\n</thead>\n<tbody>')
+                            in_table = True
+                        continue
+                    elif in_table and '|' in line and line.strip():
+                        # Table row
+                        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+                        result.append('<tr>')
+                        for cell in cells:
+                            result.append(f'<td>{cell}</td>')
+                        result.append('</tr>')
+                    elif in_table and '|' not in line:
+                        # End table
+                        result.append('</tbody>\n</table>')
+                        in_table = False
+                        result.append(line)
+                    else:
+                        result.append(line)
+            
+                if in_table:
                     result.append('</tbody>\n</table>')
-                    in_table = False
-                    result.append(line)
-                else:
-                    result.append(line)
             
-            if in_table:
-                result.append('</tbody>\n</table>')
+                html = '\n'.join(result)
             
-            html = '\n'.join(result)
+                # Convert headers
+                html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+                html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+                html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+                html = re.sub(r'^#### (.+)$', r'<h4>\1</h4>', html, flags=re.MULTILINE)
             
-            # Convert headers
-            html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
-            html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
-            html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
-            html = re.sub(r'^#### (.+)$', r'<h4>\1</h4>', html, flags=re.MULTILINE)
+                # Convert bold
+                html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
             
-            # Convert bold
-            html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
+                # Convert horizontal rules
+                html = re.sub(r'^---$', r'<hr>', html, flags=re.MULTILINE)
             
-            # Convert horizontal rules
-            html = re.sub(r'^---$', r'<hr>', html, flags=re.MULTILINE)
+                # Convert line breaks
+                html = html.replace('\n\n', '<br><br>')
             
-            # Convert line breaks
-            html = html.replace('\n\n', '<br><br>')
-            
-            return html
+                return html
         
-        # Convert markdown to HTML
-        html_content = markdown_to_html(analysis)
+            # Convert markdown to HTML
+            html_content = markdown_to_html(analysis)
         
-        html_report = f"""
+            html_report = f"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -566,40 +594,40 @@ with tab1:
 </html>
 """
         
-        col1, col2 = st.columns([3, 1])
-        with col2:
-            st.download_button(
-                label="📥 Download HTML Report",
-                data=html_report,
-                file_name=f"failover_analysis_{iteration}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
-                mime="text/html",
-                use_container_width=True,
-                key="download_html_report"
-            )
+            col1, col2 = st.columns([3, 1])
+            with col2:
+                st.download_button(
+                    label="📥 Download HTML Report",
+                    data=html_report,
+                    file_name=f"failover_analysis_{iteration}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                    mime="text/html",
+                    use_container_width=True,
+                    key="download_html_report"
+                )
         
-        st.info(f"📋 Total Analyses: {len(analysis_history)} | Showing latest only")
+            st.info(f"📋 Total Analyses: {len(analysis_history)} | Showing latest only")
         
-        # View full history expander
-        with st.expander("📜 View Full History"):
-            for entry in reversed(analysis_history[:-1]):  # All except latest
-                timestamp = entry.get('timestamp', 'Unknown')
-                iteration = entry.get('iteration', '?')
-                analysis = entry.get('analysis', 'No analysis available')
+            # View full history expander
+            with st.expander("📜 View Full History"):
+                for entry in reversed(analysis_history[:-1]):  # All except latest
+                    timestamp = entry.get('timestamp', 'Unknown')
+                    iteration = entry.get('iteration', '?')
+                    analysis = entry.get('analysis', 'No analysis available')
                 
-                try:
-                    dt = datetime.fromisoformat(timestamp)
-                    time_str = dt.strftime('%H:%M:%S')
-                    date_str = dt.strftime('%b %d, %Y')
-                except:
-                    time_str = timestamp
-                    date_str = ""
+                    try:
+                        dt = datetime.fromisoformat(timestamp)
+                        time_str = dt.strftime('%H:%M:%S')
+                        date_str = dt.strftime('%b %d, %Y')
+                    except:
+                        time_str = timestamp
+                        date_str = ""
                 
-                st.markdown(f"**🤖 Analysis #{iteration}** | {date_str} {time_str}")
-                st.markdown(analysis)
-                st.divider()
-    else:
-        st.info("⏳ Waiting for Agent 3 analysis... Start agents to see results here.")
-        st.code("start_agents_with_a2a.bat", language="bash")
+                    st.markdown(f"**🤖 Analysis #{iteration}** | {date_str} {time_str}")
+                    st.markdown(analysis)
+                    st.divider()
+        else:
+            st.info("⏳ Waiting for Agent 3 to generate first analysis... (Check every 20 seconds)")
+            st.code("Agent 3 will analyze and post results here automatically", language="bash")
 
 # TAB 2 - Phoenix Full Tab
 with tab2:

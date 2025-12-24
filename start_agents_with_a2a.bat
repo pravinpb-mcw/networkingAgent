@@ -11,7 +11,7 @@ echo ===========================================================================
 echo.
 
 REM Start Agent 1 (Risk Score - A2A Server)
-start "Agent 1 - Risk Score (A2A)" cmd /k "cd /d %~dp0 && ..\.wenv\Scripts\python.exe agents\agent_1_risk_calculation.py --continuous 30"
+start "Agent 1 - Risk Score (A2A)" cmd /k "cd /d %~dp0 && ..\.wenv\Scripts\python.exe agents\agent_1_risk_calculation.py --continuous 10"
 
 timeout /t 3 /nobreak >nul
 
@@ -21,7 +21,7 @@ start "Agent 2 - Nearest AP (A2A)" cmd /k "cd /d %~dp0 && ..\.wenv\Scripts\pytho
 timeout /t 5 /nobreak >nul
 
 REM Start Agent 3 (Failover - A2A Client)
-start "Agent 3 - Failover (A2A)" cmd /k "cd /d %~dp0 && ..\.wenv\Scripts\python.exe agents\agent_3_failover_suggestion.py --continuous 60"
+start "Agent 3 - Failover (A2A)" cmd /k "cd /d %~dp0 && ..\.wenv\Scripts\python.exe agents\agent_3_failover_suggestion.py --continuous 20"
 
 echo.
 echo ================================================================================

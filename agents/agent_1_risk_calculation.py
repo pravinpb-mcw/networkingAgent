@@ -316,13 +316,14 @@ class RiskScoreOrchestrator:
                 
                 at_risk = []
                 for ap_serial, ap_data in data.items():
-                    risk_score = ap_data.get('risk_score', 0)
+                    current_data = ap_data.get('current', {})
+                    risk_score = current_data.get('risk_score', 0)
                     if risk_score > threshold:
                         at_risk.append({
                             "ap_serial": ap_serial,
-                            "ap_name": ap_data.get('ap_name', 'Unknown'),
+                            "ap_name": current_data.get('ap_name', ap_data.get('ap_name', 'Unknown')),
                             "risk_score": risk_score,
-                            "risk_classification": ap_data.get('risk_classification', 'Unknown')
+                            "risk_classification": current_data.get('risk_classification', 'Unknown')
                         })
                 
                 response = f"Found {len(at_risk)} APs exceeding threshold {threshold}:\n"
@@ -339,7 +340,8 @@ class RiskScoreOrchestrator:
                 # Return all risk scores
                 response = f"All Risk Scores ({len(data)} APs):\n"
                 for ap_serial, ap_data in data.items():
-                    response += f"  - {ap_serial}: Risk {ap_data.get('risk_score', 0)} - {ap_data.get('risk_classification', 'Unknown')}\n"
+                    current_data = ap_data.get('current', {})
+                    response += f"  - {ap_serial}: Risk {current_data.get('risk_score', 0)} - {current_data.get('risk_classification', 'Unknown')}\n"
                 
                 span.set_attribute("total_aps", len(data))
                 span.set_attribute("output.value", response)
