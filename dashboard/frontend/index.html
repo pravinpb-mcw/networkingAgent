@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=2.0">
 </head>
 
 <body>
@@ -47,7 +47,8 @@
                 <li data-tab="analysis">
                     <i class="fa-solid fa-robot"></i>
                     <span>AI Analysis</span>
-                    <span id="analysis-tab-time" style="font-size: 10px; color: var(--text-muted); margin-left: 4px;"></span>
+                    <span id="analysis-tab-time"
+                        style="font-size: 10px; color: var(--text-muted); margin-left: 4px;"></span>
                 </li>
                 <li data-tab="phoenix">
                     <i class="fa-solid fa-fire"></i>
@@ -211,188 +212,178 @@
                 </div>
             </div>
 
-            <!-- 4. Settings View -->
+            <!-- 4. Settings View (Redesigned) -->
             <div id="view-settings" class="view-section">
-                <!-- Agent Controls - All Side by Side -->
-                <h2 style="color: var(--text-primary); margin: 0 0 16px 0; font-size: 18px;">
-                    <i class="fa-solid fa-robot"></i> Agent Controls
-                </h2>
-                
-                <!-- Individual Agent Cards - Side by Side -->
-                <div class="agent-control-grid">
-                    <!-- Agent 1 -->
-                    <div class="agent-card glass-panel">
-                        <div class="agent-header">
-                            <i class="fa-solid fa-chart-line" style="color: var(--primary);"></i>
-                            <h3>Agent 1</h3>
-                            <span class="agent-type">Risk Calculator</span>
-                        </div>
-                        <div class="agent-status">
-                            <span class="badge" id="status-agent1">Unknown</span>
-                        </div>
-                        <div class="agent-actions">
-                            <button class="btn-sm btn-success" id="btn-start-agent1">
-                                <i class="fa-solid fa-play"></i> Start
-                            </button>
-                            <button class="btn-sm btn-danger" id="btn-stop-agent1">
-                                <i class="fa-solid fa-stop"></i> Stop
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Agent 2 -->
-                    <div class="agent-card glass-panel">
-                        <div class="agent-header">
-                            <i class="fa-solid fa-network-wired" style="color: var(--accent);"></i>
-                            <h3>Agent 2</h3>
-                            <span class="agent-type">Nearest AP</span>
+                <div class="control-layout">
+                    <!-- Left Column: Agent Controls -->
+                    <div class="control-column">
+                        <div class="column-header">
+                            <i class="fa-solid fa-robot"></i> Agent Fleet Control
                         </div>
-                        <div class="agent-status">
-                            <span class="badge" id="status-agent2">Unknown</span>
-                        </div>
-                        <div class="agent-actions">
-                            <button class="btn-sm btn-success" id="btn-start-agent2">
-                                <i class="fa-solid fa-play"></i> Start
-                            </button>
-                            <button class="btn-sm btn-danger" id="btn-stop-agent2">
-                                <i class="fa-solid fa-stop"></i> Stop
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Agent 3 -->
-                    <div class="agent-card glass-panel">
-                        <div class="agent-header">
-                            <i class="fa-solid fa-arrows-rotate" style="color: var(--warning);"></i>
-                            <h3>Agent 3</h3>
-                            <span class="agent-type">Failover</span>
-                        </div>
-                        <div class="agent-status">
-                            <span class="badge" id="status-agent3">Unknown</span>
-                        </div>
-                        <div class="agent-actions">
-                            <button class="btn-sm btn-success" id="btn-start-agent3">
-                                <i class="fa-solid fa-play"></i> Start
-                            </button>
-                            <button class="btn-sm btn-danger" id="btn-stop-agent3">
-                                <i class="fa-solid fa-stop"></i> Stop
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- All Agents Control -->
-                    <div class="agent-card glass-panel all-agents-card">
-                        <div class="agent-header">
-                            <i class="fa-solid fa-layer-group" style="color: var(--success);"></i>
-                            <h3>All Agents</h3>
-                            <span class="agent-type">Batch Control</span>
-                        </div>
-                        <div class="agent-status">
-                            <span class="badge" id="status-all-agents">--</span>
-                        </div>
-                        <div class="agent-actions">
-                            <button class="btn-sm btn-primary" id="btn-start-agents">
-                                <i class="fa-solid fa-play"></i> Start All
-                            </button>
-                            <button class="btn-sm btn-danger" id="btn-stop-agents">
-                                <i class="fa-solid fa-stop"></i> Stop All
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Cards Row -->
-                <div class="settings-grid" style="margin-top: 24px;">
-                    <!-- Notification Settings -->
-                    <div class="settings-card glass-panel">
-                        <h2><i class="fa-solid fa-bell"></i> Notification Settings</h2>
-                        <p>Configure Microsoft Teams webhook for real-time alerts</p>
-
-                        <div class="control-group">
-                            <div class="status-row">
-                                <span>Webhook Status</span>
-                                <span class="badge" id="webhook-status">Checking...</span>
+                        <div class="agent-grid-compact">
+                            <!-- Agent 1 -->
+                            <div class="agent-card-compact">
+                                <div class="agent-icon" style="color: var(--primary-accent);">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3>Agent 1</h3>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Risk Calc</span>
+                                </div>
+                                <div class="agent-status-badge">
+                                    <span class="badge" id="status-agent1">Unknown</span>
+                                </div>
+                                <div class="agent-controls-row">
+                                    <button class="btn-control btn-control-start" id="btn-start-agent1">
+                                        <i class="fa-solid fa-play"></i> Start
+                                    </button>
+                                    <button class="btn-control btn-control-stop" id="btn-stop-agent1">
+                                        <i class="fa-solid fa-stop"></i> Stop
+                                    </button>
+                                </div>
                             </div>
-                            <div class="status-row">
-                                <span>Alert Source</span>
-                                <span style="color: var(--text-muted); font-size: 12px;">Agent 3 - Failover
-                                    Coordinator</span>
+
+                            <!-- Agent 2 -->
+                            <div class="agent-card-compact">
+                                <div class="agent-icon" style="color: var(--secondary-accent);">
+                                    <i class="fa-solid fa-network-wired"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3>Agent 2</h3>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Nearest AP</span>
+                                </div>
+                                <div class="agent-status-badge">
+                                    <span class="badge" id="status-agent2">Unknown</span>
+                                </div>
+                                <div class="agent-controls-row">
+                                    <button class="btn-control btn-control-start" id="btn-start-agent2">
+                                        <i class="fa-solid fa-play"></i> Start
+                                    </button>
+                                    <button class="btn-control btn-control-stop" id="btn-stop-agent2">
+                                        <i class="fa-solid fa-stop"></i> Stop
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Agent 3 -->
+                            <div class="agent-card-compact">
+                                <div class="agent-icon" style="color: var(--warning);">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3>Agent 3</h3>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Failover</span>
+                                </div>
+                                <div class="agent-status-badge">
+                                    <span class="badge" id="status-agent3">Unknown</span>
+                                </div>
+                                <div class="agent-controls-row">
+                                    <button class="btn-control btn-control-start" id="btn-start-agent3">
+                                        <i class="fa-solid fa-play"></i> Start
+                                    </button>
+                                    <button class="btn-control btn-control-stop" id="btn-stop-agent3">
+                                        <i class="fa-solid fa-stop"></i> Stop
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- All Agents -->
+                            <div class="agent-card-compact" style="border-color: var(--success);">
+                                <div class="agent-icon" style="color: var(--success);">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3>All Agents</h3>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Batch Control</span>
+                                </div>
+                                <div class="agent-status-badge">
+                                    <span class="badge" id="status-all-agents">--</span>
+                                </div>
+                                <div class="agent-controls-row">
+                                    <button class="btn-control btn-control-start" id="btn-start-agents">
+                                        <i class="fa-solid fa-play"></i> Run All
+                                    </button>
+                                    <button class="btn-control btn-control-stop" id="btn-stop-agents">
+                                        <i class="fa-solid fa-stop"></i> Stop All
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="action-buttons">
-                            <button class="btn-primary" id="btn-test-webhook">
-                                <i class="fa-solid fa-paper-plane"></i> Test Notification
-                            </button>
-                        </div>
                     </div>
 
-                    <!-- Phoenix Status -->
-                    <div class="settings-card glass-panel">
-                        <h2><i class="fa-solid fa-fire"></i> Phoenix Tracing</h2>
-                        <p>OpenTelemetry observability server status</p>
+                    <!-- Right Column: Scenarios (and hidden System Config) -->
+                    <div class="control-column">
+                        <div class="column-header">
+                            <i class="fa-solid fa-vials"></i> Simulation Scenarios
+                        </div>
 
-                        <div class="control-group">
-                            <div class="status-row">
-                                <span>Phoenix Server</span>
-                                <span class="badge" id="phoenix-status">Checking...</span>
+                        <div class="scenario-stack">
+                            <!-- Fail AP Scenario -->
+                            <div class="scenario-card-large danger-zone">
+                                <div>
+                                    <h2
+                                        style="font-size: 16px; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
+                                        <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i>
+                                        Simulate AP Failure
+                                    </h2>
+                                    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Trigger a critical
+                                        failure event on a specific AP.</p>
+                                </div>
+
+                                <div class="control-group"
+                                    style="margin: 0; padding: 16px; background: rgba(0,0,0,0.2);">
+                                    <select id="select-fail-ap" class="scenario-select" style="margin-bottom: 12px;">
+                                        <option value="">Loading APs...</option>
+                                    </select>
+                                    <div id="fail-ap-status" style="font-size: 12px; height: 16px;"></div>
+                                </div>
+
+                                <button class="btn-danger" id="btn-fail-ap"
+                                    style="width: 100%; justify-content: center;">
+                                    <i class="fa-solid fa-bomb"></i> EXECUTE FAILURE
+                                </button>
                             </div>
-                            <div class="status-row">
-                                <span>Port</span>
-                                <span style="color: var(--text-muted); font-size: 12px;">localhost:6006</span>
+
+                            <!-- Recover AP Scenario -->
+                            <div class="scenario-card-large safe-zone">
+                                <div>
+                                    <h2
+                                        style="font-size: 16px; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
+                                        <i class="fa-solid fa-heart-pulse" style="color: var(--success);"></i> Restore
+                                        AP Health
+                                    </h2>
+                                    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Reset AP metrics to
+                                        healthy state.</p>
+                                </div>
+
+                                <div class="control-group"
+                                    style="margin: 0; padding: 16px; background: rgba(0,0,0,0.2);">
+                                    <select id="select-recover-ap" class="scenario-select" style="margin-bottom: 12px;">
+                                        <option value="">Loading APs...</option>
+                                    </select>
+                                    <div id="recover-ap-status" style="font-size: 12px; height: 16px;"></div>
+                                </div>
+
+                                <button class="btn-success" id="btn-recover-ap"
+                                    style="width: 100%; justify-content: center;">
+                                    <i class="fa-solid fa-check-circle"></i> RESTORE NORMAL
+                                </button>
                             </div>
                         </div>
 
-                        <div class="action-buttons">
-                            <a href="http://localhost:6006" target="_blank" class="btn-primary">
-                                <i class="fa-solid fa-external-link"></i> Open Phoenix
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Scenario Controls - Side by Side -->
-                <h2 style="color: var(--text-primary); margin: 24px 0 16px 0; font-size: 18px;">
-                    <i class="fa-solid fa-vials"></i> Scenario Simulation
-                </h2>
-                <div class="scenario-grid">
-                    <!-- AP Failure Scenario -->
-                    <div class="settings-card glass-panel scenario-card">
-                        <h2><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Simulate AP Failure</h2>
-                        <p>Select an AP to simulate critical failure for testing</p>
-
-                        <div class="control-group">
-                            <label for="select-fail-ap" style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px; display: block;">Select Access Point:</label>
-                            <select id="select-fail-ap" class="scenario-select">
-                                <option value="">-- Loading APs... --</option>
-                            </select>
-                            <div id="fail-ap-status" style="margin-top: 10px; font-size: 12px; color: var(--text-muted);"></div>
-                        </div>
-
-                        <div class="action-buttons">
-                            <button class="btn-danger" id="btn-fail-ap">
-                                <i class="fa-solid fa-exclamation-circle"></i> Simulate Failure
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- AP Recovery Scenario -->
-                    <div class="settings-card glass-panel scenario-card">
-                        <h2><i class="fa-solid fa-heart-pulse" style="color: var(--success);"></i> Restore AP to Healthy</h2>
-                        <p>Select an AP to restore to healthy state</p>
-
-                        <div class="control-group">
-                            <label for="select-recover-ap" style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px; display: block;">Select Access Point:</label>
-                            <select id="select-recover-ap" class="scenario-select">
-                                <option value="">-- Loading APs... --</option>
-                            </select>
-                            <div id="recover-ap-status" style="margin-top: 10px; font-size: 12px; color: var(--text-muted);"></div>
-                        </div>
-
-                        <div class="action-buttons">
-                            <button class="btn-success" id="btn-recover-ap">
-                                <i class="fa-solid fa-heart"></i> Restore to Healthy
-                            </button>
+                        <!-- System Configuration (Hidden as per request) -->
+                        <div class="hidden-section">
+                            <!-- Notification Settings (Preserved but hidden) -->
+                            <div id="settings-webhook-container">
+                                <span id="webhook-status"></span>
+                                <button id="btn-test-webhook"></button>
+                            </div>
+                            <!-- Phoenix Status (Preserved but hidden) -->
+                            <div id="settings-phoenix-container">
+                                <span id="phoenix-status"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -405,20 +396,20 @@
     <script src="/static/app.js"></script>
     <script>
         // Force load APs when page is ready
-        window.addEventListener('load', async function() {
+        window.addEventListener('load', async function () {
             console.log('Force loading APs...');
             try {
                 const res = await fetch('/scenarios/aps');
                 const aps = await res.json();
                 console.log('Fetched APs:', aps);
-                
+
                 const failSelect = document.getElementById('select-fail-ap');
                 const recoverSelect = document.getElementById('select-recover-ap');
-                
+
                 if (failSelect && recoverSelect) {
                     failSelect.innerHTML = '<option value="">-- Select AP --</option>';
                     recoverSelect.innerHTML = '<option value="">-- Select AP --</option>';
-                    
+
                     aps.forEach(ap => {
                         failSelect.innerHTML += `<option value="${ap.serial}">${ap.name} (${ap.serial})</option>`;
                         recoverSelect.innerHTML += `<option value="${ap.serial}">${ap.name} (${ap.serial})</option>`;
@@ -430,39 +421,39 @@
             } catch (e) {
                 console.error('Error loading APs:', e);
             }
-            
+
             // Setup button click handlers
             const failBtn = document.getElementById('btn-fail-ap');
             const recoverBtn = document.getElementById('btn-recover-ap');
-            
+
             if (failBtn) {
-                failBtn.onclick = async function() {
+                failBtn.onclick = async function () {
                     const select = document.getElementById('select-fail-ap');
                     const apSerial = select.value;
                     const statusDiv = document.getElementById('fail-ap-status');
-                    
+
                     if (!apSerial) {
                         statusDiv.textContent = '⚠️ Please select an AP';
                         statusDiv.style.color = 'orange';
                         return;
                     }
-                    
+
                     const apName = select.options[select.selectedIndex].text;
                     if (!confirm(`Confirm: Simulate failure for ${apName}?`)) return;
-                    
+
                     try {
                         failBtn.disabled = true;
                         failBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Applying...';
                         statusDiv.textContent = 'Applying failure scenario...';
-                        
+
                         const res = await fetch('/scenarios/fail-ap', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ ap_serial: apSerial })
                         });
-                        
+
                         const data = await res.json();
-                        
+
                         if (res.ok) {
                             statusDiv.textContent = '✅ ' + data.message;
                             statusDiv.style.color = '#00d97e';
@@ -481,35 +472,35 @@
                     }
                 };
             }
-            
+
             if (recoverBtn) {
-                recoverBtn.onclick = async function() {
+                recoverBtn.onclick = async function () {
                     const select = document.getElementById('select-recover-ap');
                     const apSerial = select.value;
                     const statusDiv = document.getElementById('recover-ap-status');
-                    
+
                     if (!apSerial) {
                         statusDiv.textContent = '⚠️ Please select an AP';
                         statusDiv.style.color = 'orange';
                         return;
                     }
-                    
+
                     const apName = select.options[select.selectedIndex].text;
                     if (!confirm(`Confirm: Restore ${apName} to healthy state?`)) return;
-                    
+
                     try {
                         recoverBtn.disabled = true;
                         recoverBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Restoring...';
                         statusDiv.textContent = 'Applying recovery scenario...';
-                        
+
                         const res = await fetch('/scenarios/recover-ap', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ ap_serial: apSerial })
                         });
-                        
+
                         const data = await res.json();
-                        
+
                         if (res.ok) {
                             statusDiv.textContent = '✅ ' + data.message;
                             statusDiv.style.color = '#00d97e';
@@ -528,7 +519,7 @@
                     }
                 };
             }
-            
+
             console.log('Button handlers attached');
         });
     </script>

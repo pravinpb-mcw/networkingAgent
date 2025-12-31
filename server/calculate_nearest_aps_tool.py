@@ -49,6 +49,15 @@ async def calculate_nearest_aps(
         List[TextContent] containing nearest AP calculation results
     """
     try:
+        # Convert lat/lng - handle empty strings, None, or 'null'
+        if source_ap_lat is None or source_ap_lat == '' or source_ap_lat == 'null':
+            raise ValueError("source_ap_lat is required and cannot be empty")
+        source_ap_lat = float(source_ap_lat) if not isinstance(source_ap_lat, (int, float)) else float(source_ap_lat)
+        
+        if source_ap_lng is None or source_ap_lng == '' or source_ap_lng == 'null':
+            raise ValueError("source_ap_lng is required and cannot be empty")
+        source_ap_lng = float(source_ap_lng) if not isinstance(source_ap_lng, (int, float)) else float(source_ap_lng)
+        
         # Convert empty strings or None to defaults for integer fields
         if source_ap_floor is None or source_ap_floor == '' or source_ap_floor == 'null':
             source_ap_floor = 1
@@ -69,10 +78,31 @@ async def calculate_nearest_aps(
         if all_aps is None:
             all_aps = []
         
-        # Clean up all_aps - convert string numbers to integers
+        # Clean up all_aps - convert string numbers to proper types
         cleaned_aps = []
         for ap in all_aps:
             cleaned_ap = dict(ap)
+            
+            # Handle lat/lng - convert to float, skip if invalid
+            for coord_field in ['lat', 'lng']:
+                if coord_field in cleaned_ap:
+                    val = cleaned_ap[coord_field]
+                    if val is None or val == '' or val == 'null':
+                        logger.warning(f"AP {cleaned_ap.get('serial', 'unknown')} has empty {coord_field}, skipping")
+                        cleaned_ap = None
+                        break
+                    elif not isinstance(val, (int, float)):
+                        try:
+                            cleaned_ap[coord_field] = float(val)
+                        except (ValueError, TypeError):
+                            logger.warning(f"AP {cleaned_ap.get('serial', 'unknown')} has invalid {coord_field}: {val}, skipping")
+                            cleaned_ap = None
+                            break
+                            
+            if cleaned_ap is None:
+                continue
+                
+            # Handle integer fields - convert to int with defaults
             for field in ['floor', 'channel', 'client_count']:
                 if field in cleaned_ap:
                     val = cleaned_ap[field]

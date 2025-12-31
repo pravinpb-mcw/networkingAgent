@@ -882,20 +882,20 @@ This tool provides the professional data needed for enterprise-grade network hea
                         "description": "Source AP name (REQUIRED)"
                     },
                     "source_ap_lat": {
-                        "type": "number",
-                        "description": "Source AP latitude (REQUIRED)"
+                        "type": ["number", "string"],
+                        "description": "Source AP latitude (REQUIRED) - can be number or string representation"
                     },
                     "source_ap_lng": {
-                        "type": "number",
-                        "description": "Source AP longitude (REQUIRED)"
+                        "type": ["number", "string"],
+                        "description": "Source AP longitude (REQUIRED) - can be number or string representation"
                     },
                     "source_ap_floor": {
                         "type": ["integer", "string", "null"],
-                        "description": "Source AP floor number (default: 1)"
+                        "description": "Source AP floor number (default: 1). Empty string or null defaults to 1"
                     },
                     "source_ap_channel": {
                         "type": ["integer", "string", "null"],
-                        "description": "Source AP WiFi channel (default: 1)"
+                        "description": "Source AP WiFi channel (default: 1). Empty string or null defaults to 1"
                     },
                     "all_aps": {
                         "type": "array",
@@ -905,8 +905,8 @@ This tool provides the professional data needed for enterprise-grade network hea
                             "properties": {
                                 "serial": {"type": "string"},
                                 "name": {"type": "string"},
-                                "lat": {"type": "number"},
-                                "lng": {"type": "number"},
+                                "lat": {"type": ["number", "string"]},
+                                "lng": {"type": ["number", "string"]},
                                 "floor": {"type": ["integer", "string", "null"]},
                                 "channel": {"type": ["integer", "string", "null"]},
                                 "client_count": {"type": ["integer", "string", "null"]}

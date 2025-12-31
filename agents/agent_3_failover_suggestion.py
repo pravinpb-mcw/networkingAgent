@@ -207,7 +207,7 @@ async def run_analysis():
         print("\n[1] Querying Agent 1 (Risk Scores)...")
         risk_response = query_agent_via_a2a(
             "http://localhost:5001",
-            "Get APs at risk with threshold: 41",
+            "Get APs at risk with threshold: 25",
             "Agent1_RiskScores"
         )
         print(f"    ✅ Received from Agent 1")
@@ -308,7 +308,7 @@ async def run_analysis():
 | Analysis Date | {datetime.now().strftime('%B %d, %Y %H:%M:%S')} |
 | Analyst | Agent 3 - Failover Coordinator |
 | Protocol Used | A2A (Agent-to-Agent) |
-| Policy Threshold | {policy_data.get('risk_threshold', 41)} |
+| Policy Threshold | {policy_data.get('risk_threshold', 25)} |
 
 ## 2. DATA COLLECTION SUMMARY
 
@@ -322,7 +322,7 @@ async def run_analysis():
 
 | Source | Endpoint | Query Sent | Data Received | Purpose |
 |--------|----------|------------|---------------|---------|
-| Agent 1 | http://localhost:5001 | "Get APs at risk with threshold: 41" | Risk scores with thresholds | Identify failing APs |
+| Agent 1 | http://localhost:5001 | "Get APs at risk with threshold: 25" | Risk scores with thresholds | Identify failing APs |
 | Agent 2 | http://localhost:5002 | "Get nearest APs for [AP_SERIAL]" | Candidate APs with metrics | Find failover targets |
 
 ## 3. NETWORK STATUS
@@ -330,7 +330,7 @@ async def run_analysis():
 | Metric | Count |
 |--------|-------|
 | Total APs Monitored | [Extract from data] |
-| APs Above Threshold (>41) | [Count from risk data] |
+| APs Above Threshold (>25) | [Count from risk data] |
 | Connected Clients (At-Risk APs) | [Extract if available] |
 | Action Required | Yes / No |
 
