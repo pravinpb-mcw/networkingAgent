@@ -25,9 +25,9 @@ async def calculate_nearest_aps(
     source_ap_name: str,
     source_ap_lat: float,
     source_ap_lng: float,
-    source_ap_floor: int,
-    source_ap_channel: int,
-    all_aps: List[Dict[str, Any]],
+    source_ap_floor: int = 1,
+    source_ap_channel: int = 1,
+    all_aps: List[Dict[str, Any]] = None,
     max_candidates: int = 5
 ) -> List[TextContent]:
     """
@@ -40,18 +40,54 @@ async def calculate_nearest_aps(
         source_ap_name: Source AP name (REQUIRED)
         source_ap_lat: Source AP latitude (REQUIRED)
         source_ap_lng: Source AP longitude (REQUIRED)
-        source_ap_floor: Source AP floor number (REQUIRED)
-        source_ap_channel: Source AP WiFi channel (REQUIRED)
-        all_aps: List of all APs with {serial, name, lat, lng, floor, channel, client_count} (REQUIRED)
+        source_ap_floor: Source AP floor number (default: 1)
+        source_ap_channel: Source AP WiFi channel (default: 1)
+        all_aps: List of all APs with {serial, name, lat, lng, floor, channel, client_count}
         max_candidates: Maximum number of nearest APs to return (default: 5)
         
     Returns:
         List[TextContent] containing nearest AP calculation results
     """
     try:
+        # Convert empty strings or None to defaults for integer fields
+        if source_ap_floor is None or source_ap_floor == '' or source_ap_floor == 'null':
+            source_ap_floor = 1
+        else:
+            source_ap_floor = int(source_ap_floor) if not isinstance(source_ap_floor, int) else source_ap_floor
+            
+        if source_ap_channel is None or source_ap_channel == '' or source_ap_channel == 'null':
+            source_ap_channel = 1
+        else:
+            source_ap_channel = int(source_ap_channel) if not isinstance(source_ap_channel, int) else source_ap_channel
+            
+        if max_candidates is None or max_candidates == '' or max_candidates == 'null':
+            max_candidates = 5
+        else:
+            max_candidates = int(max_candidates) if not isinstance(max_candidates, int) else max_candidates
+        
+        # Handle None or empty all_aps
+        if all_aps is None:
+            all_aps = []
+        
+        # Clean up all_aps - convert string numbers to integers
+        cleaned_aps = []
+        for ap in all_aps:
+            cleaned_ap = dict(ap)
+            for field in ['floor', 'channel', 'client_count']:
+                if field in cleaned_ap:
+                    val = cleaned_ap[field]
+                    if val is None or val == '' or val == 'null':
+                        cleaned_ap[field] = 1 if field in ['floor', 'channel'] else 0
+                    elif not isinstance(val, int):
+                        try:
+                            cleaned_ap[field] = int(val)
+                        except (ValueError, TypeError):
+                            cleaned_ap[field] = 1 if field in ['floor', 'channel'] else 0
+            cleaned_aps.append(cleaned_ap)
+        
         logger.info(f"Calculating nearest APs for {source_ap_serial} ({source_ap_name})")
         logger.info(f"  Source location: ({source_ap_lat}, {source_ap_lng}), Floor: {source_ap_floor}")
-        logger.info(f"  Comparing against {len(all_aps)} APs")
+        logger.info(f"  Comparing against {len(cleaned_aps)} APs")
         
         # Build source AP dict
         source_ap = {
@@ -66,7 +102,7 @@ async def calculate_nearest_aps(
         # Call the calculation script (does ALL the math!)
         result = calculate_nearest_aps_for_ap(
             source_ap=source_ap,
-            all_aps=all_aps,
+            all_aps=cleaned_aps,
             max_candidates=max_candidates
         )
         

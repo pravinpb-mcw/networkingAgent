@@ -237,17 +237,45 @@ async def run_analysis():
         with tracer.start_as_current_span("llm_failover_analysis") as llm_span:
             llm_span.set_attribute("model", "glm-4.5")
             
-            # Initialize LLM
-            from langchain.chat_models import init_chat_model
-            llm = init_chat_model(
-                "glm-4.5",
-                model_provider="anthropic",
-                base_url="https://api.z.ai/api/anthropic",
-                api_key=os.environ.get("ANTHROPIC_API_KEY", "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj"),
-                temperature=0
-            )
+            try:
+                # Initialize LLM
+                from langchain.chat_models import init_chat_model
+                llm = init_chat_model(
+                    "glm-4.5",
+                    model_provider="anthropic",
+                    base_url="https://api.z.ai/api/anthropic",
+                    api_key=os.environ.get("ANTHROPIC_API_KEY", "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj"),
+                    temperature=0,
+                    max_tokens=2048,
+                    timeout=90
+                )
+                
+                # Read policy file
+                policy_file = project_root / "policies" / "network_policy.json"
+                policy_data = {}
+                if policy_file.exists():
+                    with open(policy_file, 'r') as f:
+                        policy_data = json.load(f)
+                
+                # Create analysis prompt (rest of the code continues...)
             
-            # Read policy file
+            except Exception as e:
+                error_msg = str(e)
+                if "429" in error_msg or "rate" in error_msg.lower():
+                    print(f"\n⚠️  RATE LIMIT ERROR: GLM API rate limit exceeded")
+                    print(f"    Skipping this analysis cycle. Will retry next cycle.")
+                    print(f"    Error: {error_msg[:100]}")
+                    
+                    # Save a simple notification instead of full analysis
+                    save_analysis_to_history(
+                        f"# Rate Limit Notice\n\nAnalysis skipped due to API rate limit at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.\n\nThis is normal when running frequently. The system will retry automatically.",
+                        risk_response,
+                        nearest_responses
+                    )
+                    return  # Exit gracefully
+                else:
+                    # Re-raise if it's a different error
+                    raise
             policy_file = project_root / "policies" / "network_policy.json"
             policy_data = {}
             if policy_file.exists():
@@ -310,8 +338,11 @@ async def run_analysis():
 
 **WHY Failures Are Happening:**
 
-For each at-risk AP identified:
+**CRITICAL: List ALL at-risk APs from the risk data. If there are 2 failing APs, show analysis for BOTH!**
 
+For EACH at-risk AP identified, create this section:
+
+---
 **AP: [AP_Serial] - [AP_Name]**
 - Risk Score: [Score]/100 (Classification: [Classification])
 - Root Cause: [Explain WHY this AP is failing based on risk score and classification]
@@ -319,6 +350,8 @@ For each at-risk AP identified:
   * Signal-to-Noise Ratio: [Estimated] (Optimal: >25dB, Current: likely degraded)
   * Client Impact: [Number] clients experiencing degraded service
   * Severity: Critical/Warning based on score
+
+---
 
 ## 5. FAILOVER CANDIDATES
 
@@ -330,36 +363,45 @@ Agent 2 used composite scoring algorithm via A2A tool call, evaluating:
 - Current client load - lower is better
 - Channel interference - cleaner channels preferred
 
-**Candidates for: [AP_Serial]**
+**CRITICAL: Generate a separate failover table for EACH at-risk AP identified in Section 4!**
+
+**For EACH at-risk AP, create this section:**
+
+---
+### Candidates for: [AP_Serial] - [AP_Name]
 
 | Rank | AP Serial | AP Name | Distance | RSSI | Same Floor | Clients | Score | Selection Reason |
 |------|-----------|---------|----------|------|------------|---------|-------|------------------|
-| 1st | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X] | [X]/100 | Closest distance + strongest signal |
-| 2nd | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X] | [X]/100 | Good backup, acceptable signal |
-| 3rd | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X] | [X]/100 | Last resort option |
+| 1st | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X from client_load field] | [X]/100 | Closest distance + strongest signal |
+| 2nd | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X from client_load field] | [X]/100 | Good backup, acceptable signal |
+| 3rd | [Serial] | [Name] | [X]m | [X]dBm | Yes/No | [X from client_load field] | [X]/100 | Last resort option |
 
-**PRIMARY RECOMMENDATION:**
+**PRIMARY RECOMMENDATION for [AP_Serial]:**
 - Target AP: [1st place serial] ([Name])
 - Distance: [X]m | RSSI: [X]dBm | Same Floor: Yes/No
 - Expected Risk Reduction: [Current Score] to <20
-- WHY CHOSEN: [Detailed explanation - closest distance, strongest signal, best composite score]
+- WHY CHOSEN: [Detailed explanation]
 
 **SECONDARY BACKUP:** [2nd place serial] - [Justification]
 **TERTIARY OPTION:** [3rd place serial] - [When to use]
 
+---
+
+**REPEAT THE ABOVE SECTION FOR EVERY AT-RISK AP! If there are 2 failing APs, show 2 failover tables.**
+
 ## 6. RECOMMENDED ACTIONS
 
-| Step | Action | Timeline | Details |
-|------|--------|----------|---------|
-| 1 | Migrate Clients | Immediate (5 min) | Move [X] clients from [failing AP] to [target AP] |
-| 2 | Monitor Target | Continuous | Watch load, latency, throughput on target AP |
-| 3 | Verify Connectivity | After migration | Ping tests + application checks |
-| 4 | Fallback Plan | If needed | Migrate to secondary candidate if issues arise |
+**For EACH at-risk AP, provide specific migration actions:**
 
-**Primary Recommendation:**
-- **Target AP**: [Serial] ([Name])
-- **Expected Risk Reduction**: [Current Score] → [Estimated New Score]
-- **Reason**: [Why this is the best choice]
+| At-Risk AP | Target AP | Step | Action | Timeline | Details |
+|------------|-----------|------|--------|----------|---------|
+| [Failing AP Serial] | [Target AP Serial] | 1 | Migrate Clients | Immediate (5 min) | Move clients from [failing] to [target] |
+| [Failing AP Serial] | [Target AP Serial] | 2 | Monitor Target | Continuous | Watch load, latency on target AP |
+| [Failing AP Serial] | [Target AP Serial] | 3 | Verify Connectivity | After migration | Ping tests + application checks |
+
+**If there are multiple at-risk APs, list actions for ALL of them!**
+
+**Summary of Recommendations:**
 
 ## 7. RISK ASSESSMENT
 
@@ -416,7 +458,7 @@ async def main():
     
     # Parse command line arguments
     mode = "single"
-    interval = 60  # Default 60 seconds
+    interval = 10  # Default 10 seconds
     
     args = sys.argv[1:]
     i = 0

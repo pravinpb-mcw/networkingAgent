@@ -241,7 +241,7 @@ async def get_at_risk_aps(
 
 async def update_nearest_aps(
     ap_serial: str,
-    nearest_aps: List[Dict[str, Any]],
+    nearest_aps: Optional[List[Dict[str, Any]]] = None,
     timestamp: Optional[str] = None
 ) -> List[TextContent]:
     """
@@ -260,10 +260,24 @@ async def update_nearest_aps(
         
         ts = timestamp or datetime.now().isoformat()
         
+        # Handle None, empty string, or invalid nearest_aps - default to empty list
+        if nearest_aps is None or nearest_aps == '' or nearest_aps == 'null':
+            aps_list = []
+        elif isinstance(nearest_aps, str):
+            # Try to parse if it's a JSON string
+            try:
+                aps_list = json.loads(nearest_aps) if nearest_aps.strip() else []
+            except:
+                aps_list = []
+        elif isinstance(nearest_aps, list):
+            aps_list = nearest_aps
+        else:
+            aps_list = []
+        
         data[ap_serial] = {
             "ap_serial": ap_serial,
             "last_updated": ts,
-            "nearest_aps": nearest_aps
+            "nearest_aps": aps_list
         }
         
         success = _save_json(NEAREST_APS_FILE, data)
@@ -272,7 +286,7 @@ async def update_nearest_aps(
             "success": success,
             "tool": "update_nearest_aps",
             "ap_serial": ap_serial,
-            "nearest_count": len(nearest_aps),
+            "nearest_count": len(aps_list),
             "timestamp": ts
         }
         

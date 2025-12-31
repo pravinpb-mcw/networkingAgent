@@ -401,7 +401,7 @@ async def main():
     
     # Parse command line arguments
     mode = "single"
-    interval = 10  # Default 60 seconds
+    interval = 10  # Default 10 seconds
     
     args = sys.argv[1:]
     i = 0
@@ -463,8 +463,8 @@ async def main():
             model="glm-4.5",
             model_provider="anthropic",  # Using OpenAI-compatible API
             temperature=0,
-            max_tokens=4096,
-            timeout=120,
+            max_tokens=1024,
+            timeout=60,
             max_retries=2,
             api_key=os.environ.get("ANTHROPIC_API_KEY", "60b19768f0334766a3e3259590b14460.QTFX9bVQYgALL0Mj"),
             base_url=os.environ.get("ANTHROPIC_BASE_URL", "https://api.z.ai/api/anthropic"),

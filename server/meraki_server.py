@@ -890,16 +890,16 @@ This tool provides the professional data needed for enterprise-grade network hea
                         "description": "Source AP longitude (REQUIRED)"
                     },
                     "source_ap_floor": {
-                        "type": "integer",
-                        "description": "Source AP floor number (REQUIRED)"
+                        "type": ["integer", "string", "null"],
+                        "description": "Source AP floor number (default: 1)"
                     },
                     "source_ap_channel": {
-                        "type": "integer",
-                        "description": "Source AP WiFi channel (REQUIRED)"
+                        "type": ["integer", "string", "null"],
+                        "description": "Source AP WiFi channel (default: 1)"
                     },
                     "all_aps": {
                         "type": "array",
-                        "description": "List of all APs with location/channel data (REQUIRED). Each AP should have: serial, name, lat, lng, floor, channel, client_count",
+                        "description": "List of all APs with location/channel data. Each AP should have: serial, name, lat, lng, floor, channel, client_count",
                         "items": {
                             "type": "object",
                             "properties": {
@@ -907,18 +907,18 @@ This tool provides the professional data needed for enterprise-grade network hea
                                 "name": {"type": "string"},
                                 "lat": {"type": "number"},
                                 "lng": {"type": "number"},
-                                "floor": {"type": "integer"},
-                                "channel": {"type": "integer"},
-                                "client_count": {"type": "integer"}
+                                "floor": {"type": ["integer", "string", "null"]},
+                                "channel": {"type": ["integer", "string", "null"]},
+                                "client_count": {"type": ["integer", "string", "null"]}
                             }
                         }
                     },
                     "max_candidates": {
-                        "type": "integer",
+                        "type": ["integer", "string", "null"],
                         "description": "Maximum number of nearest APs to return (default: 5)"
                     }
                 },
-                "required": ["source_ap_serial", "source_ap_name", "source_ap_lat", "source_ap_lng", "source_ap_floor", "source_ap_channel", "all_aps"]
+                "required": ["source_ap_serial", "source_ap_name", "source_ap_lat", "source_ap_lng"]
             }
         ),
         # ============ AGENT 3 DATA READING TOOLS ============
@@ -1063,20 +1063,20 @@ This tool provides the professional data needed for enterprise-grade network hea
                         "description": "Source AP serial number"
                     },
                     "nearest_aps": {
-                        "type": "array",
-                        "description": "List of nearby APs with ranking data",
+                        "type": ["array", "string", "null"],
+                        "description": "List of nearby APs with ranking data (can be empty array [] or omitted)",
                         "items": {
                             "type": "object",
                             "properties": {
                                 "ap_serial": {"type": "string"},
                                 "ap_name": {"type": "string"},
-                                "distance_meters": {"type": "number"},
-                                "rssi_dbm": {"type": "number"},
-                                "client_load": {"type": "integer"},
-                                "channel_overlap": {"type": "boolean"},
-                                "same_floor": {"type": "boolean"},
-                                "composite_score": {"type": "number"},
-                                "rank": {"type": "integer"}
+                                "distance_meters": {"type": ["number", "string", "null"]},
+                                "rssi_dbm": {"type": ["number", "string", "null"]},
+                                "client_load": {"type": ["integer", "string", "null"]},
+                                "channel_overlap": {"type": ["boolean", "string", "null"]},
+                                "same_floor": {"type": ["boolean", "string", "null"]},
+                                "composite_score": {"type": ["number", "string", "null"]},
+                                "rank": {"type": ["integer", "string", "null"]}
                             }
                         }
                     },
@@ -1085,7 +1085,7 @@ This tool provides the professional data needed for enterprise-grade network hea
                         "description": "ISO timestamp (auto-generated if not provided)"
                     }
                 },
-                "required": ["ap_serial", "nearest_aps"]
+                "required": ["ap_serial"]
             }
         ),
         Tool(
