@@ -124,50 +124,84 @@ def save_analysis_to_history(analysis: str, risk_response: str, nearest_response
         json.dump(history, f, indent=2)
 
 
-def query_agent_via_a2a(agent_url: str, query: str, agent_name: str = "Unknown") -> str:
-    """Query an agent via A2A protocol"""
-    with tracer.start_as_current_span(f"Agent3_queries_{agent_name}") as span:
-        span.set_attribute("source_agent", "Agent-3-Failover")
-        span.set_attribute("target_agent", agent_name)
-        span.set_attribute("agent", "agent-3")
-        span.set_attribute("target_url", agent_url)
-        span.set_attribute("communication.direction", "outgoing")
-        span.set_attribute("communication.protocol", "A2A")
-        span.set_attribute("input.value", query)
-        span.set_attribute("query", query)
-        span.set_attribute("target_agent", agent_name)
-        span.set_attribute("communication.direction", "outgoing")
-        span.add_event("A2A Query Sent")
+def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str]]:
+    """Read risk scores directly from Agent 1's output file"""
+    with tracer.start_as_current_span("read_agent1_data") as span:
+        span.set_attribute("source", "agent_data/risk_scores.json")
+        span.set_attribute("threshold", threshold)
         
         try:
-            client = A2AClient(agent_url)
-            conv = Conversation(messages=[
-                Message(role=MessageRole.USER, content=TextContent(text=query))
-            ])
-            response = client.send_conversation(conv)
+            risk_file = project_root / "agent_data" / "risk_scores.json"
+            with open(risk_file, 'r') as f:
+                risk_data = json.load(f)
             
-            if response.messages:
-                last_msg = response.messages[-1]
-                if hasattr(last_msg.content, 'text'):
-                    result = last_msg.content.text
-                else:
-                    result = str(last_msg.content)
-                
-                span.set_attribute("response_length", len(result))
-                span.set_attribute("output.value", result)
-                span.set_attribute("status", "success")
-                span.set_attribute("response_length", len(result))
-                span.add_event("A2A Response Received")
-                return result
+            # Find APs above threshold
+            at_risk_aps = []
+            response_lines = [f"Risk Score Analysis (Threshold: {threshold}):", ""]
             
-            span.set_attribute("status", "no_response")
-            return "No response"
+            for ap_serial, ap_data in risk_data.items():
+                if ap_data.get("history"):
+                    latest = ap_data["history"][-1]
+                    risk_score = latest.get("risk_score", 0)
+                    
+                    if risk_score >= threshold:
+                        at_risk_aps.append(ap_serial)
+                        classification = latest.get("risk_classification", "Unknown")
+                        metrics = latest.get("metrics", {})
+                        
+                        response_lines.append(f"AP: {ap_serial}")
+                        response_lines.append(f"  Risk Score: {risk_score}")
+                        response_lines.append(f"  Classification: {classification}")
+                        response_lines.append(f"  SNR: {metrics.get('snr_db', 'N/A')} dB")
+                        response_lines.append(f"  Latency: {metrics.get('latency_ms', 'N/A')} ms")
+                        response_lines.append(f"  Retransmissions: {metrics.get('retrans_per_min', 'N/A')}/min")
+                        response_lines.append("")
+            
+            response_text = "\n".join(response_lines)
+            if not at_risk_aps:
+                response_text += f"\nNo APs found above threshold {threshold}"
+            
+            span.set_attribute("at_risk_count", len(at_risk_aps))
+            return response_text, at_risk_aps
+            
         except Exception as e:
-            span.set_attribute("status", "error")
-            span.set_attribute("error", str(e))
-            return f"Error: {e}"
+            print(f"    ❌ Error reading risk scores: {e}")
+            return f"Error reading risk scores: {e}", []
 
 
+def read_agent2_nearest_aps(ap_serial: str) -> str:
+    """Read nearest APs directly from Agent 2's output file"""
+    with tracer.start_as_current_span(f"read_agent2_data_{ap_serial}") as span:
+        span.set_attribute("source", "agent_data/nearest_aps.json")
+        span.set_attribute("ap_serial", ap_serial)
+        
+        try:
+            nearest_file = project_root / "agent_data" / "nearest_aps.json"
+            with open(nearest_file, 'r') as f:
+                nearest_data = json.load(f)
+            
+            if ap_serial not in nearest_data:
+                return f"No nearest AP data found for {ap_serial}"
+            
+            ap_data = nearest_data[ap_serial]
+            response_lines = [f"Nearest APs for {ap_serial}:", ""]
+            
+            if "nearest_aps" in ap_data:
+                for i, candidate in enumerate(ap_data["nearest_aps"][:5], 1):
+                    response_lines.append(f"{i}. {candidate.get('ap_serial', 'Unknown')} - {candidate.get('ap_name', 'N/A')}")
+                    response_lines.append(f"   Distance: {candidate.get('distance_meters', 'N/A')} meters")
+                    response_lines.append(f"   RSSI: {candidate.get('rssi_dbm', 'N/A')} dBm")
+                    response_lines.append(f"   Same Floor: {candidate.get('same_floor', 'N/A')}")
+                    response_lines.append(f"   Client Load: {candidate.get('client_load', 'N/A')}")
+                    response_lines.append(f"   Composite Score: {candidate.get('composite_score', 'N/A')}")
+                    response_lines.append(f"   Rank: {candidate.get('rank', i)}")
+                    response_lines.append("")
+            
+            return "\n".join(response_lines)
+            
+        except Exception as e:
+            print(f"    ❌ Error reading nearest APs: {e}")
+            return f"Error reading nearest APs: {e}"
 
 
 class RealtimeToolLogger:
@@ -194,40 +228,28 @@ class ToolCallbackHandler(BaseCallbackHandler):
 
 
 async def run_analysis():
-    """Run a single failover analysis using A2A communication"""
+    """Run a single failover analysis by reading data directly from Agent 1 and Agent 2 output files"""
     with tracer.start_as_current_span("failover_analysis_iteration") as parent_span:
         parent_span.set_attribute("agent", "agent-3")
         parent_span.set_attribute("analysis_type", "failover")
         
         print("\n" + "="*80)
-        print("🔧 A2A COMMUNICATION")
+        print("📊 DATA COLLECTION")
         print("="*80)
         
-        # Query Agent 1 for at-risk APs
-        print("\n[1] Querying Agent 1 (Risk Scores)...")
-        risk_response = query_agent_via_a2a(
-            "http://localhost:5001",
-            "Get APs at risk with threshold: 25",
-            "Agent1_RiskScores"
-        )
-        print(f"    ✅ Received from Agent 1")
+        # Read Agent 1 data directly from file
+        print("\n[1] Reading Agent 1 Data (Risk Scores)...")
+        risk_response, at_risk_aps = read_agent1_risk_scores(threshold=25)
+        print(f"    ✅ Found {len(at_risk_aps)} at-risk APs from Agent 1")
+        parent_span.set_attribute("at_risk_aps_count", len(at_risk_aps))
         
-        # Extract AP serials from response
-        import re
-        ap_serials = re.findall(r'Q2XX-[A-Z0-9]{4}-[A-Z0-9]{4}', risk_response)
-        parent_span.set_attribute("at_risk_aps_count", len(ap_serials))
-        
-        # Query Agent 2 for each at-risk AP
+        # Read Agent 2 data for each at-risk AP
         nearest_responses = {}
-        for i, ap_serial in enumerate(ap_serials, 2):
-            print(f"[{i}] Querying Agent 2 (Nearest APs for {ap_serial})...")
-            nearest_response = query_agent_via_a2a(
-                "http://localhost:5002",
-                f"Get nearest APs for {ap_serial}",
-                f"Agent2_NearestAP_{ap_serial}"
-            )
+        for i, ap_serial in enumerate(at_risk_aps, 2):
+            print(f"[{i}] Reading Agent 2 Data (Nearest APs for {ap_serial})...")
+            nearest_response = read_agent2_nearest_aps(ap_serial)
             nearest_responses[ap_serial] = nearest_response
-            print(f"    ✅ Received from Agent 2")
+            print(f"    ✅ Retrieved nearest APs from Agent 2")
         
         print("\n" + "="*80)
         print("🤖 LLM ANALYSIS (GLM-4.5)")
@@ -282,19 +304,24 @@ async def run_analysis():
                 with open(policy_file, 'r') as f:
                     policy_data = json.load(f)
             
+            # Prepare datetime strings outside f-string to avoid backslash issues
+            report_id = f"FA-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+            analysis_date = datetime.now().strftime('%B %d, %Y %H:%M:%S')
+            nearest_ap_text = "\n".join([f"\nFor AP {ap_serial}:\n{response}" for ap_serial, response in nearest_responses.items()])
+            
             # Create analysis prompt
-            prompt = f"""You are a professional network failover analyst. Analyze the A2A communication data and create a structured report.
+            prompt = f"""You are a professional network failover analyst. Analyze the data collected from Agent 1 and Agent 2 databases and create a structured report.
 
 **DATA SOURCES:**
 
 1. **Policy Configuration (from network_policy.json):**
 {json.dumps(policy_data, indent=2)}
 
-2. **Risk Data from Agent 1 (via A2A API call to http://localhost:5001):**
+2. **Risk Data from Agent 1 (read from agent_data/risk_scores.json):**
 {risk_response}
 
-3. **Nearest AP Data from Agent 2 (via A2A API call to http://localhost:5002):**
-{json.dumps(nearest_responses, indent=2)}
+3. **Nearest AP Data from Agent 2 (read from agent_data/nearest_aps.json):**
+{nearest_ap_text}
 
 **REQUIRED OUTPUT FORMAT:**
 
@@ -304,26 +331,27 @@ async def run_analysis():
 
 | Metric | Value |
 |--------|-------|
-| Report ID | FA-{datetime.now().strftime('%Y%m%d-%H%M%S')} |
-| Analysis Date | {datetime.now().strftime('%B %d, %Y %H:%M:%S')} |
+| Report ID | {report_id} |
+| Analysis Date | {analysis_date} |
 | Analyst | Agent 3 - Failover Coordinator |
-| Protocol Used | A2A (Agent-to-Agent) |
+| Data Protocol | Direct Database Read (Agent 1 & Agent 2 Output Files) |
 | Policy Threshold | {policy_data.get('risk_threshold', 25)} |
 
 ## 2. DATA COLLECTION SUMMARY
 
-**How API Data Was Obtained:**
-- Agent 3 initiated A2A protocol communication via HTTP requests
-- Step 1: Queried Agent 1 at http://localhost:5001 to identify at-risk APs
-- Step 2: For each at-risk AP, queried Agent 2 at http://localhost:5002 for failover candidates
+**How Data Was Obtained:**
+- Agent 3 read data directly from shared database files written by Agent 1 and Agent 2
+- Step 1: Read risk_scores.json (written by Agent 1) to identify at-risk APs
+- Step 2: Read nearest_aps.json (written by Agent 2) to get failover candidates for each at-risk AP
 - Step 3: Read network_policy.json to apply configured thresholds and rules
 
-**API Calls Made:**
+**Data Sources:**
 
-| Source | Endpoint | Query Sent | Data Received | Purpose |
-|--------|----------|------------|---------------|---------|
-| Agent 1 | http://localhost:5001 | "Get APs at risk with threshold: 25" | Risk scores with thresholds | Identify failing APs |
-| Agent 2 | http://localhost:5002 | "Get nearest APs for [AP_SERIAL]" | Candidate APs with metrics | Find failover targets |
+| Source | Data Location | Data Type | Purpose |
+|--------|---------------|-----------|---------|
+| Agent 1 | agent_data/risk_scores.json | Risk scores with metrics | Identify failing APs |
+| Agent 2 | agent_data/nearest_aps.json | Candidate APs with distances | Find failover targets |
+| Policy | policies/network_policy.json | Thresholds and rules | Apply failover criteria |
 
 ## 3. NETWORK STATUS
 
@@ -435,7 +463,7 @@ Agent 2 used composite scoring algorithm via A2A tool call, evaluating:
         
         # Send Teams notification
         print("\n[NOTIFICATION]")
-        send_teams_webhook(analysis, len(ap_serials))
+        send_teams_webhook(analysis, len(at_risk_aps))
         
         # Save to history for dashboard
         save_analysis_to_history(analysis, risk_response, nearest_responses)

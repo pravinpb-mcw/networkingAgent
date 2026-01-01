@@ -700,25 +700,35 @@ function renderChatEntry(entry, isLatest) {
 
 // Individual Agent Controls
 function setupAgentControls() {
+    console.log('🔧 Setting up individual agent controls...');
     const agents = [1, 2, 3];
     
     agents.forEach(num => {
         const startBtn = document.getElementById(`btn-start-agent${num}`);
         const stopBtn = document.getElementById(`btn-stop-agent${num}`);
         
+        console.log(`Agent ${num} - Start button found:`, !!startBtn, `Stop button found:`, !!stopBtn);
+        
         if (startBtn) {
+            console.log(`✅ Attaching click handler to start-agent${num}`);
             startBtn.addEventListener('click', async () => {
+                console.log(`🚀 Start Agent ${num} clicked!`);
                 try {
                     startBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                     startBtn.disabled = true;
                     
+                    console.log(`   Making request to: /system/start-agent/${num}`);
                     const res = await fetch(`/system/start-agent/${num}`, { method: 'POST' });
                     const data = await res.json();
                     
+                    console.log(`   Response:`, data);
+                    
                     if (res.ok) {
-                        console.log(`Agent ${num} started:`, data);
+                        console.log(`   ✅ Agent ${num} started successfully`);
+                        alert(`✅ Agent ${num} started!\n\nPID: ${data.pid}\n\nA new console window should have opened.`);
                     } else {
-                        alert(`Failed to start Agent ${num}: ${data.detail || 'Unknown error'}`);
+                        console.error(`   ❌ Failed:`, data);
+                        alert(`❌ Failed to start Agent ${num}:\n\n${data.detail || 'Unknown error'}`);
                     }
                     
                     setTimeout(() => {
@@ -727,16 +737,20 @@ function setupAgentControls() {
                         refreshStatus();
                     }, 2000);
                 } catch (e) {
-                    console.error(`Start Agent ${num} failed:`, e);
-                    alert(`Failed to start Agent ${num}`);
+                    console.error(`❌ Start Agent ${num} failed:`, e);
+                    alert(`❌ Error starting Agent ${num}:\n\n${e.message}\n\nCheck browser console for details.`);
                     startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
                     startBtn.disabled = false;
                 }
             });
+        } else {
+            console.error(`❌ Start button for Agent ${num} NOT FOUND in HTML!`);
         }
         
         if (stopBtn) {
+            console.log(`✅ Attaching click handler to stop-agent${num}`);
             stopBtn.addEventListener('click', async () => {
+                console.log(`🛑 Stop Agent ${num} clicked!`);
                 try {
                     stopBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                     stopBtn.disabled = true;

@@ -440,3 +440,7 @@ python main.py --agent monitor   # Agent 3: Network monitoring (auto-starts depe
 ---
 
 **Transform your network management with intelligent automation and smart uplink rerouting!** 🤖✨
+
+
+
+.wenv\Scripts\python.exe agents\agent_3_failover_suggestion.py --continuous 10

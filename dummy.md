@@ -1,0 +1,1 @@
+"e:\network of obserbility\.wenv\Scripts\activate"

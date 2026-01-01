@@ -78,7 +78,8 @@ async def get_system_status():
         "agent1": check_port(5001),
         "agent2": check_port(5002),
         "agent3": check_process("agent_3_failover_suggestion.py"),
-        "phoenix": check_port(6006)
+        "phoenix": check_port(6006),
+        "riskUpdater": check_process("auto_risk_score_updater.py")
     }
 
 @app.get("/metrics/risk")
@@ -244,7 +245,7 @@ async def test_webhook():
 
 @app.post("/system/stop")
 async def stop_system():
-    """Stop all agents and Phoenix server"""
+    """Stop all agents, Phoenix server, and risk updater"""
     killed_processes = []
     
     # Target patterns to identify our processes
@@ -252,6 +253,7 @@ async def stop_system():
         "agent_1_risk_calculation.py",
         "agent_2_nearest_ap.py",
         "agent_3_failover_suggestion.py",
+        "auto_risk_score_updater.py",
         "phoenix.server" 
     ]
 
@@ -297,32 +299,36 @@ async def start_agents():
 async def start_single_agent(agent_num: int):
     """Start a specific agent (1, 2, or 3)"""
     try:
-        agent_scripts = {
-            1: "agent_1_risk_calculation.py",
-            2: "agent_2_nearest_ap.py",
-            3: "agent_3_failover_suggestion.py"
-        }
+        print(f"\n🚀 Starting Agent {agent_num}...")
         
-        if agent_num not in agent_scripts:
+        if agent_num not in [1, 2, 3]:
             raise HTTPException(status_code=400, detail="Invalid agent number. Use 1, 2, or 3")
         
-        script_name = agent_scripts[agent_num]
-        agents_dir = BASE_DIR / "agents"
-        script_path = agents_dir / script_name
+        # Use batch files just like "Run All" button
+        batch_file = BASE_DIR / f"start_agent_{agent_num}.bat"
         
-        if not script_path.exists():
-            raise HTTPException(status_code=404, detail=f"Agent script not found: {script_name}")
+        print(f"   Batch file: {batch_file}")
+        print(f"   Exists: {batch_file.exists()}")
         
-        # Start the agent with continuous mode
-        cmd = f'python "{script_path}" --continuous 10'
+        if not batch_file.exists():
+            raise HTTPException(status_code=404, detail=f"Batch file not found: start_agent_{agent_num}.bat")
+        
+        # Start the batch file in new console (same as Run All button)
         subprocess.Popen(
-            cmd,
-            shell=True,
+            [str(batch_file)], 
+            shell=True, 
             cwd=str(BASE_DIR),
             creationflags=subprocess.CREATE_NEW_CONSOLE
         )
         
-        return {"status": "started", "agent": agent_num, "message": f"Agent {agent_num} started"}
+        print(f"   ✅ Agent {agent_num} batch file launched in new console")
+        
+        return {
+            "status": "started", 
+            "agent": agent_num, 
+            "message": f"Agent {agent_num} started in new console window",
+            "batch_file": str(batch_file)
+        }
     except HTTPException:
         raise
     except Exception as e:
