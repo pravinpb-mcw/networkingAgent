@@ -8,5 +8,5 @@ echo    Interval: 10 seconds
 echo ================================================================================
 echo.
 
-cd /d "%~dp0"
-..\.wenv\Scripts\python.exe scripts\auto_risk_score_updater.py --continuous 10
+cd /d "%~dp0.."
+"../.wenv/Scripts/python.exe" scripts\auto_risk_score_updater.py --continuous 10

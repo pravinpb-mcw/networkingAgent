@@ -76,7 +76,11 @@
                     <span class="text-gray">Overview</span> / <span class="text-highlight">Real-time Monitor</span>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-icon" id="refresh-btn">
+                    <div class="auto-refresh-indicator" id="auto-refresh-indicator" title="Auto-refresh active">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <span id="refresh-timer">5s</span>
+                    </div>
+                    <button class="btn-icon" id="refresh-btn" title="Manual refresh">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                     <div class="clock" id="system-clock">12:00:00</div>

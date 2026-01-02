@@ -3,7 +3,10 @@ const state = {
     currentTab: 'dashboard',
     charts: {},
     systemStatus: 'unknown',
-    timeRange: 24 // hours
+    timeRange: 24, // hours
+    autoRefreshEnabled: true,
+    refreshInterval: 5000, // 5 seconds (configurable)
+    lastRefresh: null
 };
 
 // API Endpoints
@@ -32,7 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial load
     refreshData();
-    setInterval(refreshData, 1000); // 1s auto-refresh for real-time updates
+    
+    // Auto-refresh with configurable interval (default: 5 seconds)
+    setInterval(() => {
+        if (state.autoRefreshEnabled) {
+            refreshData();
+        }
+    }, state.refreshInterval);
+    
+    // Update "last refresh" indicator
+    setInterval(updateLastRefreshIndicator, 1000);
 });
 
 function setupNavigation() {
@@ -67,7 +79,37 @@ function setupClock() {
 }
 
 function setupRefresh() {
-    document.getElementById('refresh-btn').addEventListener('click', refreshData);
+    const refreshBtn = document.getElementById('refresh-btn');
+    refreshBtn.addEventListener('click', () => {
+        refreshBtn.querySelector('i').classList.add('fa-spin');
+        refreshData().finally(() => {
+            setTimeout(() => {
+                refreshBtn.querySelector('i').classList.remove('fa-spin');
+            }, 500);
+        });
+    });
+}
+
+function updateLastRefreshIndicator() {
+    if (!state.lastRefresh) {
+        state.lastRefresh = Date.now();
+        return;
+    }
+    
+    const now = Date.now();
+    const elapsed = now - state.lastRefresh;
+    const remaining = Math.max(0, state.refreshInterval - elapsed);
+    const secondsRemaining = Math.ceil(remaining / 1000);
+    
+    const timerEl = document.getElementById('refresh-timer');
+    if (timerEl) {
+        timerEl.textContent = `${secondsRemaining}s`;
+    }
+    
+    const indicatorEl = document.getElementById('auto-refresh-indicator');
+    if (indicatorEl) {
+        indicatorEl.title = `Auto-refresh every ${state.refreshInterval / 1000}s | Next in ${secondsRemaining}s`;
+    }
 }
 
 function setupButtons() {
@@ -320,6 +362,8 @@ async function setupScenarioControls() {
 }
 
 async function refreshData() {
+    state.lastRefresh = Date.now();
+    
     await refreshStatus();
 
     // Always load metrics and chat regardless of system status

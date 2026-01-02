@@ -282,8 +282,35 @@ async def stop_system():
 @app.post("/system/start")
 async def start_agents():
     try:
-        # We use the new master script
-        batch_file = BASE_DIR / "start_system.bat"
+        # First, kill any existing agent processes
+        logger.info("Killing existing agent processes...")
+        subprocess.run(
+            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 1*"],
+            capture_output=True
+        )
+        subprocess.run(
+            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 2*"],
+            capture_output=True
+        )
+        subprocess.run(
+            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 3*"],
+            capture_output=True
+        )
+        subprocess.run(
+            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Risk Score Updater*"],
+            capture_output=True
+        )
+        logger.info("Old processes terminated")
+        
+        # Use the complete system script with Phoenix + Risk Updater
+        batch_file = BASE_DIR / "batch" / "start_full_system.bat"
+        if not batch_file.exists():
+            batch_file = BASE_DIR / "batch" / "start_all_with_updater.bat"
+        if not batch_file.exists():
+            batch_file = BASE_DIR / "batch" / "start_agents_with_a2a.bat"
+        if not batch_file.exists():
+            batch_file = BASE_DIR / "start_system.bat"
+        
         if not batch_file.exists():
             raise HTTPException(status_code=404, detail="Start script not found")
         
@@ -293,7 +320,7 @@ async def start_agents():
             cwd=str(BASE_DIR),
             creationflags=subprocess.CREATE_NEW_CONSOLE
         )
-        return {"status": "initiated", "message": "Starting Phoenix and Agents..."}
+        return {"status": "initiated", "message": "Starting Risk Updater and Agents..."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -306,8 +333,18 @@ async def start_single_agent(agent_num: int):
         if agent_num not in [1, 2, 3]:
             raise HTTPException(status_code=400, detail="Invalid agent number. Use 1, 2, or 3")
         
+        # Kill existing process for this agent
+        print(f"   Killing existing Agent {agent_num} process...")
+        subprocess.run(
+            ["taskkill", "/F", "/FI", f"WINDOWTITLE eq Agent {agent_num}*"],
+            capture_output=True
+        )
+        
         # Use batch files just like "Run All" button
-        batch_file = BASE_DIR / f"start_agent_{agent_num}.bat"
+        batch_file = BASE_DIR / "batch" / f"start_agent_{agent_num}.bat"
+        if not batch_file.exists():
+            # Try old location
+            batch_file = BASE_DIR / f"start_agent_{agent_num}.bat"
         
         print(f"   Batch file: {batch_file}")
         print(f"   Exists: {batch_file.exists()}")
