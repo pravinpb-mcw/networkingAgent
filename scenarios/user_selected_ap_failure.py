@@ -38,8 +38,8 @@ ALL_APS = [
     {"serial": "Q2XX-AP08-8888", "name": "AP-08", "mac": "00:11:22:33:44:88"}
 ]
 
-# Critical failure values
-FAILURE_VALUES = {
+# Default critical failure values (can be overridden by user input)
+DEFAULT_FAILURE_VALUES = {
     "latencyMs": 350.0,
     "packetLossPct": 12.0,
     "jitterMs": 55.0,
@@ -58,12 +58,20 @@ HEALTHY_APS_CONFIG = [
 class UserSelectedAPFailure:
     """Simulates failure of user-selected AP only"""
     
-    def __init__(self, selected_ap: Dict[str, str]):
+    def __init__(self, selected_ap: Dict[str, str], latency_ms: float = None, jitter_ms: float = None):
         self.session = None
         self.selected_ap = selected_ap
         self.ap_serial = selected_ap["serial"]
         self.ap_name = selected_ap["name"]
         self.ap_mac = selected_ap["mac"]
+        
+        # Use user-provided values or defaults
+        self.failure_values = {
+            "latencyMs": latency_ms if latency_ms is not None else DEFAULT_FAILURE_VALUES["latencyMs"],
+            "packetLossPct": DEFAULT_FAILURE_VALUES["packetLossPct"],
+            "jitterMs": jitter_ms if jitter_ms is not None else DEFAULT_FAILURE_VALUES["jitterMs"],
+            "goodput": DEFAULT_FAILURE_VALUES["goodput"]
+        }
         
         # Get healthy APs (all except selected)
         self.healthy_aps = [ap for ap in ALL_APS if ap["serial"] != self.ap_serial]
@@ -86,9 +94,9 @@ class UserSelectedAPFailure:
     async def update_appliance_settings(self):
         """Update appliance settings with critical failure metrics"""
         settings = {
-            "latencyMs": FAILURE_VALUES["latencyMs"],
-            "packetLossPct": FAILURE_VALUES["packetLossPct"],
-            "jitterMs": FAILURE_VALUES["jitterMs"],
+            "latencyMs": self.failure_values["latencyMs"],
+            "packetLossPct": self.failure_values["packetLossPct"],
+            "jitterMs": self.failure_values["jitterMs"],
             "degradedLinks": [
                 {"uplink": "wan1", "status": "failed"},
                 {"uplink": "wan2", "status": "failed"}
@@ -126,9 +134,9 @@ class UserSelectedAPFailure:
                 network = data["networks"][NETWORK_ID]
                 if "appliance_settings" in network and len(network["appliance_settings"]) > 0:
                     network["appliance_settings"][0].update({
-                        "latencyMs": FAILURE_VALUES["latencyMs"],
-                        "packetLossPct": FAILURE_VALUES["packetLossPct"],
-                        "jitterMs": FAILURE_VALUES["jitterMs"],
+                        "latencyMs": self.failure_values["latencyMs"],
+                        "packetLossPct": self.failure_values["packetLossPct"],
+                        "jitterMs": self.failure_values["jitterMs"],
                         "degradedLinks": [
                             {"uplink": "wan1", "status": "failed"},
                             {"uplink": "wan2", "status": "failed"}
@@ -151,10 +159,10 @@ class UserSelectedAPFailure:
                 progress = i / 14
                 entry = {
                     "ts": datetime.now().isoformat(),
-                    "latencyMs": round(base_latency + (FAILURE_VALUES["latencyMs"] - base_latency) * progress + random.uniform(-10, 20), 2),
-                    "lossPercent": round(base_loss + (FAILURE_VALUES["packetLossPct"] - base_loss) * progress + random.uniform(-0.5, 1), 2),
-                    "jitter": round(base_jitter + (FAILURE_VALUES["jitterMs"] - base_jitter) * progress + random.uniform(-2, 5), 2),
-                    "goodput": round(base_goodput - (base_goodput - FAILURE_VALUES["goodput"]) * progress + random.uniform(-3, 2), 1),
+                    "latencyMs": round(base_latency + (self.failure_values["latencyMs"] - base_latency) * progress + random.uniform(-10, 20), 2),
+                    "lossPercent": round(base_loss + (self.failure_values["packetLossPct"] - base_loss) * progress + random.uniform(-0.5, 1), 2),
+                    "jitter": round(base_jitter + (self.failure_values["jitterMs"] - base_jitter) * progress + random.uniform(-2, 5), 2),
+                    "goodput": round(base_goodput - (base_goodput - self.failure_values["goodput"]) * progress + random.uniform(-3, 2), 1),
                     "destinationIp": "8.8.8.8"
                 }
                 failure_history.append(entry)
@@ -216,9 +224,27 @@ class UserSelectedAPFailure:
             
             latency_history = []
             
-            # Failure latency for selected AP
-            latency_progression = [28, 48, 72, 98, 125, 155]
-            jitter_progression = [6, 14, 24, 36, 48, 58]
+            # Use user-provided latency and jitter values from dashboard
+            user_latency = self.failure_values["latencyMs"]
+            user_jitter = self.failure_values["jitterMs"]
+            
+            # Create progression leading up to user's final values
+            latency_progression = [
+                user_latency * 0.2,
+                user_latency * 0.35,
+                user_latency * 0.5,
+                user_latency * 0.7,
+                user_latency * 0.85,
+                user_latency  # Final value is user's input
+            ]
+            jitter_progression = [
+                user_jitter * 0.2,
+                user_jitter * 0.35,
+                user_jitter * 0.5,
+                user_jitter * 0.7,
+                user_jitter * 0.85,
+                user_jitter  # Final value is user's input
+            ]
             loss_progression = [0.8, 2.2, 4.0, 6.5, 9.0, 12.0]
             
             for i in range(6):
@@ -227,8 +253,8 @@ class UserSelectedAPFailure:
                 entry = {
                     "timeslotStart": slot_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "timeslotEnd": slot_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "latencyMs": latency_progression[i] + random.randint(-5, 10),
-                    "jitterMs": jitter_progression[i] + random.randint(-3, 5),
+                    "latencyMs": round(latency_progression[i] + random.uniform(-5, 10), 1),
+                    "jitterMs": round(jitter_progression[i] + random.uniform(-2, 3), 1),
                     "packetLossPercent": round(loss_progression[i] + random.uniform(-0.5, 1.0), 2),
                     "deviceMac": self.ap_mac,
                     "note": f"USER_SELECTED_FAILURE_{self.ap_name}"
@@ -501,9 +527,9 @@ class UserSelectedAPFailure:
         print(f"  Other APs:       {len(self.healthy_aps)} APs (existing state preserved)")
         if self.fallback_ap:
             print(f"  Fallback AP:     {self.fallback_ap['name']} ({self.fallback_ap['serial']}) (recommended)")
-        print(f"  Latency:         {FAILURE_VALUES['latencyMs']}ms     ❌ CRITICAL")
-        print(f"  Packet Loss:     {FAILURE_VALUES['packetLossPct']}%      ❌ SEVERE")
-        print(f"  Jitter:          {FAILURE_VALUES['jitterMs']}ms       ❌ CRITICAL")
+        print(f"  Latency:         {self.failure_values['latencyMs']}ms     ❌ CRITICAL")
+        print(f"  Packet Loss:     {self.failure_values['packetLossPct']}%      ❌ SEVERE")
+        print(f"  Jitter:          {self.failure_values['jitterMs']}ms       ❌ CRITICAL")
         print(f"  Channel Util:    96.5%        ❌ SATURATED")
         print(f"  SNR:             16dB         ❌ BELOW THRESHOLD")
         print("-"*60)

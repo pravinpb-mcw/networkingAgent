@@ -183,6 +183,42 @@ def get_ap_metrics(ap_serial: str, mock_data: Dict[str, Any]) -> Dict[str, Any]:
                 # Estimate per hour (assuming data covers 1 hour)
                 metrics["auth_failures_per_hour"] = auth_failures
     
+    # 5. Get latency and jitter from network_wireless_latency_history (user dashboard input)
+    if network_id:
+        latency_history = mock_data.get("network_wireless_latency_history", {}).get(network_id, [])
+        # Find MAC address for this AP
+        ap_mac = None
+        device_details = mock_data.get("device_details", {}).get(ap_serial, {})
+        if device_details:
+            ap_mac = device_details.get("mac")
+        
+        if ap_mac:
+            # Get latest latency entries for this AP's MAC
+            ap_latency = [l for l in latency_history if l.get("deviceMac") == ap_mac]
+            if ap_latency:
+                latest = ap_latency[-1]  # Most recent
+                if not metrics["latency_ms"]:
+                    metrics["latency_ms"] = latest.get("latencyMs")
+                if not metrics["jitter_ms"]:
+                    metrics["jitter_ms"] = latest.get("jitterMs")
+    
+    # 6. Fallback: Get latency/jitter from appliance_settings (network-level, used by dashboard)
+    if network_id and (not metrics["latency_ms"] or not metrics["jitter_ms"]):
+        networks = mock_data.get("networks", {})
+        network = networks.get(network_id, {})
+        appliance_settings = network.get("appliance_settings", [])
+        if appliance_settings and len(appliance_settings) > 0:
+            settings = appliance_settings[0]
+            # Check if this AP's failure scenario is active (by checking the note)
+            note = settings.get("note", "")
+            ap_name = metrics.get("ap_name", "")
+            # If this specific AP has a failure note, apply the latency/jitter
+            if f"USER_SELECTED_FAILURE_{ap_name}" in note or f"FAILURE" in note:
+                if not metrics["latency_ms"]:
+                    metrics["latency_ms"] = settings.get("latencyMs")
+                if not metrics["jitter_ms"]:
+                    metrics["jitter_ms"] = settings.get("jitterMs")
+    
     return metrics
 
 

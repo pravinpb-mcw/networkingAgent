@@ -334,26 +334,9 @@ async def run_analysis():
 | Report ID | {report_id} |
 | Analysis Date | {analysis_date} |
 | Analyst | Agent 3 - Failover Coordinator |
-| Data Protocol | Direct Database Read (Agent 1 & Agent 2 Output Files) |
 | Policy Threshold | {policy_data.get('risk_threshold', 25)} |
 
-## 2. DATA COLLECTION SUMMARY
-
-**How Data Was Obtained:**
-- Agent 3 read data directly from shared database files written by Agent 1 and Agent 2
-- Step 1: Read risk_scores.json (written by Agent 1) to identify at-risk APs
-- Step 2: Read nearest_aps.json (written by Agent 2) to get failover candidates for each at-risk AP
-- Step 3: Read network_policy.json to apply configured thresholds and rules
-
-**Data Sources:**
-
-| Source | Data Location | Data Type | Purpose |
-|--------|---------------|-----------|---------|
-| Agent 1 | agent_data/risk_scores.json | Risk scores with metrics | Identify failing APs |
-| Agent 2 | agent_data/nearest_aps.json | Candidate APs with distances | Find failover targets |
-| Policy | policies/network_policy.json | Thresholds and rules | Apply failover criteria |
-
-## 3. NETWORK STATUS
+## 2. NETWORK STATUS
 
 | Metric | Count |
 |--------|-------|
@@ -362,7 +345,7 @@ async def run_analysis():
 | Connected Clients (At-Risk APs) | [Extract if available] |
 | Action Required | Yes / No |
 
-## 4. AT-RISK ACCESS POINTS ANALYSIS
+## 3. AT-RISK ACCESS POINTS ANALYSIS
 
 **WHY Failures Are Happening:**
 
@@ -381,17 +364,17 @@ For EACH at-risk AP identified, create this section:
 
 ---
 
-## 5. FAILOVER CANDIDATES
+## 4. FAILOVER CANDIDATES
 
 **HOW Nearest APs Were Determined:**
-Agent 2 used composite scoring algorithm via A2A tool call, evaluating:
+Composite scoring algorithm evaluating:
 - Physical distance (meters) - shorter is better
 - RSSI signal strength (dBm) - higher (less negative) is better  
 - Same floor preference - reduces interference
 - Current client load - lower is better
 - Channel interference - cleaner channels preferred
 
-**CRITICAL: Generate a separate failover table for EACH at-risk AP identified in Section 4!**
+**CRITICAL: Generate a separate failover table for EACH at-risk AP identified in Section 3!**
 
 **For EACH at-risk AP, create this section:**
 
@@ -417,7 +400,7 @@ Agent 2 used composite scoring algorithm via A2A tool call, evaluating:
 
 **REPEAT THE ABOVE SECTION FOR EVERY AT-RISK AP! If there are 2 failing APs, show 2 failover tables.**
 
-## 6. RECOMMENDED ACTIONS
+## 5. RECOMMENDED ACTIONS
 
 **For EACH at-risk AP, provide specific migration actions:**
 
@@ -431,7 +414,7 @@ Agent 2 used composite scoring algorithm via A2A tool call, evaluating:
 
 **Summary of Recommendations:**
 
-## 7. RISK ASSESSMENT
+## 6. RISK ASSESSMENT
 
 **If Action Taken:**
 - Service restored for [X] clients

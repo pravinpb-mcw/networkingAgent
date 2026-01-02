@@ -337,6 +337,16 @@
                                     <select id="select-fail-ap" class="scenario-select" style="margin-bottom: 12px;">
                                         <option value="">Loading APs...</option>
                                     </select>
+                                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Latency (ms)</label>
+                                            <input type="number" id="input-fail-latency" class="scenario-input" placeholder="350" value="350" min="50" max="1000" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--text-main);">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Jitter (ms)</label>
+                                            <input type="number" id="input-fail-jitter" class="scenario-input" placeholder="55" value="55" min="10" max="200" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--text-main);">
+                                        </div>
+                                    </div>
                                     <div id="fail-ap-status" style="font-size: 12px; height: 16px;"></div>
                                 </div>
 
@@ -430,6 +440,8 @@
                 failBtn.onclick = async function () {
                     const select = document.getElementById('select-fail-ap');
                     const apSerial = select.value;
+                    const latencyInput = document.getElementById('input-fail-latency');
+                    const jitterInput = document.getElementById('input-fail-jitter');
                     const statusDiv = document.getElementById('fail-ap-status');
 
                     if (!apSerial) {
@@ -438,8 +450,11 @@
                         return;
                     }
 
+                    const latencyMs = parseFloat(latencyInput.value) || 350;
+                    const jitterMs = parseFloat(jitterInput.value) || 55;
+
                     const apName = select.options[select.selectedIndex].text;
-                    if (!confirm(`Confirm: Simulate failure for ${apName}?`)) return;
+                    if (!confirm(`Confirm: Simulate failure for ${apName}?\nLatency: ${latencyMs}ms, Jitter: ${jitterMs}ms`)) return;
 
                     try {
                         failBtn.disabled = true;
@@ -449,7 +464,7 @@
                         const res = await fetch('/scenarios/fail-ap', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ ap_serial: apSerial })
+                            body: JSON.stringify({ ap_serial: apSerial, latency_ms: latencyMs, jitter_ms: jitterMs })
                         });
 
                         const data = await res.json();

@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 # Request Models
 class APRequest(BaseModel):
     ap_serial: str
+    latency_ms: float = 350.0  # Default failure latency
+    jitter_ms: float = 55.0    # Default failure jitter
 
 app = FastAPI(title="Network Observability Dashboard API")
 
@@ -387,12 +389,15 @@ async def simulate_ap_failure(request: APRequest):
         
         # Import the scenario module
         import sys
+        import importlib
         scenarios_dir = BASE_DIR / "scenarios"
         if str(scenarios_dir) not in sys.path:
             sys.path.insert(0, str(scenarios_dir))
         
-        # Import and run the failure scenario
-        from user_selected_ap_failure import UserSelectedAPFailure
+        # Import and reload to get latest changes
+        import user_selected_ap_failure
+        importlib.reload(user_selected_ap_failure)
+        UserSelectedAPFailure = user_selected_ap_failure.UserSelectedAPFailure
         
         # Find the AP details
         aps = [
@@ -407,18 +412,25 @@ async def simulate_ap_failure(request: APRequest):
         if not selected_ap:
             raise HTTPException(status_code=404, detail="AP not found")
         
-        # Run the scenario
-        import asyncio
-        scenario = UserSelectedAPFailure(selected_ap)
+        # Log the user-provided values
+        logger.info(f"📡 Simulating AP failure for {selected_ap['name']}")
+        logger.info(f"📊 User input - Latency: {request.latency_ms}ms, Jitter: {request.jitter_ms}ms")
+        
+        # Run the scenario with user-provided latency and jitter
+        scenario = UserSelectedAPFailure(selected_ap, latency_ms=request.latency_ms, jitter_ms=request.jitter_ms)
         await scenario.initialize()
         await scenario.update_appliance_settings()
         await scenario.update_mock_data()
         await scenario.close()
         
+        logger.info(f"✅ AP failure simulation complete for {selected_ap['name']}")
+        
         return {
             "status": "success",
-            "message": f"AP {selected_ap['name']} ({ap_serial}) failure simulated",
-            "ap_name": selected_ap['name']
+            "message": f"AP {selected_ap['name']} ({ap_serial}) failure simulated with Latency: {request.latency_ms}ms, Jitter: {request.jitter_ms}ms",
+            "ap_name": selected_ap['name'],
+            "latency_ms": request.latency_ms,
+            "jitter_ms": request.jitter_ms
         }
         
     except Exception as e:

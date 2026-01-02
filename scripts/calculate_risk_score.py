@@ -44,75 +44,111 @@ WEIGHTS = {
 # ============================================================================
 
 def score_latency(latency_ms: float) -> float:
-    """Score latency metric (0-100, higher = worse)"""
-    if latency_ms < 30:
-        return 20.0
+    """Score latency metric (0-100, higher = worse) - continuous scale"""
+    if latency_ms <= 0:
+        return 10.0
+    elif latency_ms < 30:
+        # Linear scale from 10 to 25 for 0-30ms range
+        return 10.0 + (latency_ms / 30.0) * 15.0
     elif latency_ms < 60:
-        return 50.0
+        # Linear scale from 25 to 55 for 30-60ms range
+        return 25.0 + ((latency_ms - 30) / 30.0) * 30.0
     elif latency_ms < 100:
-        return 80.0
+        # Linear scale from 55 to 85 for 60-100ms range
+        return 55.0 + ((latency_ms - 60) / 40.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for 100ms+ (caps at 100)
+        return min(100.0, 85.0 + ((latency_ms - 100) / 100.0) * 15.0)
 
 
 def score_jitter(jitter_ms: float) -> float:
-    """Score jitter metric (0-100, higher = worse)"""
-    if jitter_ms < 10:
-        return 20.0
+    """Score jitter metric (0-100, higher = worse) - continuous scale"""
+    if jitter_ms <= 0:
+        return 10.0
+    elif jitter_ms < 10:
+        # Linear scale from 10 to 25 for 0-10ms range
+        return 10.0 + (jitter_ms / 10.0) * 15.0
     elif jitter_ms < 20:
-        return 50.0
+        # Linear scale from 25 to 55 for 10-20ms range
+        return 25.0 + ((jitter_ms - 10) / 10.0) * 30.0
     elif jitter_ms < 30:
-        return 80.0
+        # Linear scale from 55 to 85 for 20-30ms range
+        return 55.0 + ((jitter_ms - 20) / 10.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for 30ms+ (caps at 100)
+        return min(100.0, 85.0 + ((jitter_ms - 30) / 30.0) * 15.0)
 
 
 def score_retransmissions(retrans_per_min: float) -> float:
-    """Score retransmission rate (0-100, higher = worse)"""
-    if retrans_per_min < 20:
-        return 20.0
+    """Score retransmission rate (0-100, higher = worse) - continuous scale"""
+    if retrans_per_min <= 0:
+        return 10.0
+    elif retrans_per_min < 20:
+        # Linear scale from 10 to 25 for 0-20 range
+        return 10.0 + (retrans_per_min / 20.0) * 15.0
     elif retrans_per_min < 35:
-        return 50.0
+        # Linear scale from 25 to 55 for 20-35 range
+        return 25.0 + ((retrans_per_min - 20) / 15.0) * 30.0
     elif retrans_per_min < 50:
-        return 80.0
+        # Linear scale from 55 to 85 for 35-50 range
+        return 55.0 + ((retrans_per_min - 35) / 15.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for 50+ (caps at 100)
+        return min(100.0, 85.0 + ((retrans_per_min - 50) / 30.0) * 15.0)
 
 
 def score_snr(snr_db: float) -> float:
-    """Score SNR (0-100, higher = worse, note: lower SNR is worse)"""
-    if snr_db > 25:
-        return 20.0
+    """Score SNR (0-100, higher = worse, note: lower SNR is worse) - continuous scale"""
+    if snr_db >= 35:
+        return 10.0
+    elif snr_db > 25:
+        # Linear scale from 10 to 25 for 35-25dB range
+        return 10.0 + ((35 - snr_db) / 10.0) * 15.0
     elif snr_db > 20:
-        return 50.0
+        # Linear scale from 25 to 55 for 25-20dB range
+        return 25.0 + ((25 - snr_db) / 5.0) * 30.0
     elif snr_db > 15:
-        return 80.0
+        # Linear scale from 55 to 85 for 20-15dB range
+        return 55.0 + ((20 - snr_db) / 5.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for below 15dB (caps at 100)
+        return min(100.0, 85.0 + ((15 - snr_db) / 10.0) * 15.0)
 
 
 def score_client_load(client_count: int) -> float:
-    """Score client load (0-100, higher = worse)"""
-    if client_count < 20:
-        return 20.0
+    """Score client load (0-100, higher = worse) - continuous scale"""
+    if client_count <= 0:
+        return 10.0
+    elif client_count < 20:
+        # Linear scale from 10 to 25 for 0-20 clients
+        return 10.0 + (client_count / 20.0) * 15.0
     elif client_count < 40:
-        return 50.0
+        # Linear scale from 25 to 55 for 20-40 clients
+        return 25.0 + ((client_count - 20) / 20.0) * 30.0
     elif client_count < 60:
-        return 80.0
+        # Linear scale from 55 to 85 for 40-60 clients
+        return 55.0 + ((client_count - 40) / 20.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for 60+ (caps at 100)
+        return min(100.0, 85.0 + ((client_count - 60) / 40.0) * 15.0)
 
 
 def score_auth_failures(auth_failures_per_hour: float) -> float:
-    """Score authentication failure rate (0-100, higher = worse)"""
-    if auth_failures_per_hour < 3:
-        return 20.0
+    """Score authentication failure rate (0-100, higher = worse) - continuous scale"""
+    if auth_failures_per_hour <= 0:
+        return 10.0
+    elif auth_failures_per_hour < 3:
+        # Linear scale from 10 to 25 for 0-3 failures
+        return 10.0 + (auth_failures_per_hour / 3.0) * 15.0
     elif auth_failures_per_hour < 8:
-        return 50.0
+        # Linear scale from 25 to 55 for 3-8 failures
+        return 25.0 + ((auth_failures_per_hour - 3) / 5.0) * 30.0
     elif auth_failures_per_hour < 15:
-        return 80.0
+        # Linear scale from 55 to 85 for 8-15 failures
+        return 55.0 + ((auth_failures_per_hour - 8) / 7.0) * 30.0
     else:
-        return 100.0
+        # Linear scale from 85 to 100 for 15+ (caps at 100)
+        return min(100.0, 85.0 + ((auth_failures_per_hour - 15) / 15.0) * 15.0)
 
 
 # ============================================================================
@@ -176,8 +212,9 @@ def calculate_ap_risk_score(
         Dictionary with risk score, classification, and all metrics
     """
     
-    # Default values for missing metrics (assume okay when no data)
-    DEFAULT_SCORE = 20.0
+    # Default values for missing metrics (assume baseline good values, not worst case)
+    # Using 15.0 as default to allow for natural variation (not exactly 20)
+    DEFAULT_SCORE = 15.0
     
     # Calculate individual metric scores
     latency_score = score_latency(latency_ms) if latency_ms is not None else DEFAULT_SCORE
