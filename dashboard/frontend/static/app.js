@@ -467,8 +467,15 @@ async function loadMetrics() {
         const res = await fetch(API.risk);
         const data = await res.json();
 
+        console.log('Risk data fetched:', data);
+
         const aps = Object.values(data);
-        if (aps.length === 0) return;
+        console.log('Total APs:', aps.length);
+        
+        if (aps.length === 0) {
+            updateAPMetricsTable([]);
+            return;
+        }
 
         // Process current data
         let maxRisk = 0;
@@ -491,6 +498,9 @@ async function loadMetrics() {
             }
         });
 
+        // Update AP Metrics Chart
+        updateAPMetricsChart(aps);
+
         // Update KPIs
         document.getElementById('metrics-ap-count').textContent = aps.length;
         document.getElementById('metrics-max-risk').textContent = Math.round(maxRisk);
@@ -504,6 +514,245 @@ async function loadMetrics() {
     } catch (e) {
         console.error('Metrics load failed', e);
     }
+}
+
+function updateAPMetricsChart(aps) {
+    console.log('=== updateAPMetricsChart START ===');
+    console.log('Chart.js loaded?', typeof Chart !== 'undefined');
+    
+    const ctx = document.getElementById('apMetricsChart');
+    
+    console.log('Canvas element:', ctx);
+    console.log('Canvas context available?', ctx ? ctx.getContext('2d') : 'NO');
+    console.log('Number of APs:', aps.length);
+    
+    if (!ctx) {
+        console.error('❌ apMetricsChart canvas element not found!');
+        return;
+    }
+    
+    if (aps.length === 0) {
+        console.warn('⚠️ No APs to display');
+        return;
+    }
+    
+    // Prepare data
+    const labels = [];
+    const latencyData = [];
+    const jitterData = [];
+    const snrData = [];
+    
+    aps.forEach((ap, index) => {
+        const current = ap.current;
+        const metrics = current.metrics || {};
+        const apName = current.ap_name || ap.ap_serial.substring(0, 12);
+        
+        console.log(`AP ${index + 1}: ${apName}`, metrics);
+        
+        labels.push(apName);
+        latencyData.push(metrics.latency_ms || 0);
+        jitterData.push(metrics.jitter_ms || 0);
+        snrData.push(metrics.snr_db || 0);
+    });
+    
+    console.log('Chart data prepared:', { labels, latencyData, jitterData, snrData });
+    
+    // Create or update chart
+    if (!state.charts.apMetrics) {
+        console.log('📊 Creating new AP Metrics chart...');
+        state.charts.apMetrics = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Latency (ms)',
+                        data: latencyData,
+                        backgroundColor: 'rgba(0, 242, 255, 0.6)',
+                        borderColor: 'rgba(0, 242, 255, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'Jitter (ms)',
+                        data: jitterData,
+                        backgroundColor: 'rgba(245, 158, 11, 0.6)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'SNR (dB)',
+                        data: snrData,
+                        backgroundColor: 'rgba(0, 217, 126, 0.6)',
+                        borderColor: 'rgba(0, 217, 126, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#e2e8f0',
+                            font: {
+                                size: 12
+                            },
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 15, 23, 0.9)',
+                        titleColor: '#00f2ff',
+                        bodyColor: '#e2e8f0',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toFixed(1);
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Latency & Jitter (ms)',
+                            color: '#94a3b8'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#94a3b8'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'SNR (dB)',
+                            color: '#94a3b8'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        ticks: {
+                            color: '#94a3b8'
+                        }
+                    }
+                }
+            }
+        });
+        console.log('✅ AP Metrics chart created successfully');
+    } else {
+        console.log('🔄 Updating existing AP Metrics chart...');
+        // Update existing chart
+        state.charts.apMetrics.data.labels = labels;
+        state.charts.apMetrics.data.datasets[0].data = latencyData;
+        state.charts.apMetrics.data.datasets[1].data = jitterData;
+        state.charts.apMetrics.data.datasets[2].data = snrData;
+        state.charts.apMetrics.update();
+        console.log('✅ AP Metrics chart updated');
+    }
+    console.log('=== updateAPMetricsChart END ===');
+}
+
+function updateAPMetricsTable(aps) {
+    const tbody = document.getElementById('ap-metrics-body');
+    
+    console.log('updateAPMetricsTable called with', aps.length, 'APs');
+    
+    if (!tbody) {
+        console.error('ap-metrics-body element not found!');
+        return;
+    }
+    
+    if (aps.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No AP data available</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    
+    aps.forEach(ap => {
+        const current = ap.current;
+        const metrics = current.metrics || {};
+        const riskScore = current.risk_score || 0;
+        const apName = current.ap_name || ap.ap_serial;
+        
+        // Determine status
+        let statusClass, statusText;
+        if (riskScore >= 60) {
+            statusClass = 'ap-status-critical';
+            statusText = 'Critical';
+        } else if (riskScore >= 25) {
+            statusClass = 'ap-status-warning';
+            statusText = 'Warning';
+        } else {
+            statusClass = 'ap-status-healthy';
+            statusText = 'Healthy';
+        }
+        
+        // Color code metrics
+        const latency = metrics.latency_ms || 0;
+        const jitter = metrics.jitter_ms || 0;
+        const snr = metrics.snr_db || 0;
+        const retrans = metrics.retrans_per_min || 0;
+        
+        const latencyClass = latency > 100 ? 'metric-critical' : (latency > 50 ? 'metric-warning' : 'metric-good');
+        const jitterClass = jitter > 20 ? 'metric-critical' : (jitter > 10 ? 'metric-warning' : 'metric-good');
+        const snrClass = snr < 15 ? 'metric-critical' : (snr < 25 ? 'metric-warning' : 'metric-good');
+        const retransClass = retrans > 30 ? 'metric-critical' : (retrans > 15 ? 'metric-warning' : 'metric-good');
+        
+        const row = document.createElement('tr');
+        row.title = `Serial: ${ap.ap_serial}\nRisk Score: ${riskScore.toFixed(1)}\nLast Updated: ${current.timestamp}`;
+        row.innerHTML = `
+            <td><strong>${apName}</strong></td>
+            <td><span class="metric-value ${latencyClass}">${latency.toFixed(1)}</span></td>
+            <td><span class="metric-value ${jitterClass}">${jitter.toFixed(1)}</span></td>
+            <td><span class="metric-value ${snrClass}">${snr.toFixed(1)}</span></td>
+            <td><span class="metric-value">${metrics.client_count || 0}</span></td>
+            <td><span class="metric-value ${retransClass}">${retrans.toFixed(1)}</span></td>
+            <td><span class="ap-status-badge ${statusClass}">${statusText}</span></td>
+        `;
+        
+        tbody.appendChild(row);
+    });
 }
 
 function updateCharts(risks, snrData, latencyData, jitterData) {
@@ -542,40 +791,79 @@ function updateCharts(risks, snrData, latencyData, jitterData) {
         state.charts.trend.update();
     }
 
-    // 2. Bar Chart - Current Risk Scores
+    // 2. Line Chart - Current Risk Scores (Wave format)
     const ctxRisk = document.getElementById('riskChart');
-    const barColors = risks.map(r => {
-        if (r.score >= 60) return '#ef4444';
-        if (r.score >= 30) return '#f59e0b';
-        return '#00d97e';
-    });
 
     if (!state.charts.risk) {
         state.charts.risk = new Chart(ctxRisk, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: risks.map(r => r.name),
                 datasets: [{
                     label: 'Risk Score',
                     data: risks.map(r => r.score),
-                    backgroundColor: barColors,
-                    borderRadius: 8
+                    borderColor: 'rgba(0, 242, 255, 1)',
+                    backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4, // Smooth curve
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: risks.map(r => {
+                        if (r.score >= 60) return '#ef4444';
+                        if (r.score >= 25) return '#f59e0b';
+                        return '#00d97e';
+                    }),
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                plugins: { legend: { display: false } }
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100, 
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: { 
+                    legend: { 
+                        display: true,
+                        labels: {
+                            color: '#e2e8f0',
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 15, 23, 0.9)',
+                        titleColor: '#00f2ff',
+                        bodyColor: '#e2e8f0',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 12
+                    }
+                }
             }
         });
     } else {
         state.charts.risk.data.labels = risks.map(r => r.name);
         state.charts.risk.data.datasets[0].data = risks.map(r => r.score);
-        state.charts.risk.data.datasets[0].backgroundColor = barColors;
+        state.charts.risk.data.datasets[0].pointBackgroundColor = risks.map(r => {
+            if (r.score >= 60) return '#ef4444';
+            if (r.score >= 25) return '#f59e0b';
+            return '#00d97e';
+        });
         state.charts.risk.update();
     }
 
