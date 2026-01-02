@@ -10,6 +10,10 @@ import subprocess
 import logging
 import psutil
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -32,12 +36,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Constants
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Get paths from environment variables or use defaults
+BASE_PATH = os.getenv('BASE_PATH', 'E:\\network of obserbility')
+
+# Calculate PROJECT_ROOT from BASE_PATH (don't read directly to avoid ${} expansion issues)
+if BASE_PATH:
+    PROJECT_ROOT = os.path.join(BASE_PATH, 'networkingAgent')
+else:
+    PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+
+PYTHON_EXE = os.path.join(BASE_PATH, '.wenv', 'Scripts', 'python.exe') if BASE_PATH else None
+
+# Convert to Path objects
+BASE_DIR = Path(PROJECT_ROOT)
 AGENT_DATA_DIR = BASE_DIR / "agent_data"
 DASHBOARD_DIR = BASE_DIR / "dashboard"
 FRONTEND_DIR = DASHBOARD_DIR / "frontend"
 STATIC_DIR = FRONTEND_DIR / "static"
+BATCH_DIR = BASE_DIR / "batch"
 
 # Mount Static Files
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

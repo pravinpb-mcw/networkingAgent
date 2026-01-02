@@ -25,6 +25,13 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Get project root - calculate from BASE_PATH or use file location
+BASE_PATH = os.getenv('BASE_PATH')
+if BASE_PATH:
+    project_root = Path(BASE_PATH) / 'networkingAgent'
+else:
+    project_root = Path(__file__).parent.parent
+
 # OpenTelemetry imports for Phoenix tracing
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -33,7 +40,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
 
 # Add project root to path
-project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Global tracer for A2A

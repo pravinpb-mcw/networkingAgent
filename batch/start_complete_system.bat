@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title Complete Network Observability System
 echo ================================================================================
 echo    STARTING COMPLETE SYSTEM: AGENTS + DASHBOARD
@@ -15,6 +16,9 @@ echo.
 
 cd /d "%~dp0.."
 
+REM Load environment variables from .env
+call "%~dp0load_env.bat"
+
 echo [0/4] Clearing old agent data for fresh start...
 echo [] > agent_data\risk_scores.json
 echo [] > agent_data\nearest_aps.json
@@ -26,19 +30,19 @@ timeout /t 2 /nobreak >nul
 
 REM Start Agent 1
 echo [1/4] Starting Agent 1 - Risk Calculation (Port 5001)...
-start "Agent 1 - Risk Calculation" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_1_risk_calculation.py --continuous 10"
+start "Agent 1 - Risk Calculation" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_1_risk_calculation.py --continuous 10"
 
 timeout /t 5 /nobreak >nul
 
 REM Start Agent 2
 echo [2/4] Starting Agent 2 - Nearest AP Analysis (Port 5002)...
-start "Agent 2 - Nearest AP" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_2_nearest_ap.py --continuous 10"
+start "Agent 2 - Nearest AP" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_2_nearest_ap.py --continuous 10"
 
 timeout /t 5 /nobreak >nul
 
 REM Start Agent 3
 echo [3/4] Starting Agent 3 - Failover Coordinator...
-start "Agent 3 - Failover" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_3_failover_suggestion.py --continuous 10"
+start "Agent 3 - Failover" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_3_failover_suggestion.py --continuous 10"
 
 echo.
 echo [4/4] Waiting for agents to initialize and generate data...

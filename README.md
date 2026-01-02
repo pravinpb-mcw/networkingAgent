@@ -444,3 +444,14 @@ python main.py --agent monitor   # Agent 3: Network monitoring (auto-starts depe
 
 
 .wenv\Scripts\python.exe agents\agent_3_failover_suggestion.py --continuous 10
+
+
+
+
+scd "D:\new\location"
+python -m venv .wenv
+.wenv\Scripts\activate
+cd networkingAgent
+pip install -r requirements.txt
+
+no need like this i will give  

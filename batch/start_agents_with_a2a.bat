@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo ================================================================================
 echo    STARTING 3 AGENTS WITH A2A COMMUNICATION
 echo ================================================================================
@@ -10,18 +11,23 @@ echo.
 echo ================================================================================
 echo.
 
+cd /d "%~dp0.."
+
+REM Load environment variables from .env
+call "%~dp0load_env.bat"
+
 REM Start Agent 1 (Risk Score - A2A Server)
-start "Agent 1 - Risk Score (A2A)" cmd /k "cd /d %~dp0.. && "../.wenv/Scripts/python.exe" agents\agent_1_risk_calculation.py --continuous 10"
+start "Agent 1 - Risk Score (A2A)" cmd /k "cd /d %~dp0.. && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_1_risk_calculation.py --continuous 10"
 
 timeout /t 3 /nobreak >nul
 
 REM Start Agent 2 (Nearest AP - A2A Server)
-start "Agent 2 - Nearest AP (A2A)" cmd /k "cd /d %~dp0.. && "../.wenv/Scripts/python.exe" agents\agent_2_nearest_ap.py --continuous 10"
+start "Agent 2 - Nearest AP (A2A)" cmd /k "cd /d %~dp0.. && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_2_nearest_ap.py --continuous 10"
 
 timeout /t 5 /nobreak >nul
 
 REM Start Agent 3 (Failover - A2A Client)
-start "Agent 3 - Failover (A2A)" cmd /k "cd /d %~dp0.. && "../.wenv/Scripts/python.exe" agents\agent_3_failover_suggestion.py --continuous 10"
+start "Agent 3 - Failover (A2A)" cmd /k "cd /d %~dp0.. && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_3_failover_suggestion.py --continuous 10"
 
 echo.
 echo ================================================================================

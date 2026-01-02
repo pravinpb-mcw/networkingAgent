@@ -41,8 +41,17 @@ from opentelemetry.sdk import trace as trace_sdk
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
 
+# Load environment variables first
+load_dotenv()
+
+# Get project root - calculate from BASE_PATH or use file location
+BASE_PATH = os.getenv('BASE_PATH')
+if BASE_PATH:
+    project_root = Path(BASE_PATH) / 'networkingAgent'
+else:
+    project_root = Path(__file__).parent.parent
+
 # Add project root to path for imports
-project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # LangChain imports

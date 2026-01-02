@@ -32,8 +32,17 @@ from opentelemetry.sdk import trace as trace_sdk
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
 
+# Load environment variables first
+load_dotenv()
+
+# Get project root - calculate from BASE_PATH or use file location
+BASE_PATH = os.getenv('BASE_PATH')
+if BASE_PATH:
+    project_root = Path(BASE_PATH) / 'networkingAgent'
+else:
+    project_root = Path(__file__).parent.parent
+
 # Add project root to path for imports
-project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Phoenix tracing import
@@ -44,9 +53,6 @@ from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.callbacks import BaseCallbackHandler
-
-# Load environment variables
-load_dotenv()
 
 # Configure logging
 logging.basicConfig(

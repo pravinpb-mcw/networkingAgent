@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title Complete System with Phoenix
 echo ================================================================================
 echo    STARTING COMPLETE SYSTEM (Phoenix + Risk Updater + 3 Agents)
@@ -6,6 +7,9 @@ echo ===========================================================================
 echo.
 
 cd /d "%~dp0.."
+
+REM Load environment variables from .env
+call "%~dp0load_env.bat"
 
 echo Killing existing processes...
 taskkill /F /FI "WINDOWTITLE eq Phoenix Server*" 2>nul
@@ -17,23 +21,23 @@ timeout /t 2 /nobreak >nul
 
 echo.
 echo [1/5] Starting Phoenix Server (Port 6006)...
-start "Phoenix Server" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" phoenix\server.py --auto-eval --eval-interval 10"
+start "Phoenix Server" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" phoenix\server.py --auto-eval --eval-interval 10"
 timeout /t 5 /nobreak >nul
 
 echo [2/5] Starting Risk Score Updater...
-start "Risk Score Updater" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" scripts\auto_risk_score_updater.py --continuous 10"
+start "Risk Score Updater" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" scripts\auto_risk_score_updater.py --continuous 10"
 timeout /t 3 /nobreak >nul
 
 echo [3/5] Starting Agent 1 - Risk Calculation...
-start "Agent 1 - Risk Calculation" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_1_risk_calculation.py --continuous 10"
+start "Agent 1 - Risk Calculation" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_1_risk_calculation.py --continuous 10"
 timeout /t 3 /nobreak >nul
 
 echo [4/5] Starting Agent 2 - Nearest AP Analysis...
-start "Agent 2 - Nearest AP" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_2_nearest_ap.py --continuous 10"
+start "Agent 2 - Nearest AP" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_2_nearest_ap.py --continuous 10"
 timeout /t 3 /nobreak >nul
 
 echo [5/5] Starting Agent 3 - Failover Coordinator...
-start "Agent 3 - Failover" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_3_failover_suggestion.py --continuous 10"
+start "Agent 3 - Failover" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_3_failover_suggestion.py --continuous 10"
 
 echo.
 echo ================================================================================

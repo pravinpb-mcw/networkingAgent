@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 REM Simple 3-Agent A2A System Startup Script
 REM ==========================================
 REM
@@ -22,21 +23,24 @@ echo.
 
 cd /d "%~dp0.."
 
+REM Load environment variables from .env
+call "%~dp0load_env.bat"
+
 REM Step 1: Start Agent 1 A2A Server
 echo [1/3] Starting Agent 1 A2A Server (port 5001)...
-start "Agent 1 - A2A Server" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_1_a2a_simple.py"
+start "Agent 1 - A2A Server" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_1_a2a_simple.py"
 
 timeout /t 3 /nobreak >nul
 
 REM Step 2: Start Agent 2 A2A Server
 echo [2/3] Starting Agent 2 A2A Server (port 5002)...
-start "Agent 2 - A2A Server" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_2_a2a_simple.py"
+start "Agent 2 - A2A Server" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_2_a2a_simple.py"
 
 timeout /t 3 /nobreak >nul
 
 REM Step 3: Start Agent 3 Failover Client
 echo [3/3] Starting Agent 3 - Failover A2A Client...
-start "Agent 3 - Failover Client" cmd /k "cd /d "%~dp0.." && "../.wenv/Scripts/python.exe" agents\agent_3_a2a_simple.py"
+start "Agent 3 - Failover Client" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" agents\agent_3_a2a_simple.py"
 
 echo.
 echo ========================================================================
