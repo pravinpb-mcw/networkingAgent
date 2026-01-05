@@ -26,7 +26,7 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2026-01-02T17:16:15.985797",
+          "updated_at": "2026-01-02T17:56:25.209260",
           "latencyMs": 15.5,
           "packetLossPct": 0.1,
           "jitterMs": 1.2,
@@ -40,7 +40,7 @@
               "status": "active"
             }
           ],
-          "note": "USER_SELECTED_HEALTHY_AP-01"
+          "note": "USER_SELECTED_HEALTHY_AP-04"
         }
       ],
       "wireless_settings": [
@@ -539,96 +539,6 @@
         "note": "USER_SELECTED_HEALTHY_AP-06"
       },
       {
-        "bucketStart": "2026-01-02T13:49:29Z",
-        "bucketEnd": "2026-01-02T13:54:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "bucketStart": "2026-01-02T13:54:29Z",
-        "bucketEnd": "2026-01-02T13:59:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "bucketStart": "2026-01-02T13:59:29Z",
-        "bucketEnd": "2026-01-02T14:04:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "bucketStart": "2026-01-02T14:04:29Z",
-        "bucketEnd": "2026-01-02T14:09:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "bucketStart": "2026-01-02T14:09:29Z",
-        "bucketEnd": "2026-01-02T14:14:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "bucketStart": "2026-01-02T14:14:29Z",
-        "bucketEnd": "2026-01-02T14:19:29Z",
-        "deviceSerial": "Q2XX-AP04-4444",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
         "bucketStart": "2026-01-02T16:27:25Z",
         "bucketEnd": "2026-01-02T16:32:25Z",
         "deviceSerial": "Q2XX-ABCD-1234",
@@ -807,6 +717,96 @@
         "uplinkSpeedMbps": 866,
         "downlinkSpeedMbps": 836,
         "note": "USER_SELECTED_HEALTHY_AP-01"
+      },
+      {
+        "bucketStart": "2026-01-02T17:26:25Z",
+        "bucketEnd": "2026-01-02T17:31:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 16.0,
+        "airtimeUtilizationPercent": 15.5,
+        "retransmissionsPerMinute": 1,
+        "avgSignalToNoise": 37.5,
+        "avgRssi": -46,
+        "clientCount": 5,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-02T17:31:25Z",
+        "bucketEnd": "2026-01-02T17:36:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 18.0,
+        "airtimeUtilizationPercent": 18.0,
+        "retransmissionsPerMinute": 1,
+        "avgSignalToNoise": 38.0,
+        "avgRssi": -45,
+        "clientCount": 6,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-02T17:36:25Z",
+        "bucketEnd": "2026-01-02T17:41:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 20.0,
+        "airtimeUtilizationPercent": 20.5,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 38.5,
+        "avgRssi": -44,
+        "clientCount": 7,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-02T17:41:25Z",
+        "bucketEnd": "2026-01-02T17:46:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 16.0,
+        "airtimeUtilizationPercent": 15.5,
+        "retransmissionsPerMinute": 1,
+        "avgSignalToNoise": 37.5,
+        "avgRssi": -46,
+        "clientCount": 5,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-02T17:46:25Z",
+        "bucketEnd": "2026-01-02T17:51:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 18.0,
+        "airtimeUtilizationPercent": 18.0,
+        "retransmissionsPerMinute": 1,
+        "avgSignalToNoise": 38.0,
+        "avgRssi": -45,
+        "clientCount": 6,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-02T17:51:25Z",
+        "bucketEnd": "2026-01-02T17:56:25Z",
+        "deviceSerial": "Q2XX-AP04-4444",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 20.0,
+        "airtimeUtilizationPercent": 20.5,
+        "retransmissionsPerMinute": 2,
+        "avgSignalToNoise": 38.5,
+        "avgRssi": -44,
+        "clientCount": 7,
+        "uplinkSpeedMbps": 866,
+        "downlinkSpeedMbps": 836,
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       }
     ]
   },
@@ -860,8 +860,8 @@
   },
   "network_wireless_health": {
     "L_3947405073390239794": {
-      "windowStart": "2026-01-02T16:16:15Z",
-      "windowEnd": "2026-01-02T17:16:15Z",
+      "windowStart": "2026-01-02T16:56:25Z",
+      "windowEnd": "2026-01-02T17:56:25Z",
       "overallHealthScore": 85,
       "coverage": {
         "clientsBelowSNRThreshold": 0,
@@ -884,7 +884,7 @@
         "healthScore": 88
       },
       "bestApRecommendation": null,
-      "note": "USER_SELECTED_HEALTHY_AP-01"
+      "note": "USER_SELECTED_HEALTHY_AP-04"
     }
   },
   "network_wireless_latency_history": {
@@ -998,60 +998,6 @@
         "note": "USER_SELECTED_HEALTHY_AP-06"
       },
       {
-        "timeslotStart": "2026-01-02T13:49:29Z",
-        "timeslotEnd": "2026-01-02T13:54:29Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "timeslotStart": "2026-01-02T13:54:29Z",
-        "timeslotEnd": "2026-01-02T13:59:29Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "timeslotStart": "2026-01-02T13:59:29Z",
-        "timeslotEnd": "2026-01-02T14:04:29Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "timeslotStart": "2026-01-02T14:04:29Z",
-        "timeslotEnd": "2026-01-02T14:09:29Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "timeslotStart": "2026-01-02T14:09:29Z",
-        "timeslotEnd": "2026-01-02T14:14:29Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "timeslotStart": "2026-01-02T14:14:29Z",
-        "timeslotEnd": "2026-01-02T14:19:29Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:44",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
         "timeslotStart": "2026-01-02T16:27:25Z",
         "timeslotEnd": "2026-01-02T16:32:25Z",
         "latencyMs": 5,
@@ -1158,6 +1104,60 @@
         "packetLossPercent": 0.08,
         "deviceMac": "00:11:22:33:44:11",
         "note": "USER_SELECTED_HEALTHY_AP-01"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:26:25Z",
+        "timeslotEnd": "2026-01-02T17:31:25Z",
+        "latencyMs": 5,
+        "jitterMs": 1,
+        "packetLossPercent": 0.01,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:31:25Z",
+        "timeslotEnd": "2026-01-02T17:36:25Z",
+        "latencyMs": 7,
+        "jitterMs": 1,
+        "packetLossPercent": 0.03,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:36:25Z",
+        "timeslotEnd": "2026-01-02T17:41:25Z",
+        "latencyMs": 9,
+        "jitterMs": 1.8,
+        "packetLossPercent": 0.08,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:41:25Z",
+        "timeslotEnd": "2026-01-02T17:46:25Z",
+        "latencyMs": 5,
+        "jitterMs": 1,
+        "packetLossPercent": 0.01,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:46:25Z",
+        "timeslotEnd": "2026-01-02T17:51:25Z",
+        "latencyMs": 7,
+        "jitterMs": 1,
+        "packetLossPercent": 0.03,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-02T17:51:25Z",
+        "timeslotEnd": "2026-01-02T17:56:25Z",
+        "latencyMs": 9,
+        "jitterMs": 1.8,
+        "packetLossPercent": 0.08,
+        "deviceMac": "00:11:22:33:44:44",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       }
     ]
   },
@@ -1259,7 +1259,7 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2026-01-02T17:14:48.580237",
+        "lastSeen": "2026-01-02T17:55:35.893524",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
@@ -1299,7 +1299,7 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2026-01-02T17:14:48.580237",
+        "lastSeen": "2026-01-02T17:55:35.893524",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
@@ -1339,7 +1339,7 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2026-01-02T17:14:48.580237",
+        "lastSeen": "2026-01-02T17:55:35.893524",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -1379,7 +1379,7 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2026-01-02T17:14:48.580237",
+        "lastSeen": "2026-01-02T17:55:35.893524",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -1419,7 +1419,7 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2026-01-02T17:14:48.580237",
+        "lastSeen": "2026-01-02T17:55:35.893524",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
@@ -1886,7 +1886,7 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2026-01-02T17:16:15.986798",
+        "lastReportedAt": "2026-01-02T17:56:25.210272",
         "uplinks": [
           {
             "uplink": "wan1",
@@ -2892,264 +2892,264 @@
   "device_loss_and_latency_history": {
     "Q2MN-Q3J9-YJHW": [
       {
-        "ts": "2026-01-02T17:14:48.577236",
-        "latencyMs": 36.98,
-        "lossPercent": 6.04,
-        "jitter": 14.87,
-        "goodput": 67.4,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 37.72,
+        "lossPercent": 5.97,
+        "jitter": 12.89,
+        "goodput": 68.4,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.577236",
-        "latencyMs": 44.87,
-        "lossPercent": 6.73,
-        "jitter": 13.54,
-        "goodput": 64.3,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 43.3,
+        "lossPercent": 5.91,
+        "jitter": 13.03,
+        "goodput": 66.1,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.577236",
-        "latencyMs": 35.2,
-        "lossPercent": 6.58,
-        "jitter": 12.97,
-        "goodput": 65.3,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 30.58,
+        "lossPercent": 6.6,
+        "jitter": 13.1,
+        "goodput": 64.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.577236",
-        "latencyMs": 23.98,
-        "lossPercent": 7.93,
-        "jitter": 15.59,
-        "goodput": 59.9,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 43.89,
+        "lossPercent": 7.89,
+        "jitter": 12.06,
+        "goodput": 58.3,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.577236",
-        "latencyMs": 25.78,
-        "lossPercent": 8.59,
-        "jitter": 11.75,
-        "goodput": 54.5,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 20.44,
+        "lossPercent": 8.17,
+        "jitter": 13.16,
+        "goodput": 55.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.578238",
-        "latencyMs": 29.08,
-        "lossPercent": 9.58,
-        "jitter": 13.55,
-        "goodput": 55.6,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 28.04,
+        "lossPercent": 9.62,
+        "jitter": 14.92,
+        "goodput": 56.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.578238",
-        "latencyMs": 31.46,
-        "lossPercent": 9.46,
-        "jitter": 13.52,
-        "goodput": 49.5,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 32.08,
+        "lossPercent": 10.49,
+        "jitter": 14.37,
+        "goodput": 50.3,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.578238",
-        "latencyMs": 32.17,
-        "lossPercent": 10.28,
-        "jitter": 9.43,
-        "goodput": 45.9,
-        "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2026-01-02T17:14:48.578238",
-        "latencyMs": 26.82,
-        "lossPercent": 12.08,
-        "jitter": 13.95,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 21.02,
+        "lossPercent": 11.49,
+        "jitter": 11.56,
         "goodput": 45.8,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:14:48.578238",
-        "latencyMs": 20.23,
-        "lossPercent": 11.77,
-        "jitter": 9.03,
-        "goodput": 44.0,
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 21.46,
+        "lossPercent": 11.59,
+        "jitter": 8.66,
+        "goodput": 44.7,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "ts": "2026-01-02T17:55:35.892524",
+        "latencyMs": 29.71,
+        "lossPercent": 12.8,
+        "jitter": 12.8,
+        "goodput": 39.6,
+        "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.089699",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:24.440406",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       },
       {
-        "ts": "2026-01-02T17:16:15.986798",
+        "ts": "2026-01-02T17:56:25.209260",
         "latencyMs": 15.5,
         "lossPercent": 0.1,
         "jitter": 1.2,
         "goodput": 95.0,
         "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-01"
+        "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "ts": "2026-01-02T17:56:25.209260",
+        "latencyMs": 15.5,
+        "lossPercent": 0.1,
+        "jitter": 1.2,
+        "goodput": 95.0,
+        "destinationIp": "8.8.8.8",
+        "note": "USER_SELECTED_HEALTHY_AP-04"
       }
     ]
   },
@@ -3381,14 +3381,14 @@
             "x": 45.2,
             "y": 11.7,
             "rfCoverageMeters": 25,
-            "historicalStabilityScore": 94
+            "historicalStabilityScore": 89
           },
           {
             "deviceSerial": "Q2XX-AP04-4444",
             "x": 55.2,
             "y": 6.7,
             "rfCoverageMeters": 25,
-            "historicalStabilityScore": 91
+            "historicalStabilityScore": 94
           },
           {
             "deviceSerial": "Q2XX-AP08-8888",
@@ -3398,7 +3398,7 @@
             "historicalStabilityScore": 88
           }
         ],
-        "note": "USER_SELECTED_FAILURE_AP-01"
+        "note": "USER_SELECTED_FAILURE_AP-04"
       }
     ]
   },
@@ -3406,15 +3406,15 @@
     "L_3947405073390239794": {
       "sourceAp": null,
       "sourceApSerial": null,
-      "window": "2026-01-02T16:46:15Z/2026-01-02T17:16:15Z",
+      "window": "2026-01-02T17:26:25Z/2026-01-02T17:56:25Z",
       "usersImpacted": 0,
       "failureProbability": 0.05,
       "recoveryLikelihood": "N/A",
-      "recoveryReason": "AP-01 restored to healthy operation",
+      "recoveryReason": "AP-04 restored to healthy operation",
       "estimatedTimeToFailure": "Not applicable",
       "interventionPriority": "NONE",
       "recommendedFallbackAp": null,
-      "reason": "AP-01 operating normally - excellent metrics",
+      "reason": "AP-04 operating normally - excellent metrics",
       "applications": [
         {
           "name": "Teams Video",
@@ -3490,7 +3490,7 @@
           "change": 0,
           "trend": "STABLE"
         },
-        "pattern": "HEALTHY - AP-01 metrics stable within optimal ranges"
+        "pattern": "HEALTHY - AP-04 metrics stable within optimal ranges"
       },
       "currentThresholds": {
         "latency": {
@@ -3514,10 +3514,10 @@
         {
           "step": 1,
           "action": "NO_ACTION_REQUIRED",
-          "description": "AP-01 healthy, continue normal monitoring"
+          "description": "AP-04 healthy, continue normal monitoring"
         }
       ],
-      "note": "USER_SELECTED_HEALTHY_AP-01"
+      "note": "USER_SELECTED_HEALTHY_AP-04"
     }
   },
   "wireless_channel_utilization": [

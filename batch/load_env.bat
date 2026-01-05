@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 REM Helper script to load environment variables from .env file
 
 set "ENV_FILE=%~dp0..\.env"
@@ -8,35 +9,27 @@ if not exist "%ENV_FILE%" (
     exit /b 1
 )
 
-REM Read .env file and set variables
+REM First pass - read BASE_PATH
 for /f "usebackq tokens=1,* delims==" %%a in ("%ENV_FILE%") do (
-    set "line=%%a"
-    REM Skip comments and empty lines
-    if not "!line:~0,1!"=="#" if not "%%a"=="" (
-        set "key=%%a"
-        set "value=%%b"
-        
-        REM Remove quotes if present
-        set "value=!value:"=!"
-        
-        REM Expand variables in value (replace ${VAR} with actual value)
-        call :ExpandVariables "!value!" expandedValue
-        
-        REM Set the environment variable
-        set "%%a=!expandedValue!"
+    if "%%a"=="BASE_PATH" (
+        set "BASE_PATH=%%b"
+        REM Remove quotes and trim spaces
+        set "BASE_PATH=!BASE_PATH:"=!"
+        for /f "tokens=* delims= " %%x in ("!BASE_PATH!") do set "BASE_PATH=%%x"
     )
 )
 
-exit /b 0
+REM Calculate derived paths with proper quoting
+set "VENV_PATH=!BASE_PATH!\.wenv"
+set "PYTHON_EXE=!VENV_PATH!\Scripts\python.exe"
+set "PROJECT_ROOT=!BASE_PATH!\networkingAgent"
 
-:ExpandVariables
-setlocal enabledelayedexpansion
-set "result=%~1"
+REM Export to parent shell with quotes preserved
+endlocal & (
+    set "BASE_PATH=%BASE_PATH%"
+    set "VENV_PATH=%VENV_PATH%"
+    set "PYTHON_EXE=%PYTHON_EXE%"
+    set "PROJECT_ROOT=%PROJECT_ROOT%"
+)
 
-REM Replace ${BASE_PATH} with actual BASE_PATH value
-set "result=!result:${BASE_PATH}=%BASE_PATH%!"
-set "result=!result:${VENV_PATH}=%VENV_PATH%!"
-set "result=!result:${PROJECT_ROOT}=%PROJECT_ROOT%!"
-
-endlocal & set "%~2=%result%"
 exit /b 0

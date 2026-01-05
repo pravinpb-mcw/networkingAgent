@@ -460,13 +460,40 @@ def start_server(port=6006, auto_eval=False, eval_interval=30):
     if backend:
         print(f"✅ Evaluation: {backend} ({model})")
     
-    # Launch Phoenix
-    px.launch_app(run_in_thread=True)
-    time.sleep(2)
+    # Launch Phoenix with retry logic for slower systems
+    max_retries = 3
+    retry_delay = 5
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"🚀 Starting Phoenix server (attempt {attempt + 1}/{max_retries})...")
+            px.launch_app(run_in_thread=True)
+            time.sleep(3)  # Give it time to start
+            print("✅ Phoenix started successfully!")
+            break
+        except RuntimeError as e:
+            if "took too long to start" in str(e):
+                if attempt < max_retries - 1:
+                    print(f"⚠️  Phoenix startup delayed, retrying in {retry_delay}s...")
+                    time.sleep(retry_delay)
+                else:
+                    print(f"""
+⚠️  WARNING: Phoenix failed to start after {max_retries} attempts
+This is usually due to:
+  - Slower system performance
+  - Antivirus/Firewall interference
+  - Port 6006 already in use
+
+CONTINUING WITHOUT PHOENIX - Agents will still work!
+Observability features will be limited.
+""")
+                    # Continue anyway - agents can work without Phoenix
+            else:
+                raise
     
     print(f"""
 {'='*80}
-✅ PHOENIX SERVER RUNNING
+✅ SYSTEM RUNNING
 
    📊 Dashboard: http://localhost:{port}
    💾 Database: {DB_FILE}

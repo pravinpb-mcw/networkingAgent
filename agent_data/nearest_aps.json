@@ -1,7 +1,7 @@
 {
   "Q2XX-ABCD-1234": {
     "ap_serial": "Q2XX-ABCD-1234",
-    "last_updated": "2026-01-02T17:16:13.655994",
+    "last_updated": "2026-01-05T14:19:18.647316",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-AP08-8888",
@@ -10,8 +10,8 @@
         "rssi_dbm": -63,
         "client_load": 2,
         "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 80,
+        "same_floor": false,
+        "composite_score": 70,
         "rank": 1
       },
       {
@@ -51,7 +51,7 @@
   },
   "Q2XX-AP06-5678": {
     "ap_serial": "Q2XX-AP06-5678",
-    "last_updated": "2026-01-02T17:16:13.278558",
+    "last_updated": "2026-01-05T14:19:18.914811",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
@@ -93,15 +93,15 @@
         "rssi_dbm": -86,
         "client_load": 2,
         "channel_overlap": true,
-        "same_floor": true,
-        "composite_score": 25,
+        "same_floor": false,
+        "composite_score": 15,
         "rank": 4
       }
     ]
   },
   "Q2XX-AP01-1111": {
     "ap_serial": "Q2XX-AP01-1111",
-    "last_updated": "2026-01-02T17:16:13.952999",
+    "last_updated": "2026-01-05T14:19:18.962860",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
@@ -118,7 +118,7 @@
   },
   "Q2XX-AP04-4444": {
     "ap_serial": "Q2XX-AP04-4444",
-    "last_updated": "2026-01-02T17:16:13.645923",
+    "last_updated": "2026-01-05T14:19:18.950811",
     "nearest_aps": [
       {
         "rssi_dbm": -69,
@@ -143,18 +143,21 @@
         "same_floor": true
       },
       {
-        "rssi_dbm": -72,
+        "rssi_dbm": -85,
         "channel_overlap": false,
-        "ap_serial": "Q2XX-AP08-8888",
-        "ap_name": "AP-08",
-        "distance_meters": 42.6,
-        "client_load": 2
+        "composite_score": 45,
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 182.2,
+        "client_load": 1,
+        "rank": 3,
+        "same_floor": true
       }
     ]
   },
   "Q2XX-AP08-8888": {
     "ap_serial": "Q2XX-AP08-8888",
-    "last_updated": "2026-01-02T17:16:20.072314",
+    "last_updated": "2026-01-05T14:19:26.901967",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
@@ -163,8 +166,8 @@
         "rssi_dbm": -63,
         "client_load": 2,
         "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 80,
+        "same_floor": false,
+        "composite_score": 70,
         "rank": 1
       },
       {
@@ -174,8 +177,8 @@
         "rssi_dbm": -72,
         "client_load": 1,
         "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 50,
+        "same_floor": false,
+        "composite_score": 40,
         "rank": 2
       },
       {
@@ -185,8 +188,8 @@
         "rssi_dbm": -81,
         "client_load": 3,
         "channel_overlap": false,
-        "same_floor": true,
-        "composite_score": 45,
+        "same_floor": false,
+        "composite_score": 35,
         "rank": 3
       },
       {
@@ -196,8 +199,8 @@
         "rssi_dbm": -86,
         "client_load": 1,
         "channel_overlap": true,
-        "same_floor": true,
-        "composite_score": 25,
+        "same_floor": false,
+        "composite_score": 15,
         "rank": 4
       }
     ]
