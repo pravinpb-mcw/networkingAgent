@@ -1,7 +1,7 @@
 {
   "Q2XX-ABCD-1234": {
     "ap_serial": "Q2XX-ABCD-1234",
-    "last_updated": "2026-01-05T14:19:18.647316",
+    "last_updated": "2026-01-06T02:13:59.401457",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-AP08-8888",
@@ -49,9 +49,59 @@
       }
     ]
   },
+  "Q2XX-AP04-4444": {
+    "ap_serial": "Q2XX-AP04-4444",
+    "last_updated": "2026-01-06T02:14:08.046215",
+    "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-ABCD-1234",
+        "ap_name": "AP-03",
+        "distance_meters": 28.4,
+        "rssi_dbm": -69,
+        "client_load": 2,
+        "channel_overlap": true,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 1
+      },
+      {
+        "ap_serial": "Q2XX-AP01-1111",
+        "ap_name": "AP-01",
+        "distance_meters": 78.1,
+        "rssi_dbm": -77,
+        "client_load": 3,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 2
+      },
+      {
+        "ap_serial": "Q2XX-AP06-5678",
+        "ap_name": "AP-06",
+        "distance_meters": 182.2,
+        "rssi_dbm": -85,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 45,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 42.6,
+        "rssi_dbm": -72,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 40,
+        "rank": 4
+      }
+    ]
+  },
   "Q2XX-AP06-5678": {
     "ap_serial": "Q2XX-AP06-5678",
-    "last_updated": "2026-01-05T14:19:18.914811",
+    "last_updated": "2026-01-06T02:13:59.496407",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
@@ -101,8 +151,19 @@
   },
   "Q2XX-AP01-1111": {
     "ap_serial": "Q2XX-AP01-1111",
-    "last_updated": "2026-01-05T14:19:18.962860",
+    "last_updated": "2026-01-06T02:13:59.543046",
     "nearest_aps": [
+      {
+        "ap_serial": "Q2XX-AP04-4444",
+        "ap_name": "AP-04",
+        "distance_meters": 78.1,
+        "rssi_dbm": -77,
+        "client_load": 1,
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 50,
+        "rank": 1
+      },
       {
         "ap_serial": "Q2XX-ABCD-1234",
         "ap_name": "AP-03",
@@ -112,52 +173,35 @@
         "channel_overlap": false,
         "same_floor": true,
         "composite_score": 45,
-        "rank": 1
-      }
-    ]
-  },
-  "Q2XX-AP04-4444": {
-    "ap_serial": "Q2XX-AP04-4444",
-    "last_updated": "2026-01-05T14:19:18.950811",
-    "nearest_aps": [
-      {
-        "rssi_dbm": -69,
-        "channel_overlap": true,
-        "composite_score": 50,
-        "ap_serial": "Q2XX-ABCD-1234",
-        "ap_name": "AP-03",
-        "distance_meters": 28.4,
-        "client_load": 2,
-        "rank": 1,
-        "same_floor": true
+        "rank": 2
       },
       {
-        "rssi_dbm": -77,
-        "channel_overlap": false,
-        "composite_score": 50,
-        "ap_serial": "Q2XX-AP01-1111",
-        "ap_name": "AP-01",
-        "distance_meters": 78.1,
-        "client_load": 3,
-        "rank": 2,
-        "same_floor": true
-      },
-      {
-        "rssi_dbm": -85,
-        "channel_overlap": false,
-        "composite_score": 45,
         "ap_serial": "Q2XX-AP06-5678",
         "ap_name": "AP-06",
-        "distance_meters": 182.2,
+        "distance_meters": 104.4,
+        "rssi_dbm": -80,
         "client_load": 1,
-        "rank": 3,
-        "same_floor": true
+        "channel_overlap": false,
+        "same_floor": true,
+        "composite_score": 45,
+        "rank": 3
+      },
+      {
+        "ap_serial": "Q2XX-AP08-8888",
+        "ap_name": "AP-08",
+        "distance_meters": 117.8,
+        "rssi_dbm": -81,
+        "client_load": 2,
+        "channel_overlap": false,
+        "same_floor": false,
+        "composite_score": 35,
+        "rank": 4
       }
     ]
   },
   "Q2XX-AP08-8888": {
     "ap_serial": "Q2XX-AP08-8888",
-    "last_updated": "2026-01-05T14:19:26.901967",
+    "last_updated": "2026-01-06T02:14:08.080953",
     "nearest_aps": [
       {
         "ap_serial": "Q2XX-ABCD-1234",
@@ -204,5 +248,10 @@
         "rank": 4
       }
     ]
+  },
+  "Q2": {
+    "ap_serial": "Q2",
+    "last_updated": "2026-01-06T01:34:35.805567",
+    "nearest_aps": []
   }
 }

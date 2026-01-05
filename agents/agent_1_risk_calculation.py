@@ -45,6 +45,23 @@ else:
 # Add project root to path for imports
 sys.path.insert(0, str(project_root))
 
+def get_python_executable() -> str:
+    """Get the correct Python executable path for subprocess calls"""
+    # Check for .wenv first (preferred)
+    base_path = os.getenv('BASE_PATH', '')
+    if base_path:
+        wenv_python = Path(base_path) / '.wenv' / 'Scripts' / 'python.exe'
+        if wenv_python.exists():
+            return str(wenv_python)
+    
+    # Check for .venv in project root
+    venv_python = project_root / '.venv' / 'Scripts' / 'python.exe'
+    if venv_python.exists():
+        return str(venv_python)
+    
+    # Fall back to current interpreter
+    return sys.executable
+
 # Phoenix tracing import
 from core.phoenix_tracing import initialize_phoenix
 
@@ -237,12 +254,15 @@ class RiskScoreOrchestrator:
             script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             server_path = os.path.join(script_dir, "server", "meraki_server.py")
             
-            # Create MCP client
+            # Create MCP client - use correct Python executable
+            python_exe = get_python_executable()
+            logger.info(f"Using Python executable: {python_exe}")
+            
             self.mcp_client = MultiServerMCPClient(
                 {
                     "cisco-meraki-observability": {
                         "transport": "stdio",
-                        "command": "python",
+                        "command": python_exe,
                         "args": [server_path],
                         "env": {
                             "TIMESPAN": "7200",

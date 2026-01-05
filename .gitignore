@@ -1,14 +1,72 @@
-.env
-
-/monitoring_data/
-
-.venv/
-
-network_monitor.db
-
-network_monitor.log
-
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
 
-.wenv
-langfuse/*
+# Virtual Environments
+.venv/
+.wenv/
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+*.log.*
+agent_data/logs/
+logs/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+.phoenix/
+phoenix/.phoenix_data/
+
+# Node.js / React
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+.next/
+.cache/
+
+# Data Files
+monitoring_data/
+langfuse/
+agent_data/*.json
+!agent_data/.gitkeep
+
+# Lock files (optional - uncomment if you want team to use same versions)
+# package-lock.json
+# uv.lock
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temporary
+*.tmp
+*.temp
+.pytest_cache/
+.coverage
+htmlcov/

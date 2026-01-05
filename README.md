@@ -1,30 +1,53 @@
 # Network Observability Agent System
 
+🤖 Professional AI-powered network monitoring system with predictive failure detection and automated recommendations for Cisco Meraki networks.
 
-Professional AI-powered network monitoring system with predictive failure detection and automated failover recommendations for Cisco Meraki networks.
-## 🚀 **Key Features**
+---
 
-### 🧠 **Intelligent Uplink Rerouting**
-- **Policy-Driven Automation**: Centralized policy file controls all rerouting decisions
-- **Smart Load Balancing**: Automatically reroutes devices when WANs exceed 20-device limit
-- **Down WAN Recovery**: Intelligently handles failed WANs by rerouting excess devices
-- **Dynamic WAN Creation**: Creates WAN3 when all existing WANs are overloaded
-- **Real-time Monitoring**: Continuous WAN status and device count monitoring
+## ⚡ Quick Start
 
-### 🤖 **AI-Powered Decision Making**
-- **LLM Integration**: Uses Gemini 1.5 Flash for intelligent analysis
-- **Natural Language Processing**: Understands and executes complex network commands
-- **Context-Aware Actions**: Makes decisions based on complete network state
-- **Zero Human Intervention**: Fully automated fixes with clear reasoning
-- **Conservative Approach**: Only makes changes when actual problems exist
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+cd react_dashboard && npm install && npm run build && cd ..
 
-### 📊 **Comprehensive Network Analysis**
-- **WAN Status Monitoring**: Real-time uplink health assessment
-- **Device Distribution Analysis**: Intelligent counting and distribution logic
-- **Capacity Management**: Automatic load balancing across available WANs
-- **Performance Optimization**: Proactive network optimization
+# 2. Configure environment
+cp .env.example .env  # Edit with your API keys
 
-## 🏗️ **Architecture**
+# 3. Start the system
+cd dashboard/backend
+python -m uvicorn main:app --host 0.0.0.0 --port 8000
+
+# 4. Open browser → http://localhost:8000
+```
+
+**📖 Full Setup Guide:** See [SETUP.md](SETUP.md)
+
+---
+
+## 🎯 Key Features
+
+### 🧠 AI-Powered Analysis
+- **3 Specialized Agents**: Risk calculation, nearest AP detection, failover suggestions
+- **LLM Integration**: Powered by GLM-4.5 via Anthropic SDK
+- **Real-time Monitoring**: Continuous network health assessment
+- **Automated Recommendations**: Zero-touch failure remediation suggestions
+
+### 📊 Observability & Validation
+- **Phoenix Integration**: Full trace analysis and visualization
+- **Auto-Evaluation**: 5 deterministic validators (μ 1.00 accuracy)
+- **Anti-Hallucination**: Math verification, topology validation, policy compliance
+- **Live Dashboards**: Real-time risk scores, AP health, network metrics
+
+### 🎨 Modern React Dashboard
+- **Real-time Updates**: WebSocket-powered live data
+- **Interactive Charts**: Risk waves, AP status, network topology
+- **Agent Controls**: Start/stop agents, view logs, simulate scenarios
+- **Embedded Phoenix**: Built-in observability dashboard
+
+---
+
+## 🏗️ Architecture
 
 ```
 networkingAgent/

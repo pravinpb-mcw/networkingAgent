@@ -3,7 +3,7 @@
     "ap_serial": "Q2XX-ABCD-1234",
     "history": [
       {
-        "timestamp": "2026-01-05T08:49:36.863132Z",
+        "timestamp": "2026-01-05T21:01:45.125074Z",
         "risk_score": 13.7,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -23,7 +23,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T08:49:36.863132Z",
+      "timestamp": "2026-01-05T21:01:45.125074Z",
       "risk_score": 13.7,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -41,13 +41,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T08:49:36.863132Z"
+    "last_updated": "2026-01-05T21:01:45.125074Z"
   },
   "Q2XX-AP06-5678": {
     "ap_serial": "Q2XX-AP06-5678",
     "history": [
       {
-        "timestamp": "2026-01-05T08:49:36.863132Z",
+        "timestamp": "2026-01-05T21:01:45.125074Z",
         "risk_score": 13.0,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -67,7 +67,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T08:49:36.863132Z",
+      "timestamp": "2026-01-05T21:01:45.125074Z",
       "risk_score": 13.0,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -85,13 +85,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T08:49:36.863132Z"
+    "last_updated": "2026-01-05T21:01:45.125074Z"
   },
   "Q2XX-AP01-1111": {
     "ap_serial": "Q2XX-AP01-1111",
     "history": [
       {
-        "timestamp": "2026-01-05T08:49:36.863132Z",
+        "timestamp": "2026-01-05T21:01:45.125074Z",
         "risk_score": 14.1,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -111,7 +111,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T08:49:36.863132Z",
+      "timestamp": "2026-01-05T21:01:45.125074Z",
       "risk_score": 14.1,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -129,13 +129,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T08:49:36.863132Z"
+    "last_updated": "2026-01-05T21:01:45.125074Z"
   },
   "Q2XX-AP04-4444": {
     "ap_serial": "Q2XX-AP04-4444",
     "history": [
       {
-        "timestamp": "2026-01-05T08:49:36.863132Z",
+        "timestamp": "2026-01-05T21:01:45.125074Z",
         "risk_score": 12.8,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -155,7 +155,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T08:49:36.863132Z",
+      "timestamp": "2026-01-05T21:01:45.125074Z",
       "risk_score": 12.8,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -173,13 +173,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T08:49:36.863132Z"
+    "last_updated": "2026-01-05T21:01:45.125074Z"
   },
   "Q2XX-AP08-8888": {
     "ap_serial": "Q2XX-AP08-8888",
     "history": [
       {
-        "timestamp": "2026-01-05T08:49:36.863132Z",
+        "timestamp": "2026-01-05T21:01:45.125074Z",
         "risk_score": 13.3,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -199,7 +199,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T08:49:36.863132Z",
+      "timestamp": "2026-01-05T21:01:45.125074Z",
       "risk_score": 13.3,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -217,6 +217,6 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T08:49:36.863132Z"
+    "last_updated": "2026-01-05T21:01:45.125074Z"
   }
 }

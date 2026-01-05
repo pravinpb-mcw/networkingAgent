@@ -12,6 +12,13 @@ call "%~dp0load_env.bat"
 
 echo [1/5] Starting Phoenix Observability Server (Port 6006)...
 start "Phoenix Server" cmd /k "cd /d "%~dp0.." && call "%~dp0load_env.bat" && "%PYTHON_EXE%" phoenix\server.py --auto-eval --eval-interval 10"
+echo Waiting for Phoenix to become ready...
+"%PYTHON_EXE%" "%~dp0check_phoenix.py"
+if errorlevel 1 (
+    echo.
+    echo WARNING: Phoenix may not be ready, continuing anyway...
+    echo.
+)
 
 echo [2/5] Waiting for Phoenix to initialize...
 timeout /t 5 /nobreak >nul

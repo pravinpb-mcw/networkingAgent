@@ -130,8 +130,10 @@ def save_analysis_to_history(analysis: str, risk_response: str, nearest_response
         json.dump(history, f, indent=2)
 
 
-def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str]]:
-    """Read risk scores directly from Agent 1's output file"""
+def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str], int, int]:
+    """Read risk scores directly from Agent 1's output file
+    Returns: (response_text, at_risk_aps, total_aps_count, total_clients)
+    """
     with tracer.start_as_current_span("read_agent1_data") as span:
         span.set_attribute("source", "agent_data/risk_scores.json")
         span.set_attribute("threshold", threshold)
@@ -141,19 +143,23 @@ def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str]]:
             with open(risk_file, 'r') as f:
                 risk_data = json.load(f)
             
-            # Find APs above threshold
+            # Count total APs and find APs above threshold
+            total_aps = len(risk_data)
+            total_clients = 0
             at_risk_aps = []
-            response_lines = [f"Risk Score Analysis (Threshold: {threshold}):", ""]
+            response_lines = [f"Risk Score Analysis (Threshold: {threshold}):", f"Total APs in Database: {total_aps}", ""]
             
             for ap_serial, ap_data in risk_data.items():
                 if ap_data.get("history"):
                     latest = ap_data["history"][-1]
                     risk_score = latest.get("risk_score", 0)
+                    metrics = latest.get("metrics", {})
+                    client_count = metrics.get("client_count", 0)
+                    total_clients += client_count
                     
                     if risk_score >= threshold:
                         at_risk_aps.append(ap_serial)
                         classification = latest.get("risk_classification", "Unknown")
-                        metrics = latest.get("metrics", {})
                         
                         response_lines.append(f"AP: {ap_serial}")
                         response_lines.append(f"  Risk Score: {risk_score}")
@@ -161,6 +167,7 @@ def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str]]:
                         response_lines.append(f"  SNR: {metrics.get('snr_db', 'N/A')} dB")
                         response_lines.append(f"  Latency: {metrics.get('latency_ms', 'N/A')} ms")
                         response_lines.append(f"  Retransmissions: {metrics.get('retrans_per_min', 'N/A')}/min")
+                        response_lines.append(f"  Connected Clients: {client_count}")
                         response_lines.append("")
             
             response_text = "\n".join(response_lines)
@@ -168,11 +175,12 @@ def read_agent1_risk_scores(threshold: float = 25) -> tuple[str, list[str]]:
                 response_text += f"\nNo APs found above threshold {threshold}"
             
             span.set_attribute("at_risk_count", len(at_risk_aps))
-            return response_text, at_risk_aps
+            span.set_attribute("total_aps", total_aps)
+            return response_text, at_risk_aps, total_aps, total_clients
             
         except Exception as e:
             print(f"    ❌ Error reading risk scores: {e}")
-            return f"Error reading risk scores: {e}", []
+            return f"Error reading risk scores: {e}", [], 0, 0
 
 
 def read_agent2_nearest_aps(ap_serial: str) -> str:
@@ -245,9 +253,10 @@ async def run_analysis():
         
         # Read Agent 1 data directly from file
         print("\n[1] Reading Agent 1 Data (Risk Scores)...")
-        risk_response, at_risk_aps = read_agent1_risk_scores(threshold=25)
-        print(f"    ✅ Found {len(at_risk_aps)} at-risk APs from Agent 1")
+        risk_response, at_risk_aps, total_aps, total_clients = read_agent1_risk_scores(threshold=25)
+        print(f"    ✅ Found {len(at_risk_aps)} at-risk APs out of {total_aps} total APs")
         parent_span.set_attribute("at_risk_aps_count", len(at_risk_aps))
+        parent_span.set_attribute("total_aps", total_aps)
         
         # Read Agent 2 data for each at-risk AP
         nearest_responses = {}
@@ -316,17 +325,24 @@ async def run_analysis():
             nearest_ap_text = "\n".join([f"\nFor AP {ap_serial}:\n{response}" for ap_serial, response in nearest_responses.items()])
             
             # Create analysis prompt
-            prompt = f"""You are a professional network failover analyst. Analyze the data collected from Agent 1 and Agent 2 databases and create a structured report.
+            prompt = f"""You are a professional network failover analyst. Analyze the data collected from Agent 1 and Agent 2 and create a structured report.
+
+**IMPORTANT OUTPUT RULES:**
+- NEVER mention file paths, JSON files, or database files in your output
+- Say "Data from Agent 1" instead of mentioning risk_scores.json
+- Say "Data from Agent 2" instead of mentioning nearest_aps.json
+- Say "Network Policy" instead of mentioning network_policy.json
+- Present data as if received from intelligent agents, not files
 
 **DATA SOURCES:**
 
-1. **Policy Configuration (from network_policy.json):**
+1. **Network Policy Configuration:**
 {json.dumps(policy_data, indent=2)}
 
-2. **Risk Data from Agent 1 (read from agent_data/risk_scores.json):**
+2. **Risk Data (received from Agent 1 - Risk Calculator):**
 {risk_response}
 
-3. **Nearest AP Data from Agent 2 (read from agent_data/nearest_aps.json):**
+3. **Nearest AP Data (received from Agent 2 - AP Proximity Analyzer):**
 {nearest_ap_text}
 
 **REQUIRED OUTPUT FORMAT:**
@@ -346,10 +362,10 @@ async def run_analysis():
 
 | Metric | Count |
 |--------|-------|
-| Total APs Monitored | [Extract from data] |
-| APs Above Threshold (>25) | [Count from risk data] |
-| Connected Clients (At-Risk APs) | [Extract if available] |
-| Action Required | Yes / No |
+| Total APs Monitored | {total_aps} |
+| APs Above Threshold (>25) | {len(at_risk_aps)} |
+| Connected Clients (At-Risk APs) | {total_clients} |
+| Action Required | {'Yes' if at_risk_aps else 'No'} |
 
 ## 3. AT-RISK ACCESS POINTS ANALYSIS
 
@@ -516,6 +532,20 @@ async def main():
     tracer_provider.add_span_processor(span_processor)
     trace.set_tracer_provider(tracer_provider)
     print("✅ Phoenix tracing enabled: http://localhost:6006\n")
+    
+    # Check if Phoenix server is running and enable LangChain tracing
+    try:
+        import requests
+        response = requests.get("http://localhost:6006", timeout=2)
+        if response.status_code == 200:
+            print("🔍 Phoenix server detected, enabling LangChain instrumentation...")
+            from openinference.instrumentation.langchain import LangChainInstrumentor
+            LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
+            print("✅ LangChain instrumentation enabled!")
+            print("📊 Agent traces will appear in Phoenix: http://localhost:6006\n")
+    except Exception as e:
+        print(f"⚠️ Phoenix not available: {e}")
+        print("Continuing without LangChain tracing...\n")
     
     # Run in selected mode
     if mode == "continuous":

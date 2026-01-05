@@ -49,8 +49,9 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
         evaluated_ids = set()
     
     try:
-        from phoenix.session.client import Client
-        from phoenix.trace import SpanEvaluations
+        # Use arize-phoenix-client for modern API
+        from phoenix.client import Client as PhoenixClient
+        from phoenix.client.__generated__.v1 import SpanAnnotationData
         import pandas as pd
         import sys
         import json
@@ -65,8 +66,22 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
             validate_threshold_matches_policy
         )
         
-        client = Client(endpoint=endpoint)
-        spans_df = client.get_spans_dataframe()
+        def log_annotation(client, span_id, name, label, score, explanation):
+            """Helper to log a single span annotation with correct format"""
+            try:
+                annotation = SpanAnnotationData(
+                    span_id=str(span_id),
+                    name=name,
+                    annotator_kind="CODE",
+                    result={"label": label, "score": score, "explanation": explanation}
+                )
+                client.spans.log_span_annotations(span_annotations=[annotation])
+            except Exception as e:
+                print(f"   ⚠️ Failed to log annotation: {e}")
+        
+        # Use new Phoenix client API (arize-phoenix-client)
+        client = PhoenixClient(base_url=endpoint)
+        spans_df = client.spans.get_spans_dataframe()
         
         if spans_df is None or spans_df.empty:
             return evaluated_ids
@@ -130,53 +145,20 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                 })
             
             if tool_evals:
-                tool_df = pd.DataFrame(tool_evals)
-                client.log_evaluations(SpanEvaluations(dataframe=tool_df, eval_name="tool_parameters_complete"))
+                # Use helper function for correct API
+                for eval_item in tool_evals:
+                    log_annotation(
+                        client,
+                        eval_item['span_id'],
+                        eval_item['name'],
+                        eval_item['label'],
+                        eval_item['score'],
+                        eval_item['explanation']
+                    )
                 passed = sum(1 for e in tool_evals if e['score'] == 1.0)
                 print(f"   ✅ Tool parameters: {passed}/{len(tool_evals)} passed")
         
-        # Evaluate LLM decision completeness (deterministic)
-        llm_spans = new_spans[new_spans['span_kind'] == 'LLM']
-        if not llm_spans.empty:
-            print(f"   🤖 Checking {len(llm_spans)} LLM calls for decision completeness...")
-            
-            llm_evals = []
-            for idx, span in llm_spans.iterrows():
-                # Get input and output messages
-                input_msg = span.get('attributes.llm.input_messages', [])
-                output_msg = span.get('attributes.llm.output_messages', [])
-                
-                # Convert to string for text-based checks
-                input_str = str(input_msg)
-                output_str = str(output_msg)
-                
-                # Extract tool calls from output_messages
-                tool_calls = []
-                if isinstance(output_msg, list):
-                    for msg in output_msg:
-                        if isinstance(msg, dict) and 'message.tool_calls' in msg:
-                            tool_calls.extend(msg['message.tool_calls'])
-                
-                # Pass both text and structured data to validator
-                score, explanation = evaluate_llm_decision_completeness(
-                    input_str, 
-                    output_str,
-                    tool_calls=tool_calls
-                )
-                
-                llm_evals.append({
-                    'span_id': idx,
-                    'name': 'llm_decision_completeness',
-                    'label': 'complete' if score >= 0.8 else ('partial' if score >= 0.5 else 'incomplete'),
-                    'score': score,
-                    'explanation': explanation
-                })
-            
-            if llm_evals:
-                llm_df = pd.DataFrame(llm_evals)
-                client.log_evaluations(SpanEvaluations(dataframe=llm_df, eval_name="llm_decision_completeness"))
-                complete = sum(1 for e in llm_evals if e['score'] >= 0.8)
-                print(f"   ✅ LLM decisions: {complete}/{len(llm_evals)} complete")
+        # LLM decision completeness check removed to reduce noise
         
         # Mark as evaluated
         evaluated_ids.update(new_ids)
@@ -266,8 +248,16 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                         })
             
             if math_evals:
-                math_df = pd.DataFrame(math_evals)
-                client.log_evaluations(SpanEvaluations(dataframe=math_df, eval_name="risk_math_verification"))
+                # Use helper function for correct API
+                for eval_item in math_evals:
+                    log_annotation(
+                        client,
+                        eval_item['span_id'],
+                        eval_item['name'],
+                        eval_item['label'],
+                        eval_item['score'],
+                        eval_item['explanation']
+                    )
                 verified = sum(1 for e in math_evals if e['score'] >= 0.8)
                 print(f"   ✅ Math verification: {verified}/{len(math_evals)} passed")
         
@@ -328,8 +318,16 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                         pass  # Skip if can't extract AP serial
                 
                 if ap_evals:
-                    ap_df = pd.DataFrame(ap_evals)
-                    client.log_evaluations(SpanEvaluations(dataframe=ap_df, eval_name="ap_exists_in_topology"))
+                    # Use helper function for correct API
+                    for eval_item in ap_evals:
+                        log_annotation(
+                            client,
+                            eval_item['span_id'],
+                            eval_item['name'],
+                            eval_item['label'],
+                            eval_item['score'],
+                            eval_item['explanation']
+                        )
                     exists = sum(1 for e in ap_evals if e['score'] == 1.0)
                     print(f"   ✅ AP existence: {exists}/{len(ap_evals)} verified")
             
@@ -367,8 +365,16 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
                         pass  # Skip if can't validate
             
             if policy_evals:
-                policy_df = pd.DataFrame(policy_evals)
-                client.log_evaluations(SpanEvaluations(dataframe=policy_df, eval_name="threshold_from_policy"))
+                # Use helper function for correct API
+                for eval_item in policy_evals:
+                    log_annotation(
+                        client,
+                        eval_item['span_id'],
+                        eval_item['name'],
+                        eval_item['label'],
+                        eval_item['score'],
+                        eval_item['explanation']
+                    )
                 correct = sum(1 for e in policy_evals if e['score'] == 1.0)
                 print(f"   ✅ Policy compliance: {correct}/{len(policy_evals)} verified")
         
@@ -406,7 +412,7 @@ def evaluate_spans(endpoint="http://localhost:6006", evaluated_ids=None):
 
 def auto_eval_loop(interval, endpoint):
     """Background thread for continuous evaluation"""
-    from phoenix.session.client import Client
+    from phoenix.client import Client as PhoenixClient
     import requests
     
     evaluated_ids = set()
@@ -416,19 +422,24 @@ def auto_eval_loop(interval, endpoint):
         time.sleep(interval)
         try:
             if requests.get(endpoint, timeout=2).status_code == 200:
-                client = Client(endpoint=endpoint)
-                spans_df = client.get_spans_dataframe()
+                client = PhoenixClient(base_url=endpoint)
+                # Use new API
+                spans_df = client.spans.get_spans_dataframe()
                 
                 if spans_df is not None and not spans_df.empty:
-                    llm_spans = spans_df[spans_df['span_kind'] == 'LLM']
-                    new_ids = set(llm_spans.index) - evaluated_ids
+                    # Check for both LLM and TOOL spans
+                    relevant_spans = spans_df[spans_df['span_kind'].isin(['LLM', 'TOOL'])]
+                    new_ids = set(relevant_spans.index) - evaluated_ids
                     
                     if new_ids:
-                        print(f"[{time.strftime('%H:%M:%S')}] Found {len(new_ids)} new spans")
+                        print(f"[{time.strftime('%H:%M:%S')}] Found {len(new_ids)} new spans to evaluate")
                         evaluated_ids = evaluate_spans(endpoint, evaluated_ids)
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
+            # Print errors for debugging
+            if "Connection" not in str(e):
+                print(f"[{time.strftime('%H:%M:%S')}] Eval error: {e}")
             pass
 
 

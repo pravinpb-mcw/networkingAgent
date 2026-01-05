@@ -20,9 +20,16 @@ for /f "usebackq tokens=1,* delims==" %%a in ("%ENV_FILE%") do (
 )
 
 REM Calculate derived paths with proper quoting
-set "VENV_PATH=!BASE_PATH!\.wenv"
-set "PYTHON_EXE=!VENV_PATH!\Scripts\python.exe"
 set "PROJECT_ROOT=!BASE_PATH!\networkingAgent"
+
+REM Check for .wenv first (preferred as it has packages)
+if exist "!BASE_PATH!\.wenv\Scripts\python.exe" (
+    set "VENV_PATH=!BASE_PATH!\.wenv"
+    set "PYTHON_EXE=!VENV_PATH!\Scripts\python.exe"
+) else (
+    set "VENV_PATH=!PROJECT_ROOT!\.venv"
+    set "PYTHON_EXE=!VENV_PATH!\Scripts\python.exe"
+)
 
 REM Export to parent shell with quotes preserved
 endlocal & (

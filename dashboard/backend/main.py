@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import subprocess
 import logging
 import psutil
 import requests
+from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -25,7 +27,59 @@ class APRequest(BaseModel):
     latency_ms: float = 350.0  # Default failure latency
     jitter_ms: float = 55.0    # Default failure jitter
 
-app = FastAPI(title="Network Observability Dashboard API")
+def cleanup_old_processes():
+    """Kill any old Phoenix and agent processes from previous runs"""
+    logger.info("Cleaning up old processes on startup...")
+    killed = []
+    
+    # Targets to kill - Phoenix and agent scripts
+    targets = [
+        "phoenix/server.py",
+        "phoenix\\server.py",
+        "agent_1_risk_calculation.py",
+        "agent_2_nearest_ap.py", 
+        "agent_3_failover_suggestion.py",
+        "auto_risk_score_updater.py",
+        "arize-phoenix",
+        "phoenix.server.main",
+    ]
+    
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            cmdline = proc.info.get('cmdline') or []
+            cmd_str = ' '.join(cmdline).lower() if cmdline else ''
+            proc_name = proc.info.get('name', '').lower()
+            
+            # Skip this backend process
+            if 'uvicorn' in cmd_str and 'main:app' in cmd_str:
+                continue
+                
+            # Check if this is a target process
+            for target in targets:
+                if target.lower() in cmd_str or target.lower() in proc_name:
+                    logger.info(f"Killing old process: {proc.info['pid']} - {cmd_str[:80]}")
+                    proc.kill()
+                    killed.append(proc.info['pid'])
+                    break
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+    if killed:
+        logger.info(f"Cleaned up {len(killed)} old processes: {killed}")
+    else:
+        logger.info("No old processes found to clean up")
+    
+    return killed
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown events"""
+    # Startup: Clean up old processes
+    cleanup_old_processes()
+    yield
+    # Shutdown: Nothing needed for now
+
+app = FastAPI(title="Network Observability Dashboard API", lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
@@ -36,31 +90,66 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Get paths from environment variables or use defaults
-BASE_PATH = os.getenv('BASE_PATH', 'E:\\network of obserbility')
+# Get paths dynamically - no hardcoded paths!
+# Priority: 1) .env BASE_PATH, 2) Auto-detect from current file location
+BASE_PATH = os.getenv('BASE_PATH')
 
-# Calculate PROJECT_ROOT from BASE_PATH (don't read directly to avoid ${} expansion issues)
 if BASE_PATH:
+    # If BASE_PATH is set in .env, use it
     PROJECT_ROOT = os.path.join(BASE_PATH, 'networkingAgent')
 else:
+    # Auto-detect: go up 3 levels from backend/main.py -> networkingAgent/
     PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+    BASE_PATH = str(Path(PROJECT_ROOT).parent)
 
-PYTHON_EXE = os.path.join(BASE_PATH, '.wenv', 'Scripts', 'python.exe') if BASE_PATH else None
+# Check for Python virtual environment (supports both .wenv and .venv)
+venv_names = ['.wenv', '.venv', 'venv', 'env']
+PYTHON_EXE = None
+
+for venv_name in venv_names:
+    venv_path = os.path.join(BASE_PATH, venv_name)
+    python_path = os.path.join(venv_path, 'Scripts', 'python.exe')  # Windows
+    if os.path.exists(python_path):
+        PYTHON_EXE = python_path
+        break
+    # Try Unix-style path
+    python_path = os.path.join(venv_path, 'bin', 'python')  # Unix/Mac
+    if os.path.exists(python_path):
+        PYTHON_EXE = python_path
+        break
+
+# Fallback to system Python if no venv found
+if not PYTHON_EXE:
+    PYTHON_EXE = sys.executable
 
 # Convert to Path objects
 BASE_DIR = Path(PROJECT_ROOT)
 AGENT_DATA_DIR = BASE_DIR / "agent_data"
-DASHBOARD_DIR = BASE_DIR / "dashboard"
-FRONTEND_DIR = DASHBOARD_DIR / "frontend"
-STATIC_DIR = FRONTEND_DIR / "static"
-BATCH_DIR = BASE_DIR / "batch"
+LOG_DIR = AGENT_DATA_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-# Mount Static Files
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+# React Dashboard (built files from react_dashboard/dist)
+REACT_DIST_DIR = BASE_DIR / "react_dashboard" / "dist"
+
+# Mount React build files if they exist
+if REACT_DIST_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(REACT_DIST_DIR / "assets")), name="assets")
+    logger.info(f"✅ Serving React dashboard from: {REACT_DIST_DIR}")
+else:
+    logger.warning(f"⚠️ React dashboard not built yet. Run: cd react_dashboard && npm run build")
 
 @app.get("/")
 async def serve_dashboard():
-    return FileResponse(FRONTEND_DIR / "index.html")
+    """Serve the React dashboard index.html"""
+    index_file = REACT_DIST_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
+    else:
+        return {
+            "error": "Dashboard not built",
+            "message": "Run: cd react_dashboard && npm install && npm run build",
+            "api_docs": "http://localhost:8000/docs"
+        }
 
 # --- Helper Functions ---
 
@@ -160,7 +249,7 @@ async def get_analysis_history():
 async def get_timeseries_data(metric_type: str, hours: int = 24):
     """Get time-series data for a specific metric over the last N hours"""
     try:
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
         
         file_path = AGENT_DATA_DIR / "risk_scores.json"
         if not file_path.exists():
@@ -169,8 +258,8 @@ async def get_timeseries_data(metric_type: str, hours: int = 24):
         with open(file_path, "r") as f:
             data = json.load(f)
         
-        # Calculate time threshold
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        # Calculate time threshold (use UTC for consistency)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
         
         result = {}
         
@@ -181,6 +270,9 @@ async def get_timeseries_data(metric_type: str, hours: int = 24):
             for entry in history:
                 try:
                     entry_time = datetime.fromisoformat(entry["timestamp"])
+                    # Make entry_time offset-aware if it's not
+                    if entry_time.tzinfo is None:
+                        entry_time = entry_time.replace(tzinfo=timezone.utc)
                     if entry_time >= cutoff_time:
                         # Extract the requested metric
                         value = None
@@ -261,6 +353,69 @@ async def test_webhook():
         logger.error(f"Webhook test failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Global storage for agent logs
+MAX_LOG_LINES = 200  # Keep last 200 lines per agent
+
+# Agent process handles
+agent_processes = {}
+
+def read_log_file(agent_name: str) -> list:
+    """Read log entries from agent log file"""
+    log_file = LOG_DIR / f"{agent_name}.log"
+    logs = []
+    if log_file.exists():
+        try:
+            with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
+                lines = f.readlines()[-MAX_LOG_LINES:]  # Last N lines
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        logs.append({
+                            "timestamp": datetime.now().isoformat(),
+                            "message": line,
+                            "level": "error" if "error" in line.lower() or "❌" in line else 
+                                    "warn" if "warning" in line.lower() or "⚠️" in line else
+                                    "success" if "✅" in line or "success" in line.lower() else "info"
+                        })
+        except Exception as e:
+            logs.append({"timestamp": datetime.now().isoformat(), "message": f"Error reading log: {e}", "level": "error"})
+    return logs
+
+@app.get("/system/logs/{agent_name}")
+async def get_agent_logs(agent_name: str):
+    """Get logs for a specific agent"""
+    valid_agents = ["agent1", "agent2", "agent3", "phoenix", "risk_updater"]
+    if agent_name not in valid_agents:
+        raise HTTPException(status_code=404, detail=f"Unknown agent: {agent_name}")
+    
+    # Read from log file
+    logs = read_log_file(agent_name)
+    return {"agent": agent_name, "logs": logs}
+
+@app.delete("/system/logs/{agent_name}")
+async def clear_agent_logs(agent_name: str):
+    """Clear logs for a specific agent"""
+    valid_agents = ["agent1", "agent2", "agent3", "phoenix", "risk_updater"]
+    if agent_name not in valid_agents:
+        raise HTTPException(status_code=404, detail=f"Unknown agent: {agent_name}")
+    
+    # Clear log file
+    log_file = LOG_DIR / f"{agent_name}.log"
+    if log_file.exists():
+        log_file.unlink()
+    return {"status": "cleared"}
+
+@app.get("/system/logs")
+async def get_all_agent_logs():
+    """Get logs for all agents"""
+    return {
+        "agent1": read_log_file("agent1"),
+        "agent2": read_log_file("agent2"),
+        "agent3": read_log_file("agent3"),
+        "phoenix": read_log_file("phoenix"),
+        "risk_updater": read_log_file("risk_updater")
+    }
+
 @app.post("/system/stop")
 async def stop_system():
     """Stop all agents, Phoenix server, and risk updater"""
@@ -295,49 +450,143 @@ async def stop_system():
             
     return {"status": "stopped", "killed_count": len(killed_processes)}
 
+def is_port_in_use(port: int) -> bool:
+    """Check if a port is already in use"""
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
 @app.post("/system/start")
 async def start_agents():
+    """Start all agents directly with Python (no popup terminals)"""
+    global agent_processes
+    
     try:
-        # First, kill any existing agent processes
-        logger.info("Killing existing agent processes...")
-        subprocess.run(
-            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 1*"],
-            capture_output=True
-        )
-        subprocess.run(
-            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 2*"],
-            capture_output=True
-        )
-        subprocess.run(
-            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Agent 3*"],
-            capture_output=True
-        )
-        subprocess.run(
-            ["taskkill", "/F", "/FI", "WINDOWTITLE eq Risk Score Updater*"],
-            capture_output=True
-        )
-        logger.info("Old processes terminated")
+        # Check if Phoenix is already running (ports 6006 and 4317)
+        phoenix_running = is_port_in_use(6006)
         
-        # Use the complete system script with Phoenix + Risk Updater
-        batch_file = BASE_DIR / "batch" / "start_full_system.bat"
-        if not batch_file.exists():
-            batch_file = BASE_DIR / "batch" / "start_all_with_updater.bat"
-        if not batch_file.exists():
-            batch_file = BASE_DIR / "batch" / "start_agents_with_a2a.bat"
-        if not batch_file.exists():
-            batch_file = BASE_DIR / "start_system.bat"
+        if not phoenix_running:
+            # Only stop and restart if Phoenix is not running
+            await stop_system()
+        else:
+            # Phoenix is running, just stop the agents (not Phoenix)
+            logger.info("Phoenix already running, only restarting agents...")
+            for name in ["agent1", "agent2", "agent3", "risk_updater"]:
+                if name in agent_processes and agent_processes[name]:
+                    try:
+                        agent_processes[name].terminate()
+                        agent_processes[name].wait(timeout=2)
+                    except:
+                        pass
         
-        if not batch_file.exists():
-            raise HTTPException(status_code=404, detail="Start script not found")
+        # Clear old log files (except phoenix if it's running)
+        logs_to_clear = ["agent1", "agent2", "agent3", "risk_updater"]
+        if not phoenix_running:
+            logs_to_clear.append("phoenix")
+            
+        for agent_name in logs_to_clear:
+            log_file = LOG_DIR / f"{agent_name}.log"
+            try:
+                if log_file.exists():
+                    log_file.unlink()
+            except Exception as e:
+                logger.warning(f"Could not delete log file {agent_name}: {e}")
         
-        subprocess.Popen(
-            [str(batch_file)], 
-            shell=True, 
+        logger.info("Starting agents in background...")
+        
+        # Determine Python executable
+        python_exe = PYTHON_EXE
+        if not python_exe or not os.path.exists(python_exe):
+            python_exe = "python"
+        
+        logger.info(f"Using Python: {python_exe}")
+        logger.info(f"BASE_DIR: {BASE_DIR}")
+        
+        # Create startup info to hide windows
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        
+        # Set environment to use UTF-8 encoding for subprocess output
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUTF8"] = "1"
+        
+        # Start Phoenix Server only if not already running
+        if not phoenix_running:
+            phoenix_log = open(LOG_DIR / "phoenix.log", "w", encoding="utf-8")
+            agent_processes["phoenix"] = subprocess.Popen(
+                [python_exe, str(BASE_DIR / "phoenix" / "server.py"), "--auto-eval", "--eval-interval", "10"],
+                cwd=str(BASE_DIR),
+                stdout=phoenix_log,
+                stderr=subprocess.STDOUT,
+                startupinfo=startupinfo,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                env=env
+            )
+            logger.info("Phoenix server started")
+            
+            # Wait for Phoenix to be ready
+            import time
+            time.sleep(3)
+        else:
+            logger.info("Phoenix already running, skipping...")
+        
+        # Start Risk Score Updater (updates risk_scores.json from mock data)
+        risk_updater_log = open(LOG_DIR / "risk_updater.log", "w", encoding="utf-8")
+        agent_processes["risk_updater"] = subprocess.Popen(
+            [python_exe, str(BASE_DIR / "scripts" / "auto_risk_score_updater.py"), "--continuous", "10"],
             cwd=str(BASE_DIR),
-            creationflags=subprocess.CREATE_NEW_CONSOLE
+            stdout=risk_updater_log,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            env=env
         )
-        return {"status": "initiated", "message": "Starting Risk Updater and Agents..."}
+        logger.info("Risk Score Updater started")
+        
+        # Start Agent 1 - Risk Calculation (LLM-based)
+        agent1_log = open(LOG_DIR / "agent1.log", "w", encoding="utf-8")
+        agent_processes["agent1"] = subprocess.Popen(
+            [python_exe, str(BASE_DIR / "agents" / "agent_1_risk_calculation.py"), "--continuous", "15"],
+            cwd=str(BASE_DIR),
+            stdout=agent1_log,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            env=env
+        )
+        logger.info("Agent 1 - Risk Calculation started")
+        
+        # Start Agent 2 - Nearest AP
+        agent2_log = open(LOG_DIR / "agent2.log", "w", encoding="utf-8")
+        agent_processes["agent2"] = subprocess.Popen(
+            [python_exe, str(BASE_DIR / "agents" / "agent_2_nearest_ap.py"), "--continuous", "15"],
+            cwd=str(BASE_DIR),
+            stdout=agent2_log,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            env=env
+        )
+        logger.info("Agent 2 - Nearest AP started")
+        
+        # Start Agent 3 - Failover Suggestion
+        agent3_log = open(LOG_DIR / "agent3.log", "w", encoding="utf-8")
+        agent_processes["agent3"] = subprocess.Popen(
+            [python_exe, str(BASE_DIR / "agents" / "agent_3_failover_suggestion.py"), "--continuous", "60"],
+            cwd=str(BASE_DIR),
+            stdout=agent3_log,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+            env=env
+        )
+        logger.info("Agent 3 - Failover Suggestion started")
+        
+        return {"status": "initiated", "message": "All agents started in background"}
     except Exception as e:
+        logger.error(f"Failed to start agents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/system/start-agent/{agent_num}")
@@ -368,20 +617,25 @@ async def start_single_agent(agent_num: int):
         if not batch_file.exists():
             raise HTTPException(status_code=404, detail=f"Batch file not found: start_agent_{agent_num}.bat")
         
-        # Start the batch file in new console (same as Run All button)
+        # Start the batch file in background without popup window
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        
         subprocess.Popen(
             [str(batch_file)], 
             shell=True, 
             cwd=str(BASE_DIR),
-            creationflags=subprocess.CREATE_NEW_CONSOLE
+            startupinfo=startupinfo,
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
         
-        print(f"   ✅ Agent {agent_num} batch file launched in new console")
+        print(f"   ✅ Agent {agent_num} started in background")
         
         return {
             "status": "started", 
             "agent": agent_num, 
-            "message": f"Agent {agent_num} started in new console window",
+            "message": f"Agent {agent_num} started in background",
             "batch_file": str(batch_file)
         }
     except HTTPException:

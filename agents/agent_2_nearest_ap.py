@@ -54,6 +54,23 @@ else:
 # Add project root to path for imports
 sys.path.insert(0, str(project_root))
 
+def get_python_executable() -> str:
+    """Get the correct Python executable path for subprocess calls"""
+    # Check for .wenv first (preferred)
+    base_path = os.getenv('BASE_PATH', '')
+    if base_path:
+        wenv_python = Path(base_path) / '.wenv' / 'Scripts' / 'python.exe'
+        if wenv_python.exists():
+            return str(wenv_python)
+    
+    # Check for .venv in project root
+    venv_python = project_root / '.venv' / 'Scripts' / 'python.exe'
+    if venv_python.exists():
+        return str(venv_python)
+    
+    # Fall back to current interpreter
+    return sys.executable
+
 # LangChain imports
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -408,6 +425,21 @@ async def main():
     trace.set_tracer_provider(tracer_provider)
     print("✅ Phoenix tracing enabled for A2A: http://localhost:6006\n")
     
+    # Check if Phoenix server is running and enable LangChain tracing
+    phoenix_session = None
+    try:
+        import requests
+        response = requests.get("http://localhost:6006", timeout=2)
+        if response.status_code == 200:
+            print("\n🔍 Phoenix server detected, enabling LangChain instrumentation...")
+            from openinference.instrumentation.langchain import LangChainInstrumentor
+            LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
+            print("✅ LangChain instrumentation enabled!")
+            print("📊 Agent traces will appear in Phoenix: http://localhost:6006\n")
+    except Exception as e:
+        print(f"⚠️ Phoenix not available: {e}")
+        print("Continuing without LangChain tracing...\n")
+    
     # Parse command line arguments
     mode = "single"
     interval = 10  # Default 10 seconds
@@ -443,11 +475,15 @@ async def main():
     
     logger.info(f"Connecting to MCP server: {server_path}")
     
+    # Use correct Python executable
+    python_exe = get_python_executable()
+    logger.info(f"Using Python executable: {python_exe}")
+    
     mcp_client = MultiServerMCPClient(
         {
             "cisco-meraki-observability": {
                 "transport": "stdio",
-                "command": "python",
+                "command": python_exe,
                 "args": [server_path],
                 "env": {
                     "TIMESPAN": "7200",
