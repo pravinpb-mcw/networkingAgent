@@ -1,0 +1,164 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    LINUX QUICK REFERENCE CARD                                ║
+║              Network Observability Agent - Shell Scripts                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ FIRST TIME SETUP ────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  chmod +x setup_linux.sh && ./setup_linux.sh                                 │
+│                                                                               │
+│  This will:                                                                   │
+│    ✓ Create virtual environment                                              │
+│    ✓ Install Python dependencies                                             │
+│    ✓ Install Node.js dependencies                                            │
+│    ✓ Make all scripts executable                                             │
+│    ✓ Create .env file                                                        │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ QUICK START COMMANDS ────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Start Everything:       ./batch/start_complete_system.sh                    │
+│  Start Agents Only:      ./batch/start_system.sh                             │
+│  Start Dashboard:        ./batch/start_react_dashboard.sh                    │
+│  Stop All:               ./batch/stop_agents.sh                              │
+│  Check Status:           ./batch/check_agents.sh                             │
+│  Restart All:            ./batch/restart_agents.sh                           │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ SERVICE URLs ────────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Dashboard:       http://localhost:5173                                      │
+│  Backend API:     http://localhost:8000                                      │
+│  API Docs:        http://localhost:8000/docs                                 │
+│  Phoenix:         http://localhost:6006                                      │
+│  Agent 1:         http://localhost:5001                                      │
+│  Agent 2:         http://localhost:5002                                      │
+│  Agent 3:         http://localhost:5003                                      │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ INDIVIDUAL COMPONENTS ───────────────────────────────────────────────────────┐
+│                                                                               │
+│  Phoenix Server:         ./batch/start_phoenix.sh                            │
+│  Risk Updater:           ./batch/start_risk_updater.sh                       │
+│  Agent 1 (Risk):         ./batch/start_agent_1.sh                            │
+│  Agent 2 (Nearest AP):   ./batch/start_agent_2.sh                            │
+│  Agent 3 (Failover):     ./batch/start_agent_3.sh                            │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ DEBUGGING COMMANDS ──────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Test Environment:       ./batch/test_env.sh                                 │
+│  View All Logs:          tail -f logs/*.log                                  │
+│  View Specific Log:      tail -f logs/agent1.log                             │
+│  Check Processes:        ps aux | grep "agent_.*\.py"                        │
+│  Check Ports:            lsof -i :5001                                       │
+│  Kill Process:           kill -9 <PID>                                       │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ TROUBLESHOOTING ─────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Scripts Not Executable?                                                     │
+│    cd batch && chmod +x *.sh                                                 │
+│                                                                               │
+│  Port Already in Use?                                                        │
+│    lsof -i :5001          # Find process                                     │
+│    kill -9 <PID>          # Kill it                                          │
+│                                                                               │
+│  Python Not Found?                                                           │
+│    source .venv/bin/activate                                                 │
+│    ./batch/test_env.sh                                                       │
+│                                                                               │
+│  Agent Won't Start?                                                          │
+│    tail -f logs/agent1.log                                                   │
+│    ./batch/check_agents.sh                                                   │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ LOG FILES ───────────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  logs/phoenix.log         - Phoenix server output                            │
+│  logs/agent1.log          - Agent 1 (Risk Calculation)                       │
+│  logs/agent2.log          - Agent 2 (Nearest AP)                             │
+│  logs/agent3.log          - Agent 3 (Failover)                               │
+│  logs/risk_updater.log    - Risk score updater                               │
+│  logs/backend.log         - Backend API server                               │
+│  logs/frontend.log        - React dashboard                                  │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ USEFUL ALIASES ──────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Add to ~/.bashrc:                                                           │
+│                                                                               │
+│    alias noa-start='./batch/start_complete_system.sh'                        │
+│    alias noa-stop='./batch/stop_agents.sh'                                   │
+│    alias noa-status='./batch/check_agents.sh'                                │
+│    alias noa-logs='tail -f logs/*.log'                                       │
+│    alias noa-restart='./batch/restart_agents.sh'                             │
+│                                                                               │
+│  Then: source ~/.bashrc                                                      │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ ADVANCED USAGE ──────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  With A2A Communication:                                                     │
+│    ./batch/start_full_a2a_system.sh                                          │
+│                                                                               │
+│  Watch Logs in Real-time:                                                    │
+│    watch -n 2 'tail -n 20 logs/agent1.log'                                   │
+│                                                                               │
+│  Check Specific Port:                                                        │
+│    netstat -tuln | grep :5001                                                │
+│    nc -zv localhost 5001                                                     │
+│                                                                               │
+│  View Process Tree:                                                          │
+│    pstree -p | grep python                                                   │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ SYSTEMD (PRODUCTION) ────────────────────────────────────────────────────────┐
+│                                                                               │
+│  For production deployments, use systemd services:                           │
+│  See docs/LINUX_SETUP.md for complete systemd configuration                  │
+│                                                                               │
+│    sudo systemctl enable noa-agent1                                          │
+│    sudo systemctl start noa-agent1                                           │
+│    sudo systemctl status noa-agent1                                          │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ DOCUMENTATION ───────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  Complete Guides:                                                            │
+│    docs/LINUX_SETUP.md            - Full Linux setup guide                   │
+│    batch/README.md                - All scripts reference                    │
+│    batch/LINUX_SCRIPTS.md         - Detailed Linux docs                      │
+│    CROSS_PLATFORM.md              - Platform comparison                      │
+│    LINUX_MIGRATION_COMPLETE.md    - Migration summary                        │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CHEAT SHEET ─────────────────────────────────────────────────────────────────┐
+│                                                                               │
+│  chmod +x script.sh          Make script executable                          │
+│  ./script.sh                 Run script                                      │
+│  source .venv/bin/activate   Activate virtual environment                    │
+│  ps aux | grep python        Show Python processes                           │
+│  pkill -f "agent_1"          Kill agent by name                              │
+│  cat .pids                   Show saved process IDs                          │
+│  lsof -i :PORT               Show what's using a port                        │
+│  tail -f file.log            Follow log file                                 │
+│  grep ERROR logs/*.log       Search for errors in logs                       │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  Save this file for quick reference!                                         ║
+║  All scripts work identically on Windows (use .bat instead of .sh)           ║
+╚══════════════════════════════════════════════════════════════════════════════╝

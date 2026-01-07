@@ -3,7 +3,7 @@
     "ap_serial": "Q2XX-ABCD-1234",
     "history": [
       {
-        "timestamp": "2026-01-05T21:01:45.125074Z",
+        "timestamp": "2026-01-07T07:06:15.941013Z",
         "risk_score": 13.7,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -23,7 +23,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T21:01:45.125074Z",
+      "timestamp": "2026-01-07T07:06:15.941013Z",
       "risk_score": 13.7,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -41,13 +41,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T21:01:45.125074Z"
+    "last_updated": "2026-01-07T07:06:15.941013Z"
   },
   "Q2XX-AP06-5678": {
     "ap_serial": "Q2XX-AP06-5678",
     "history": [
       {
-        "timestamp": "2026-01-05T21:01:45.125074Z",
+        "timestamp": "2026-01-07T07:06:15.941013Z",
         "risk_score": 13.0,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -67,7 +67,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T21:01:45.125074Z",
+      "timestamp": "2026-01-07T07:06:15.941013Z",
       "risk_score": 13.0,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -85,13 +85,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T21:01:45.125074Z"
+    "last_updated": "2026-01-07T07:06:15.941013Z"
   },
   "Q2XX-AP01-1111": {
     "ap_serial": "Q2XX-AP01-1111",
     "history": [
       {
-        "timestamp": "2026-01-05T21:01:45.125074Z",
+        "timestamp": "2026-01-07T07:06:15.941013Z",
         "risk_score": 14.1,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -111,7 +111,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T21:01:45.125074Z",
+      "timestamp": "2026-01-07T07:06:15.941013Z",
       "risk_score": 14.1,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -129,13 +129,13 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T21:01:45.125074Z"
+    "last_updated": "2026-01-07T07:06:15.941013Z"
   },
   "Q2XX-AP04-4444": {
     "ap_serial": "Q2XX-AP04-4444",
     "history": [
       {
-        "timestamp": "2026-01-05T21:01:45.125074Z",
+        "timestamp": "2026-01-07T07:06:15.941013Z",
         "risk_score": 12.8,
         "risk_classification": "Stable Network",
         "metrics": {
@@ -155,7 +155,7 @@
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T21:01:45.125074Z",
+      "timestamp": "2026-01-07T07:06:15.941013Z",
       "risk_score": 12.8,
       "risk_classification": "Stable Network",
       "metrics": {
@@ -173,50 +173,50 @@
         "auth_score": 15.0
       }
     },
-    "last_updated": "2026-01-05T21:01:45.125074Z"
+    "last_updated": "2026-01-07T07:06:15.941013Z"
   },
   "Q2XX-AP08-8888": {
     "ap_serial": "Q2XX-AP08-8888",
     "history": [
       {
-        "timestamp": "2026-01-05T21:01:45.125074Z",
-        "risk_score": 13.3,
-        "risk_classification": "Stable Network",
+        "timestamp": "2026-01-07T07:06:15.941013Z",
+        "risk_score": 73.0,
+        "risk_classification": "Likely Failure",
         "metrics": {
-          "latency_ms": 9,
-          "latency_score": 14.5,
-          "jitter_ms": 1.8,
-          "jitter_score": 12.7,
-          "retrans_per_min": 1,
-          "retrans_score": 10.75,
+          "latency_ms": 205.7,
+          "latency_score": 100.0,
+          "jitter_ms": 36.8,
+          "jitter_score": 88.4,
+          "retrans_per_min": 58,
+          "retrans_score": 89.0,
           "snr_db": 32.8,
           "snr_score": 13.300000000000004,
-          "client_count": 6,
-          "load_score": 14.5,
-          "auth_failures_per_hour": null,
-          "auth_score": 15.0
+          "client_count": 45,
+          "load_score": 62.5,
+          "auth_failures_per_hour": 6,
+          "auth_score": 43.0
         }
       }
     ],
     "current": {
-      "timestamp": "2026-01-05T21:01:45.125074Z",
-      "risk_score": 13.3,
-      "risk_classification": "Stable Network",
+      "timestamp": "2026-01-07T07:06:15.941013Z",
+      "risk_score": 73.0,
+      "risk_classification": "Likely Failure",
       "metrics": {
-        "latency_ms": 9,
-        "latency_score": 14.5,
-        "jitter_ms": 1.8,
-        "jitter_score": 12.7,
-        "retrans_per_min": 1,
-        "retrans_score": 10.75,
+        "latency_ms": 205.7,
+        "latency_score": 100.0,
+        "jitter_ms": 36.8,
+        "jitter_score": 88.4,
+        "retrans_per_min": 58,
+        "retrans_score": 89.0,
         "snr_db": 32.8,
         "snr_score": 13.300000000000004,
-        "client_count": 6,
-        "load_score": 14.5,
-        "auth_failures_per_hour": null,
-        "auth_score": 15.0
+        "client_count": 45,
+        "load_score": 62.5,
+        "auth_failures_per_hour": 6,
+        "auth_score": 43.0
       }
     },
-    "last_updated": "2026-01-05T21:01:45.125074Z"
+    "last_updated": "2026-01-07T07:06:15.941013Z"
   }
 }

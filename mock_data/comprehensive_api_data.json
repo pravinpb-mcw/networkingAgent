@@ -26,21 +26,21 @@
             "enabled": true
           },
           "created_at": "2025-09-03T16:51:18.745746",
-          "updated_at": "2026-01-06T02:00:27.751165",
-          "latencyMs": 15.5,
-          "packetLossPct": 0.1,
-          "jitterMs": 1.2,
+          "updated_at": "2026-01-07T12:38:32.234238",
+          "latencyMs": 250.0,
+          "packetLossPct": 12.0,
+          "jitterMs": 55.0,
           "degradedLinks": [
             {
               "uplink": "wan1",
-              "status": "active"
+              "status": "failed"
             },
             {
               "uplink": "wan2",
-              "status": "active"
+              "status": "failed"
             }
           ],
-          "note": "USER_SELECTED_HEALTHY_AP-04"
+          "note": "USER_SELECTED_FAILURE_AP-03"
         }
       ],
       "wireless_settings": [
@@ -539,186 +539,6 @@
         "note": "USER_SELECTED_HEALTHY_AP-01"
       },
       {
-        "bucketStart": "2026-01-06T00:50:25Z",
-        "bucketEnd": "2026-01-06T00:55:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T00:55:25Z",
-        "bucketEnd": "2026-01-06T01:00:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T01:00:25Z",
-        "bucketEnd": "2026-01-06T01:05:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T01:05:25Z",
-        "bucketEnd": "2026-01-06T01:10:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T01:10:25Z",
-        "bucketEnd": "2026-01-06T01:15:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T01:15:25Z",
-        "bucketEnd": "2026-01-06T01:20:25Z",
-        "deviceSerial": "Q2XX-ABCD-1234",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "bucketStart": "2026-01-06T00:51:57Z",
-        "bucketEnd": "2026-01-06T00:56:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "bucketStart": "2026-01-06T00:56:57Z",
-        "bucketEnd": "2026-01-06T01:01:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "bucketStart": "2026-01-06T01:01:57Z",
-        "bucketEnd": "2026-01-06T01:06:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "bucketStart": "2026-01-06T01:06:57Z",
-        "bucketEnd": "2026-01-06T01:11:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 16.0,
-        "airtimeUtilizationPercent": 15.5,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 37.5,
-        "avgRssi": -46,
-        "clientCount": 5,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "bucketStart": "2026-01-06T01:11:57Z",
-        "bucketEnd": "2026-01-06T01:16:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 18.0,
-        "airtimeUtilizationPercent": 18.0,
-        "retransmissionsPerMinute": 1,
-        "avgSignalToNoise": 38.0,
-        "avgRssi": -45,
-        "clientCount": 6,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "bucketStart": "2026-01-06T01:16:57Z",
-        "bucketEnd": "2026-01-06T01:21:57Z",
-        "deviceSerial": "Q2XX-AP08-8888",
-        "ssid": "MCW-SanJose",
-        "channelUtilizationPercent": 20.0,
-        "airtimeUtilizationPercent": 20.5,
-        "retransmissionsPerMinute": 2,
-        "avgSignalToNoise": 38.5,
-        "avgRssi": -44,
-        "clientCount": 7,
-        "uplinkSpeedMbps": 866,
-        "downlinkSpeedMbps": 836,
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
         "bucketStart": "2026-01-06T01:30:27Z",
         "bucketEnd": "2026-01-06T01:35:27Z",
         "deviceSerial": "Q2XX-AP04-4444",
@@ -807,6 +627,186 @@
         "uplinkSpeedMbps": 866,
         "downlinkSpeedMbps": 836,
         "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "bucketStart": "2026-01-07T12:06:04Z",
+        "bucketEnd": "2026-01-07T12:11:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 48.1,
+        "airtimeUtilizationPercent": 49.4,
+        "retransmissionsPerMinute": 12,
+        "avgSignalToNoise": 31.1,
+        "avgRssi": -59,
+        "clientCount": 24,
+        "uplinkSpeedMbps": 830,
+        "downlinkSpeedMbps": 767,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:11:04Z",
+        "bucketEnd": "2026-01-07T12:16:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 65.6,
+        "airtimeUtilizationPercent": 66.3,
+        "retransmissionsPerMinute": 25,
+        "avgSignalToNoise": 26.9,
+        "avgRssi": -61,
+        "clientCount": 26,
+        "uplinkSpeedMbps": 681,
+        "downlinkSpeedMbps": 572,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:16:04Z",
+        "bucketEnd": "2026-01-07T12:21:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 79.4,
+        "airtimeUtilizationPercent": 81.1,
+        "retransmissionsPerMinute": 34,
+        "avgSignalToNoise": 23.2,
+        "avgRssi": -64,
+        "clientCount": 29,
+        "uplinkSpeedMbps": 511,
+        "downlinkSpeedMbps": 420,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:21:04Z",
+        "bucketEnd": "2026-01-07T12:26:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 89.8,
+        "airtimeUtilizationPercent": 89.5,
+        "retransmissionsPerMinute": 43,
+        "avgSignalToNoise": 19.5,
+        "avgRssi": -69,
+        "clientCount": 30,
+        "uplinkSpeedMbps": 386,
+        "downlinkSpeedMbps": 310,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:26:04Z",
+        "bucketEnd": "2026-01-07T12:31:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 93.5,
+        "airtimeUtilizationPercent": 97.4,
+        "retransmissionsPerMinute": 56,
+        "avgSignalToNoise": 17.6,
+        "avgRssi": -69,
+        "clientCount": 36,
+        "uplinkSpeedMbps": 325,
+        "downlinkSpeedMbps": 227,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:31:04Z",
+        "bucketEnd": "2026-01-07T12:36:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 97.4,
+        "airtimeUtilizationPercent": 97.7,
+        "retransmissionsPerMinute": 59,
+        "avgSignalToNoise": 15.9,
+        "avgRssi": -73,
+        "clientCount": 38,
+        "uplinkSpeedMbps": 258,
+        "downlinkSpeedMbps": 157,
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "bucketStart": "2026-01-07T12:08:32Z",
+        "bucketEnd": "2026-01-07T12:13:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 47.8,
+        "airtimeUtilizationPercent": 51.6,
+        "retransmissionsPerMinute": 16,
+        "avgSignalToNoise": 31.2,
+        "avgRssi": -57,
+        "clientCount": 22,
+        "uplinkSpeedMbps": 851,
+        "downlinkSpeedMbps": 792,
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "bucketStart": "2026-01-07T12:13:32Z",
+        "bucketEnd": "2026-01-07T12:18:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 64.4,
+        "airtimeUtilizationPercent": 67.4,
+        "retransmissionsPerMinute": 21,
+        "avgSignalToNoise": 27.2,
+        "avgRssi": -61,
+        "clientCount": 27,
+        "uplinkSpeedMbps": 651,
+        "downlinkSpeedMbps": 588,
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "bucketStart": "2026-01-07T12:18:32Z",
+        "bucketEnd": "2026-01-07T12:23:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 77.8,
+        "airtimeUtilizationPercent": 81.0,
+        "retransmissionsPerMinute": 36,
+        "avgSignalToNoise": 23.2,
+        "avgRssi": -64,
+        "clientCount": 28,
+        "uplinkSpeedMbps": 528,
+        "downlinkSpeedMbps": 417,
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "bucketStart": "2026-01-07T12:23:32Z",
+        "bucketEnd": "2026-01-07T12:28:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 89.5,
+        "airtimeUtilizationPercent": 89.1,
+        "retransmissionsPerMinute": 43,
+        "avgSignalToNoise": 19.7,
+        "avgRssi": -69,
+        "clientCount": 30,
+        "uplinkSpeedMbps": 404,
+        "downlinkSpeedMbps": 301,
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "bucketStart": "2026-01-07T12:28:32Z",
+        "bucketEnd": "2026-01-07T12:33:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 95.3,
+        "airtimeUtilizationPercent": 96.8,
+        "retransmissionsPerMinute": 52,
+        "avgSignalToNoise": 17.0,
+        "avgRssi": -69,
+        "clientCount": 35,
+        "uplinkSpeedMbps": 290,
+        "downlinkSpeedMbps": 228,
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "bucketStart": "2026-01-07T12:33:32Z",
+        "bucketEnd": "2026-01-07T12:38:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "ssid": "MCW-SanJose",
+        "channelUtilizationPercent": 97.9,
+        "airtimeUtilizationPercent": 100.3,
+        "retransmissionsPerMinute": 58,
+        "avgSignalToNoise": 15.6,
+        "avgRssi": -71,
+        "clientCount": 39,
+        "uplinkSpeedMbps": 277,
+        "downlinkSpeedMbps": 164,
+        "note": "USER_SELECTED_FAILURE_AP-03"
       }
     ]
   },
@@ -860,31 +860,29 @@
   },
   "network_wireless_health": {
     "L_3947405073390239794": {
-      "windowStart": "2026-01-06T01:00:27Z",
-      "windowEnd": "2026-01-06T02:00:27Z",
-      "overallHealthScore": 85,
+      "windowStart": "2026-01-07T11:38:32Z",
+      "windowEnd": "2026-01-07T12:38:32Z",
+      "overallHealthScore": 28,
       "coverage": {
-        "clientsBelowSNRThreshold": 0,
-        "worstSNR": 32.5,
-        "medianSNR": 35.1
+        "clientsBelowSNRThreshold": 12,
+        "worstSNR": 14.5,
+        "medianSNR": 17.0
       },
       "performance": {
-        "avgLatencyMs": 12,
-        "avgJitterMs": 2,
-        "avgPacketLossPercent": 0.1
+        "avgLatencyMs": 125,
+        "avgJitterMs": 48,
+        "avgPacketLossPercent": 9.5
       },
       "capacity": {
-        "overutilizedRadios": 0,
-        "avgChannelUtilizationPercent": 28.0,
-        "avgAirtimeUtilizationPercent": 30.5
+        "overutilizedRadios": 2,
+        "avgChannelUtilizationPercent": 94.0,
+        "avgAirtimeUtilizationPercent": 96.5
       },
       "clientExperience": {
-        "dhcpFailures": 0,
-        "authFailures": 0,
-        "healthScore": 88
-      },
-      "bestApRecommendation": null,
-      "note": "USER_SELECTED_HEALTHY_AP-04"
+        "dhcpFailures": 8,
+        "authFailures": 12,
+        "healthScore": 24
+      }
     }
   },
   "network_wireless_latency_history": {
@@ -998,114 +996,6 @@
         "note": "USER_SELECTED_HEALTHY_AP-01"
       },
       {
-        "timeslotStart": "2026-01-06T00:50:25Z",
-        "timeslotEnd": "2026-01-06T00:55:25Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T00:55:25Z",
-        "timeslotEnd": "2026-01-06T01:00:25Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:00:25Z",
-        "timeslotEnd": "2026-01-06T01:05:25Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:05:25Z",
-        "timeslotEnd": "2026-01-06T01:10:25Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:10:25Z",
-        "timeslotEnd": "2026-01-06T01:15:25Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:15:25Z",
-        "timeslotEnd": "2026-01-06T01:20:25Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:55",
-        "note": "USER_SELECTED_HEALTHY_AP-03"
-      },
-      {
-        "timeslotStart": "2026-01-06T00:51:57Z",
-        "timeslotEnd": "2026-01-06T00:56:57Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "timeslotStart": "2026-01-06T00:56:57Z",
-        "timeslotEnd": "2026-01-06T01:01:57Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:01:57Z",
-        "timeslotEnd": "2026-01-06T01:06:57Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:06:57Z",
-        "timeslotEnd": "2026-01-06T01:11:57Z",
-        "latencyMs": 5,
-        "jitterMs": 1,
-        "packetLossPercent": 0.01,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:11:57Z",
-        "timeslotEnd": "2026-01-06T01:16:57Z",
-        "latencyMs": 7,
-        "jitterMs": 1,
-        "packetLossPercent": 0.03,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
-        "timeslotStart": "2026-01-06T01:16:57Z",
-        "timeslotEnd": "2026-01-06T01:21:57Z",
-        "latencyMs": 9,
-        "jitterMs": 1.8,
-        "packetLossPercent": 0.08,
-        "deviceMac": "00:11:22:33:44:88",
-        "note": "USER_SELECTED_HEALTHY_AP-08"
-      },
-      {
         "timeslotStart": "2026-01-06T01:30:27Z",
         "timeslotEnd": "2026-01-06T01:35:27Z",
         "latencyMs": 5,
@@ -1158,11 +1048,216 @@
         "packetLossPercent": 0.08,
         "deviceMac": "00:11:22:33:44:44",
         "note": "USER_SELECTED_HEALTHY_AP-04"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:06:04Z",
+        "timeslotEnd": "2026-01-07T12:11:04Z",
+        "latencyMs": 45.3,
+        "jitterMs": 9.4,
+        "packetLossPercent": 0.55,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:11:04Z",
+        "timeslotEnd": "2026-01-07T12:16:04Z",
+        "latencyMs": 74.7,
+        "jitterMs": 11.9,
+        "packetLossPercent": 2.89,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:16:04Z",
+        "timeslotEnd": "2026-01-07T12:21:04Z",
+        "latencyMs": 101.4,
+        "jitterMs": 17.4,
+        "packetLossPercent": 4.36,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:21:04Z",
+        "timeslotEnd": "2026-01-07T12:26:04Z",
+        "latencyMs": 152.9,
+        "jitterMs": 25.0,
+        "packetLossPercent": 6.22,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:26:04Z",
+        "timeslotEnd": "2026-01-07T12:31:04Z",
+        "latencyMs": 177.2,
+        "jitterMs": 28.3,
+        "packetLossPercent": 9.3,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:31:04Z",
+        "timeslotEnd": "2026-01-07T12:36:04Z",
+        "latencyMs": 205.7,
+        "jitterMs": 36.8,
+        "packetLossPercent": 12.2,
+        "deviceMac": "00:11:22:33:44:88",
+        "note": "USER_SELECTED_FAILURE_AP-08"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:08:32Z",
+        "timeslotEnd": "2026-01-07T12:13:32Z",
+        "latencyMs": 46.1,
+        "jitterMs": 13.1,
+        "packetLossPercent": 0.91,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:13:32Z",
+        "timeslotEnd": "2026-01-07T12:18:32Z",
+        "latencyMs": 94.3,
+        "jitterMs": 21.0,
+        "packetLossPercent": 2.56,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:18:32Z",
+        "timeslotEnd": "2026-01-07T12:23:32Z",
+        "latencyMs": 122.9,
+        "jitterMs": 29.0,
+        "packetLossPercent": 3.75,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:23:32Z",
+        "timeslotEnd": "2026-01-07T12:28:32Z",
+        "latencyMs": 176.2,
+        "jitterMs": 37.5,
+        "packetLossPercent": 6.59,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:28:32Z",
+        "timeslotEnd": "2026-01-07T12:33:32Z",
+        "latencyMs": 221.3,
+        "jitterMs": 49.2,
+        "packetLossPercent": 8.97,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
+      },
+      {
+        "timeslotStart": "2026-01-07T12:33:32Z",
+        "timeslotEnd": "2026-01-07T12:38:32Z",
+        "latencyMs": 247.8,
+        "jitterMs": 53.1,
+        "packetLossPercent": 12.81,
+        "deviceMac": "00:11:22:33:44:55",
+        "note": "USER_SELECTED_FAILURE_AP-03"
       }
     ]
   },
   "network_wireless_failed_connections": {
-    "L_3947405073390239794": []
+    "L_3947405073390239794": [
+      {
+        "eventTime": "2026-01-07T12:21:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:01",
+        "failureReason": "auth_failure",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:24:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:02",
+        "failureReason": "dhcp_timeout",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:26:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:03",
+        "failureReason": "association_rejected",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:28:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:04",
+        "failureReason": "auth_failure",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:31:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:05",
+        "failureReason": "dhcp_timeout",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:34:04Z",
+        "deviceSerial": "Q2XX-AP08-8888",
+        "clientMac": "AA:BB:CC:DD:EE:06",
+        "failureReason": "deauthentication",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:88"
+      },
+      {
+        "eventTime": "2026-01-07T12:23:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:01",
+        "failureReason": "auth_failure",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      },
+      {
+        "eventTime": "2026-01-07T12:26:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:02",
+        "failureReason": "dhcp_timeout",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      },
+      {
+        "eventTime": "2026-01-07T12:28:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:03",
+        "failureReason": "association_rejected",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      },
+      {
+        "eventTime": "2026-01-07T12:30:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:04",
+        "failureReason": "auth_failure",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      },
+      {
+        "eventTime": "2026-01-07T12:33:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:05",
+        "failureReason": "dhcp_timeout",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      },
+      {
+        "eventTime": "2026-01-07T12:36:32Z",
+        "deviceSerial": "Q2XX-ABCD-1234",
+        "clientMac": "AA:BB:CC:DD:EE:06",
+        "failureReason": "deauthentication",
+        "ssid": "MCW-SanJose",
+        "apMac": "00:11:22:33:44:55"
+      }
+    ]
   },
   "device_clients": {
     "Q2XX-ABCD-1234": [
@@ -1259,7 +1354,7 @@
         "ip6Local": "fe80:0:0:0:1994:fe4d:7743:b797",
         "user": null,
         "firstSeen": "2024-10-26T02:02:49Z",
-        "lastSeen": "2026-01-06T01:59:03.358548",
+        "lastSeen": "2026-01-07T12:38:32.235212",
         "manufacturer": "Intel",
         "os": "Windows 10",
         "deviceTypePrediction": null,
@@ -1299,7 +1394,7 @@
         "ip6Local": "fe80:0:0:0:2e0:4cff:fe4a:4470",
         "user": null,
         "firstSeen": "2025-06-17T01:17:45Z",
-        "lastSeen": "2026-01-06T01:59:03.358548",
+        "lastSeen": "2026-01-07T12:38:32.235212",
         "manufacturer": "Realtek Semiconductor",
         "os": null,
         "deviceTypePrediction": null,
@@ -1339,7 +1434,7 @@
         "ip6Local": "fe80:0:0:0:2694:ff06:97d2:6dd0",
         "user": null,
         "firstSeen": "2025-07-23T21:12:50Z",
-        "lastSeen": "2026-01-06T01:59:03.358548",
+        "lastSeen": "2026-01-07T12:38:32.235212",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -1379,7 +1474,7 @@
         "ip6Local": "fe80:0:0:0:b756:4d0e:b5c6:3de1",
         "user": null,
         "firstSeen": "2025-07-23T23:16:20Z",
-        "lastSeen": "2026-01-06T01:59:03.358548",
+        "lastSeen": "2026-01-07T12:38:32.235212",
         "manufacturer": "Advanced Micro Devices",
         "os": null,
         "deviceTypePrediction": null,
@@ -1419,7 +1514,7 @@
         "ip6Local": "fe80:0:0:0:bc9f:53ff:fe02:eb81",
         "user": null,
         "firstSeen": "2025-06-19T17:40:14Z",
-        "lastSeen": "2026-01-06T01:59:03.358548",
+        "lastSeen": "2026-01-07T12:38:32.235212",
         "manufacturer": null,
         "os": null,
         "deviceTypePrediction": null,
@@ -1886,15 +1981,15 @@
           "enabled": false,
           "role": "primary"
         },
-        "lastReportedAt": "2026-01-06T02:00:27.751671",
+        "lastReportedAt": "2026-01-07T12:38:32.235212",
         "uplinks": [
           {
             "uplink": "wan1",
-            "status": "active"
+            "status": "failed"
           },
           {
             "uplink": "wan2",
-            "status": "active"
+            "status": "failed"
           }
         ]
       },
@@ -2892,214 +2987,124 @@
   "device_loss_and_latency_history": {
     "Q2MN-Q3J9-YJHW": [
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 69.1,
-        "lossPercent": 2.73,
-        "jitter": 19.31,
-        "goodput": 85.1,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 40.69,
+        "lossPercent": 1.83,
+        "jitter": 16.72,
+        "goodput": 84.6,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 91.1,
-        "lossPercent": 3.02,
-        "jitter": 19.54,
-        "goodput": 80.7,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 68.57,
+        "lossPercent": 3.16,
+        "jitter": 18.99,
+        "goodput": 80.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 110.27,
-        "lossPercent": 4.43,
-        "jitter": 22.45,
-        "goodput": 80.4,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 70.35,
+        "lossPercent": 4.0,
+        "jitter": 21.37,
+        "goodput": 77.9,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 109.85,
-        "lossPercent": 3.69,
-        "jitter": 25.54,
-        "goodput": 72.8,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 101.89,
+        "lossPercent": 4.27,
+        "jitter": 26.26,
+        "goodput": 76.7,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 134.6,
-        "lossPercent": 5.64,
-        "jitter": 28.72,
-        "goodput": 72.3,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 126.69,
+        "lossPercent": 5.72,
+        "jitter": 24.83,
+        "goodput": 70.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 150.67,
-        "lossPercent": 6.14,
-        "jitter": 27.36,
-        "goodput": 70.2,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 112.9,
+        "lossPercent": 5.25,
+        "jitter": 29.38,
+        "goodput": 67.0,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 175.28,
-        "lossPercent": 7.02,
-        "jitter": 35.35,
-        "goodput": 66.8,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 140.01,
+        "lossPercent": 6.0,
+        "jitter": 34.17,
+        "goodput": 68.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 198.53,
-        "lossPercent": 7.37,
-        "jitter": 33.73,
-        "goodput": 61.7,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 156.53,
+        "lossPercent": 7.12,
+        "jitter": 33.55,
+        "goodput": 64.9,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 236.87,
-        "lossPercent": 8.63,
-        "jitter": 36.35,
-        "goodput": 58.9,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 182.53,
+        "lossPercent": 7.99,
+        "jitter": 42.0,
+        "goodput": 58.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 254.32,
-        "lossPercent": 8.08,
-        "jitter": 39.88,
-        "goodput": 59.0,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 180.27,
+        "lossPercent": 8.99,
+        "jitter": 39.23,
+        "goodput": 58.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.356561",
-        "latencyMs": 280.05,
-        "lossPercent": 10.13,
-        "jitter": 44.34,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 211.23,
+        "lossPercent": 9.95,
+        "jitter": 48.15,
         "goodput": 55.5,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.357562",
-        "latencyMs": 305.04,
-        "lossPercent": 10.52,
-        "jitter": 50.22,
-        "goodput": 50.5,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 205.44,
+        "lossPercent": 10.16,
+        "jitter": 50.63,
+        "goodput": 50.2,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.357562",
-        "latencyMs": 309.58,
-        "lossPercent": 10.1,
-        "jitter": 52.55,
-        "goodput": 47.9,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 213.0,
+        "lossPercent": 10.35,
+        "jitter": 50.2,
+        "goodput": 45.7,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.357562",
-        "latencyMs": 332.04,
-        "lossPercent": 11.65,
-        "jitter": 56.88,
-        "goodput": 42.6,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 233.04,
+        "lossPercent": 10.92,
+        "jitter": 55.93,
+        "goodput": 46.1,
         "destinationIp": "8.8.8.8"
       },
       {
-        "ts": "2026-01-06T01:59:03.357562",
-        "latencyMs": 340.36,
-        "lossPercent": 11.75,
-        "jitter": 54.35,
-        "goodput": 43.1,
+        "ts": "2026-01-07T12:38:32.234238",
+        "latencyMs": 252.65,
+        "lossPercent": 12.91,
+        "jitter": 54.73,
+        "goodput": 39.4,
         "destinationIp": "8.8.8.8"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
-      },
-      {
-        "ts": "2026-01-06T02:00:27.751165",
-        "latencyMs": 15.5,
-        "lossPercent": 0.1,
-        "jitter": 1.2,
-        "goodput": 95.0,
-        "destinationIp": "8.8.8.8",
-        "note": "USER_SELECTED_HEALTHY_AP-04"
       }
     ]
   },
@@ -3195,7 +3200,7 @@
           "id": "Q2XX-ABCD-1234",
           "name": "AP-03",
           "floorPlanId": "FP-FLR1",
-          "status": "healthy"
+          "status": "failing"
         },
         {
           "type": "wireless",
@@ -3231,9 +3236,9 @@
           "source": "Q2MN-Q3J9-YJHW",
           "target": "Q2XX-ABCD-1234",
           "linkType": "wired",
-          "status": "ok",
-          "latencyMs": 3,
-          "lossPercent": 0.05
+          "status": "critical",
+          "latencyMs": 45,
+          "lossPercent": 4.5
         },
         {
           "source": "Q2MN-Q3J9-YJHW",
@@ -3271,9 +3276,9 @@
           "source": "Q2XX-ABCD-1234",
           "target": "Q2XX-AP06-5678",
           "linkType": "wireless-mesh",
-          "status": "ok",
-          "latencyMs": 5,
-          "lossPercent": 0.1
+          "status": "critical",
+          "latencyMs": 35,
+          "lossPercent": 3.2
         },
         {
           "source": "Q2XX-AP06-5678",
@@ -3316,8 +3321,8 @@
             "deviceSerial": "Q2XX-ABCD-1234",
             "x": 12.4,
             "y": 6.1,
-            "rfCoverageMeters": 25,
-            "historicalStabilityScore": 92
+            "rfCoverageMeters": 15,
+            "historicalStabilityScore": 18
           },
           {
             "deviceSerial": "Q2XX-AP06-5678",
@@ -3338,7 +3343,7 @@
             "x": 55.2,
             "y": 6.7,
             "rfCoverageMeters": 25,
-            "historicalStabilityScore": 94
+            "historicalStabilityScore": 91
           },
           {
             "deviceSerial": "Q2XX-AP08-8888",
@@ -3348,126 +3353,108 @@
             "historicalStabilityScore": 88
           }
         ],
-        "note": "USER_SELECTED_FAILURE_AP-04"
+        "note": "USER_SELECTED_FAILURE_AP-03"
       }
     ]
   },
   "service_impact_predictions": {
     "L_3947405073390239794": {
-      "sourceAp": null,
-      "sourceApSerial": null,
-      "window": "2026-01-06T01:30:27Z/2026-01-06T02:00:27Z",
-      "usersImpacted": 0,
-      "failureProbability": 0.05,
-      "recoveryLikelihood": "N/A",
-      "recoveryReason": "AP-04 restored to healthy operation",
-      "estimatedTimeToFailure": "Not applicable",
-      "interventionPriority": "NONE",
-      "recommendedFallbackAp": null,
-      "reason": "AP-04 operating normally - excellent metrics",
+      "sourceAp": "AP-03",
+      "sourceApSerial": "Q2XX-ABCD-1234",
+      "window": "2026-01-07T12:08:32Z/2026-01-07T12:38:32Z",
+      "usersImpacted": 22,
+      "failureProbability": 0.92,
+      "recoveryLikelihood": "NONE",
+      "recoveryReason": "Critical cascade on AP-03 with sustained worsening - no recovery pattern visible",
+      "estimatedTimeToFailure": "5-10 minutes",
+      "interventionPriority": "CRITICAL",
+      "recommendedFallbackAp": "AP-06",
+      "reason": "CRITICAL: AP-03 multiple correlated failures - immediate intervention required",
       "applications": [
         {
           "name": "Teams Video",
           "activeUserPercent": 62,
-          "impactLevel": "none",
-          "notes": "Operating normally - excellent quality"
+          "impactLevel": "critical",
+          "notes": "CRITICAL RISK - video freezing"
         },
         {
           "name": "VOIP",
           "activeUserPercent": 15,
-          "impactLevel": "none",
-          "notes": "Operating normally - crystal clear"
+          "impactLevel": "critical",
+          "notes": "UNAVAILABLE - jitter >30ms"
         },
         {
           "name": "SSH Sessions",
           "activeUserPercent": 8,
-          "impactLevel": "none",
-          "notes": "Operating normally - responsive"
+          "impactLevel": "high",
+          "notes": "HIGH RISK - terminal lag"
         },
         {
           "name": "Email",
           "activeUserPercent": 20,
-          "impactLevel": "none",
-          "notes": "Operating normally"
+          "impactLevel": "high",
+          "notes": "SEVERELY DEGRADED"
         },
         {
           "name": "File Transfers",
           "activeUserPercent": 12,
-          "impactLevel": "none",
-          "notes": "Operating normally - fast transfers"
+          "impactLevel": "critical",
+          "notes": "CRITICAL RISK - timeouts"
         }
       ],
       "trendAnalysis": {
         "channelUtilization": {
-          "start": 18,
-          "end": 18,
-          "change": 0,
-          "trend": "STABLE"
+          "start": 66,
+          "end": 89,
+          "change": 35,
+          "trend": "WORSENING"
         },
         "airtimeUtilization": {
-          "start": 20,
-          "end": 20,
-          "change": 0,
-          "trend": "STABLE"
+          "start": 71,
+          "end": 92,
+          "change": 30,
+          "trend": "WORSENING"
         },
         "retransmissions": {
-          "start": 1,
-          "end": 1,
-          "change": 0,
-          "trend": "STABLE"
+          "start": 16,
+          "end": 44,
+          "change": 175,
+          "trend": "WORSENING"
         },
         "signalSNR": {
-          "start": 38,
-          "end": 38,
-          "change": 0,
-          "trend": "STABLE"
+          "start": 26.5,
+          "end": 18.1,
+          "change": -32,
+          "trend": "WORSENING"
         },
-        "uplinkSpeed": {
-          "start": 920,
-          "end": 920,
-          "change": 0,
-          "trend": "STABLE"
-        },
-        "downlinkSpeed": {
-          "start": 890,
-          "end": 890,
-          "change": 0,
-          "trend": "STABLE"
-        },
-        "clientLoad": {
-          "start": 6,
-          "end": 6,
-          "change": 0,
-          "trend": "STABLE"
-        },
-        "pattern": "HEALTHY - AP-04 metrics stable within optimal ranges"
+        "pattern": "CRITICAL CASCADE on AP-03 - No recovery in last 2 buckets"
       },
       "currentThresholds": {
         "latency": {
-          "value": 7,
+          "value": 65,
           "threshold": 60,
-          "status": "EXCELLENT"
+          "status": "CRITICAL"
         },
         "jitter": {
-          "value": 0.8,
+          "value": 22,
           "threshold": 20,
-          "status": "EXCELLENT"
+          "status": "CRITICAL"
         },
         "packetLoss": {
-          "value": 0.03,
+          "value": 3.2,
           "threshold": 3.0,
-          "status": "EXCELLENT"
+          "status": "CRITICAL"
         }
       },
-      "failoverCandidates": [],
-      "executionPlan": [
+      "failoverCandidates": [
         {
-          "step": 1,
-          "action": "NO_ACTION_REQUIRED",
-          "description": "AP-04 healthy, continue normal monitoring"
+          "rank": 1,
+          "apName": "AP-06",
+          "apSerial": "Q2XX-AP06-5678",
+          "score": 92,
+          "reason": "Best available alternative - low load, good signal"
         }
-      ],
-      "note": "USER_SELECTED_HEALTHY_AP-04"
+      ]
     }
   },
   "wireless_channel_utilization": [
@@ -3481,44 +3468,44 @@
       },
       "wifi0": {
         "utilization": {
-          "total": 18,
-          "wifi": 12,
-          "nonWifi": 6
+          "total": 96,
+          "wifi": 85,
+          "nonWifi": 11
         },
         "channelWidth": 20,
         "channel": 6
       },
       "wifi1": {
         "utilization": {
-          "total": 15,
-          "wifi": 10,
-          "nonWifi": 5
+          "total": 94,
+          "wifi": 82,
+          "nonWifi": 12
         },
         "channelWidth": 40,
         "channel": 36
       },
       "signalToNoiseRatio": {
         "wifi0": {
-          "avg": 38,
-          "min": 32,
-          "max": 42
+          "avg": 14,
+          "min": 8,
+          "max": 18
         },
         "wifi1": {
-          "avg": 40,
-          "min": 35,
-          "max": 45
+          "avg": 12,
+          "min": 6,
+          "max": 16
         }
       },
       "retransmissions": {
-        "rate": 1.2,
-        "perMinute": 1
+        "rate": 58.5,
+        "perMinute": 58
       },
       "airtime": {
-        "utilization": 20
+        "utilization": 92
       },
-      "clientCount": 6,
-      "status": "healthy",
-      "note": "USER_SELECTED_HEALTHY_AP-03"
+      "clientCount": 45,
+      "status": "critical",
+      "note": "USER_SELECTED_FAILURE_AP-03"
     },
     {
       "serial": "Q2XX-AP06-5678",
@@ -3677,44 +3664,44 @@
       },
       "wifi0": {
         "utilization": {
-          "total": 18,
-          "wifi": 12,
-          "nonWifi": 6
+          "total": 96,
+          "wifi": 85,
+          "nonWifi": 11
         },
         "channelWidth": 20,
         "channel": 6
       },
       "wifi1": {
         "utilization": {
-          "total": 15,
-          "wifi": 10,
-          "nonWifi": 5
+          "total": 94,
+          "wifi": 82,
+          "nonWifi": 12
         },
         "channelWidth": 40,
         "channel": 36
       },
       "signalToNoiseRatio": {
         "wifi0": {
-          "avg": 38,
-          "min": 32,
-          "max": 42
+          "avg": 14,
+          "min": 8,
+          "max": 18
         },
         "wifi1": {
-          "avg": 40,
-          "min": 35,
-          "max": 45
+          "avg": 12,
+          "min": 6,
+          "max": 16
         }
       },
       "retransmissions": {
-        "rate": 1.2,
-        "perMinute": 1
+        "rate": 58.5,
+        "perMinute": 58
       },
       "airtime": {
-        "utilization": 20
+        "utilization": 92
       },
-      "clientCount": 6,
-      "status": "healthy",
-      "note": "USER_SELECTED_HEALTHY_AP-08"
+      "clientCount": 45,
+      "status": "critical",
+      "note": "USER_SELECTED_FAILURE_AP-08"
     }
   ]
 }
