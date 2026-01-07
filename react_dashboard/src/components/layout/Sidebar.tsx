@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Bot, Flame, Settings, Network } from 'lucide-react';
+import { LayoutDashboard, Bot, Flame, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Sidebar() {
@@ -14,13 +14,9 @@ export default function Sidebar() {
 
   return (
     <div className="h-screen w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 z-30">
-      <div className="p-6 flex items-center gap-3 border-b border-border/50">
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-          <Network className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="font-bold text-lg tracking-tight">NET.OBSERVER</h1>
-          <p className="text-xs text-muted-foreground">AI-Driven Analysis</p>
+      <div className="p-6 flex items-center justify-center border-b border-border/50">
+        <div className="rounded-lg bg-black dark:bg-transparent px-4 py-2.5">
+          <img src="/logo-1.png" alt="NetAgent Logo" className="h-12 w-auto object-contain" />
         </div>
       </div>
 

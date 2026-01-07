@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Bot,
   Activity,
-  Network,
   Sliders
 } from "lucide-react"
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -58,12 +57,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Network className="size-4" />
+              <div className="hidden aspect-square size-8 items-center justify-center rounded-lg overflow-hidden bg-black dark:bg-transparent p-1.5 group-data-[collapsible=icon]:flex">
+                <img src="/favicon.png" alt="NetAgent Icon" className="w-full h-full object-contain" />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">NetAgent</span>
-                <span className="truncate text-xs">Observability</span>
+              <div className="flex w-full items-center justify-center rounded-lg bg-black dark:bg-transparent px-4 py-2 group-data-[collapsible=icon]:hidden">
+                <img src="/logo-1.png" alt="NetAgent Logo" className="h-8 w-auto object-contain" />
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
