@@ -34,12 +34,25 @@ else
     exit 1
 fi
 
-# Check npm
-if command -v npm &> /dev/null; then
+# Check bun or npm
+if command -v bun &> /dev/null; then
+    BUN_VERSION=$(bun --version)
+    echo "   ✓ bun found: v$BUN_VERSION"
+    PKG_MANAGER="bun"
+elif command -v npm &> /dev/null; then
     NPM_VERSION=$(npm --version)
-    echo "   ✓ npm found: $NPM_VERSION"
+    echo "   ✓ npm found: v$NPM_VERSION"
+    PKG_MANAGER="npm"
 else
-    echo "   ✗ npm not found. Please install npm."
+    echo "   ✗ Neither bun nor npm found."
+    echo ""
+    echo "   Install bun (recommended, faster):"
+    echo "     curl -fsSL https://bun.sh/install | bash"
+    echo ""
+    echo "   Or install npm:"
+    echo "     sudo apt install npm    # Ubuntu/Debian"
+    echo "     sudo yum install npm    # CentOS/RHEL"
+    echo ""
     exit 1
 fi
 
@@ -61,20 +74,27 @@ echo "   ✓ Python dependencies installed"
 
 echo
 echo "Step 4: Installing Node.js dependencies for dashboard..."
-cd react_dashboard
-if [ ! -d "node_modules" ]; then
-    npm install
-    echo "   ✓ Node dependencies installed"
+if [ -d "react_dashboard" ]; then
+    cd react_dashboard
+    if [ ! -d "node_modules" ]; then
+        echo "   Installing with $PKG_MANAGER..."
+        $PKG_MANAGER install
+        echo "   ✓ Node dependencies installed"
+    else
+        echo "   ○ Node dependencies already installed"
+    fi
+    cd ..
 else
-    echo "   ○ Node dependencies already installed"
+    echo "   ⚠ react_dashboard directory not found, skipping..."
 fi
-cd ..
 
 echo
 echo "Step 5: Installing backend dependencies..."
 if [ -f "dashboard/backend/requirements.txt" ]; then
-    pip install -r dashboard/backend/requirements.txt > /dev/null
+    pip install -r dashboard/backend/requirements.txt > /dev/null 2>&1
     echo "   ✓ Backend dependencies installed"
+else
+    echo "   ○ Backend requirements.txt not found, skipping..."
 fi
 
 echo

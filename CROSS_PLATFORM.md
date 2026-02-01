@@ -46,6 +46,10 @@ batch\start_complete_system.bat
 git clone <repo-url>
 cd networkingAgent
 
+# Install bun (recommended, faster than npm)
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
+
 # Run automatic setup
 chmod +x setup_linux.sh
 ./setup_linux.sh

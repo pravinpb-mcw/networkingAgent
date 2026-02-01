@@ -44,20 +44,44 @@ AGENT3_PID=$!
 echo "   Agent 3 PID: $AGENT3_PID"
 
 echo "[6/7] Starting Backend Server (Port 8000)..."
-"$PYTHON_EXE" -m uvicorn dashboard.backend.main:app --host 0.0.0.0 --port 8000 --reload > logs/backend.log 2>&1 &
-BACKEND_PID=$!
-echo "   Backend PID: $BACKEND_PID"
+if [ -f "dashboard/backend/main.py" ]; then
+    "$PYTHON_EXE" -m uvicorn dashboard.backend.main:app --host 0.0.0.0 --port 8000 --reload > logs/backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo "   ✓ Backend PID: $BACKEND_PID"
+else
+    echo "   ⚠ Backend not found, skipping..."
+    BACKEND_PID=""
+fi
 
 echo "[7/7] Starting React Dashboard (Port 5173)..."
-cd react_dashboard
-if [ ! -d "node_modules" ]; then
-    echo "   Installing Node dependencies..."
-    npm install
+if [ -d "react_dashboard" ]; then
+    cd react_dashboard
+    
+    # Check for bun or npm
+    if command -v bun &> /dev/null; then
+        PKG_MANAGER="bun"
+    elif command -v npm &> /dev/null; then
+        PKG_MANAGER="npm"
+    else
+        echo "   ⚠ Neither bun nor npm found, skipping frontend..."
+        cd ..
+        FRONTEND_PID=""
+    fi
+    
+    if [ ! -z "$PKG_MANAGER" ]; then
+        if [ ! -d "node_modules" ]; then
+            echo "   Installing dependencies with $PKG_MANAGER..."
+            $PKG_MANAGER install > /dev/null 2>&1
+        fi
+        $PKG_MANAGER run dev > ../logs/frontend.log 2>&1 &
+        FRONTEND_PID=$!
+        echo "   ✓ Frontend PID: $FRONTEND_PID"
+        cd ..
+    fi
+else
+    echo "   ⚠ react_dashboard not found, skipping..."
+    FRONTEND_PID=""
 fi
-npm run dev > ../logs/frontend.log 2>&1 &
-FRONTEND_PID=$!
-cd ..
-echo "   Frontend PID: $FRONTEND_PID"
 
 echo
 echo "================================================================================"

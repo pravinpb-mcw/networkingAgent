@@ -44,14 +44,28 @@ echo "[6/8] Starting Agent 3 (Failover - Port 5003) with A2A..."
 AGENT3_PID=$!
 
 echo "[7/8] Starting Backend Server (Port 8000)..."
-"$PYTHON_EXE" -m uvicorn dashboard.backend.main:app --host 0.0.0.0 --port 8000 --reload > logs/backend.log 2>&1 &
-BACKEND_PID=$!
+if [ -f "dashboard/backend/main.py" ]; then
+    "$PYTHON_EXE" -m uvicorn dashboard.backend.main:app --host 0.0.0.0 --port 8000 --reload > logs/backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo "   ✓ Backend PID: $BACKEND_PID"
+else
+    BACKEND_PID=""
+fi
 
 echo "[8/8] Starting React Dashboard (Port 5173)..."
-cd react_dashboard
-npm run dev > ../logs/frontend.log 2>&1 &
-FRONTEND_PID=$!
-cd ..
+if [ -d "react_dashboard" ]; then
+    cd react_dashboard
+    if command -v bun &> /dev/null; then
+        bun run dev > ../logs/frontend.log 2>&1 &
+    elif command -v npm &> /dev/null; then
+        npm run dev > ../logs/frontend.log 2>&1 &
+    fi
+    FRONTEND_PID=$!
+    echo "   ✓ Frontend PID: $FRONTEND_PID"
+    cd ..
+else
+    FRONTEND_PID=""
+fi
 
 echo
 echo "================================================================================"

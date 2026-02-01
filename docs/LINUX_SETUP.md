@@ -11,10 +11,30 @@ This guide provides instructions for running the Network Observability Agent sys
    python3 --version
    ```
 
-2. **Node.js 18+ and npm**
+2. **Node.js 18+ and bun/npm**
    ```bash
    node --version
+   
+   # Option 1: bun (recommended - faster)
+   bun --version
+   
+   # Option 2: npm (traditional)
    npm --version
+   ```
+   
+   **Install bun (recommended):**
+   ```bash
+   curl -fsSL https://bun.sh/install | bash
+   source ~/.bashrc  # or restart terminal
+   ```
+   
+   **Or install npm:**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install npm
+   
+   # CentOS/RHEL
+   sudo yum install npm
    ```
 
 3. **Git**
@@ -66,7 +86,13 @@ cd ..
 #### 5. Install Node Dependencies for Dashboard
 ```bash
 cd react_dashboard
+
+# Using bun (faster)
+bun install
+
+# Or using npm
 npm install
+
 cd ..
 ```
 

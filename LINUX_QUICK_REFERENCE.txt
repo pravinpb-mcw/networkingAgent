@@ -5,12 +5,17 @@
 
 ┌─ FIRST TIME SETUP ────────────────────────────────────────────────────────────┐
 │                                                                               │
+│  # Install bun (recommended - faster than npm)                               │
+│  curl -fsSL https://bun.sh/install | bash                                    │
+│  source ~/.bashrc                                                            │
+│                                                                               │
+│  # Then run setup                                                            │
 │  chmod +x setup_linux.sh && ./setup_linux.sh                                 │
 │                                                                               │
 │  This will:                                                                   │
 │    ✓ Create virtual environment                                              │
 │    ✓ Install Python dependencies                                             │
-│    ✓ Install Node.js dependencies                                            │
+│    ✓ Install Node.js dependencies (using bun or npm)                         │
 │    ✓ Make all scripts executable                                             │
 │    ✓ Create .env file                                                        │
 │                                                                               │
@@ -64,6 +69,11 @@
 │                                                                               │
 │  Scripts Not Executable?                                                     │
 │    cd batch && chmod +x *.sh                                                 │
+│                                                                               │
+│  Bun/NPM Not Found?                                                          │
+│    curl -fsSL https://bun.sh/install | bash  # Install bun (recommended)    │
+│    source ~/.bashrc                                                          │
+│    # or: sudo apt install npm                # Install npm (alternative)    │
 │                                                                               │
 │  Port Already in Use?                                                        │
 │    lsof -i :5001          # Find process                                     │
